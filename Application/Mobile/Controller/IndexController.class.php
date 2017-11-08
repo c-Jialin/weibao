@@ -13,6 +13,7 @@ class IndexController extends MobileController
      */
     public function index()
     {
+        echo __METHOD__;
         if (UID) {
             if (IS_ROOT) { //管理员首页
                 $this->meta_title = '案件列表';

@@ -1,11 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | OneThink [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
-// +----------------------------------------------------------------------
 
 namespace Mobile\Controller;
 
@@ -13,14 +6,12 @@ use User\Api\UserApi;
 
 /**
  * 后台用户控制器
- * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 class UserController extends MobileController
 {
 
     /**
      * 用户管理首页
-     * @author 麦当苗儿 <zuojiazi@vip.qq.com>
      */
     public function index()
     {
@@ -41,7 +32,6 @@ class UserController extends MobileController
 
     /**
      * 修改昵称初始化
-     * @author huajie <banhuajie@163.com>
      */
     public function updateNickname()
     {
@@ -53,7 +43,6 @@ class UserController extends MobileController
 
     /**
      * 修改昵称提交
-     * @author huajie <banhuajie@163.com>
      */
     public function submitNickname()
     {
@@ -89,7 +78,6 @@ class UserController extends MobileController
 
     /**
      * 修改密码初始化
-     * @author huajie <banhuajie@163.com>
      */
     public function updatePassword()
     {
@@ -100,7 +88,6 @@ class UserController extends MobileController
 
     /**
      * 修改密码提交
-     * @author huajie <banhuajie@163.com>
      */
     public function submitPassword()
     {
@@ -131,7 +118,6 @@ class UserController extends MobileController
 
     /**
      * 用户行为列表
-     * @author huajie <banhuajie@163.com>
      */
     public function action()
     {
@@ -149,7 +135,6 @@ class UserController extends MobileController
 
     /**
      * 新增行为
-     * @author huajie <banhuajie@163.com>
      */
     public function addAction()
     {
@@ -160,7 +145,6 @@ class UserController extends MobileController
 
     /**
      * 编辑行为
-     * @author huajie <banhuajie@163.com>
      */
     public function editAction()
     {
@@ -175,7 +159,6 @@ class UserController extends MobileController
 
     /**
      * 更新行为
-     * @author huajie <banhuajie@163.com>
      */
     public function saveAction()
     {
@@ -189,7 +172,6 @@ class UserController extends MobileController
 
     /**
      * 会员状态修改
-     * @author 朱亚杰 <zhuyajie@topthink.net>
      */
     public function changeStatus($method = null)
     {

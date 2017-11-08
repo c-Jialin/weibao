@@ -1,6 +1,7 @@
 <?php
 
 namespace Mobile\Model;
+
 use Admin\Model\AuthRuleModel as AuthRule;
 
 /**
@@ -8,6 +9,5 @@ use Admin\Model\AuthRuleModel as AuthRule;
  */
 class AuthRuleModel extends AuthRule
 {
-
 
 }

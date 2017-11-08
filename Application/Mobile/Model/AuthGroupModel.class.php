@@ -1,6 +1,7 @@
 <?php
 
 namespace Mobile\Model;
+
 use Admin\Model\AuthGroupModel as AuthGroup;
 
 /**
