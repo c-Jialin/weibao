@@ -1,107 +1,109 @@
 <?php
-// +----------------------------------------------------------------------
-// | OneThink [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: huajie <yangweijiester@gmail.com>
-// +----------------------------------------------------------------------
 
 namespace Admin\Controller;
+
 use Think\QiNiuStorage;
 
 /**
  * 七牛扩展类测试控制器
- * @author yangweijie <yangweijiester@gmail.com>
  */
-class QiniuController extends AdminController {
+class QiniuController extends AdminController
+{
 
-    public function _initialize(){
+    public function _initialize()
+    {
         $config = array(
-            'accessKey'=>'__ODsglZwwjRJNZHAu7vtcEf-zgIxdQAY-QqVrZD',
-            'secrectKey'=>'Z9-RahGtXhKeTUYy9WCnLbQ98ZuZ_paiaoBjByKv',
-            'bucket'=>'blackwhite',
-            'domain'=>'blackwhite.u.qiniudn.com'
+            'accessKey' => '__ODsglZwwjRJNZHAu7vtcEf-zgIxdQAY-QqVrZD',
+            'secrectKey' => 'Z9-RahGtXhKeTUYy9WCnLbQ98ZuZ_paiaoBjByKv',
+            'bucket' => 'blackwhite',
+            'domain' => 'blackwhite.u.qiniudn.com'
         );
         $this->qiniu = new QiNiuStorage($config);
         parent:: _initialize();
     }
 
     //获取文件列表
-    public function index(){
+    public function index()
+    {
         $this->meta_title = '七牛云存储测试';
         $map = array();
         $prefix = trim(I('post.prefix'));
-        if($prefix)
+        if ($prefix)
             $map['prefix'] = $prefix;
         $list = $this->qiniu->getList($map);
-        if(!$list)
+        if (!$list)
             trace($this->qiniu->error);
         $this->assign('qiniu', $this->qiniu);
         $this->assign('_list', $list['items']);
         $this->display();
     }
 
-    public function del(){
+    public function del()
+    {
         $file = trim(I('file'));
-        if($file){
+        if ($file) {
             $result = $this->qiniu->del($file);
-            if(false === $result){
+            if (false === $result) {
                 $this->error($this->qiniu->errorStr);
-            }else{
+            } else {
                 $this->success('删除成功');
             }
-        }else{
+        } else {
             $this->error('错误的文件名');
         }
     }
 
-    public function dealImage($key){
-        $url = $this->qiniu->dealWithType($key, 'img') ;
+    public function dealImage($key)
+    {
+        $url = $this->qiniu->dealWithType($key, 'img');
         redirect($url);
     }
 
-    public function dealDoc($key){
+    public function dealDoc($key)
+    {
         $url = $this->qiniu->dealWithType($key, 'doc');
         redirect($url);
     }
 
-    public function rename(){
+    public function rename()
+    {
         $key = I('get.file');
         $new = I('new_name');
         $result = $this->qiniu->rename($key, $new);
-        if(false === $result){
+        if (false === $result) {
             trace($this->qiniu->error);
             $this->error($this->qiniu->errorStr);
-        }else{
+        } else {
             $this->success('改名成功');
         }
     }
 
-    public function batchDel(){
+    public function batchDel()
+    {
         $files = $_GET['key'];
-        if(is_array($files) && $files !== array()){
-            $files = array_column($files,'value');
+        if (is_array($files) && $files !== array()) {
+            $files = array_column($files, 'value');
             $result = $this->qiniu->delBatch($files);
-            if(false === $result){
+            if (false === $result) {
                 $this->error($this->qiniu->errorStr);
-            }else{
+            } else {
                 $this->success('删除成功');
             }
-        }else{
+        } else {
             $this->error('请至少选择一个文件');
         }
     }
 
-    public function detail($key){
+    public function detail($key)
+    {
         $result = $this->qiniu->info($key);
-        if($result){
-            if(in_array($result['mimeType'], array('image/jpeg','image/png'))){
+        if ($result) {
+            if (in_array($result['mimeType'], array('image/jpeg', 'image/png'))) {
                 $img = "<img src='{$this->qiniu->downlink($key)}?imageView/2/w/203/h/203'>";
-            }else{
+            } else {
                 $img = '<img class="file-prev" src="https://dn-portal-static.qbox.me/v104/static/theme/default/image/resource/no-prev.png">';
             }
-            $time = date('Y-m-d H:i:s', bcmul(substr(strval($result['putTime']), 0, 11),"1000000000"));
+            $time = date('Y-m-d H:i:s', bcmul(substr(strval($result['putTime']), 0, 11), "1000000000"));
             $filesize = format_bytes($result['fsize']);
             $tpl = <<<tpl
             <div class="right-head">
@@ -124,29 +126,30 @@ class QiniuController extends AdminController {
                 </div>
             </div>
 tpl;
-            $this->success('as', '', array('tpl'=>$tpl));
-        }else{
+            $this->success('as', '', array('tpl' => $tpl));
+        } else {
             $this->error('获取文件信息失败');
         }
 
     }
 
     //上传单个文件 用uploadify
-    public function uploadOne(){
+    public function uploadOne()
+    {
         $file = $_FILES['qiniu_file'];
         $file = array(
-            'name'=>'file',
-            'fileName'=>$file['name'],
-            'fileBody'=>file_get_contents($file['tmp_name'])
+            'name' => 'file',
+            'fileName' => $file['name'],
+            'fileBody' => file_get_contents($file['tmp_name'])
         );
         $config = array();
         $result = $this->qiniu->upload($config, $file);
-        if($result){
-            $this->success('上传成功','', $result);
-        }else{
-            $this->error('上传失败','', array(
-                'error'=>$this->qiniu->error,
-                'errorStr'=>$this->qiniu->errorStr
+        if ($result) {
+            $this->success('上传成功', '', $result);
+        } else {
+            $this->error('上传失败', '', array(
+                'error' => $this->qiniu->error,
+                'errorStr' => $this->qiniu->errorStr
             ));
         }
         exit;

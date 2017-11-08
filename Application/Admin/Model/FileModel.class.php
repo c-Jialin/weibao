@@ -1,13 +1,7 @@
 <?php
-// +----------------------------------------------------------------------
-// | OneThink [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
-// +----------------------------------------------------------------------
 
 namespace Admin\Model;
+
 use Think\Model;
 use Think\Upload;
 
@@ -15,8 +9,8 @@ use Think\Upload;
  * 文件模型
  * 负责文件的下载和上传
  */
-
-class FileModel extends Model{
+class FileModel extends Model
+{
     /**
      * 文件模型自动完成
      * @var array
@@ -35,31 +29,32 @@ class FileModel extends Model{
 
     /**
      * 文件上传
-     * @param  array  $files   要上传的文件列表（通常是$_FILES数组）
-     * @param  array  $setting 文件上传配置
-     * @param  string $driver  上传驱动名称
-     * @param  array  $config  上传驱动配置
+     * @param  array $files 要上传的文件列表（通常是$_FILES数组）
+     * @param  array $setting 文件上传配置
+     * @param  string $driver 上传驱动名称
+     * @param  array $config 上传驱动配置
      * @return array           文件上传成功后的信息
      */
-    public function upload($files, $setting, $driver = 'Local', $config = null){
+    public function upload($files, $setting, $driver = 'Local', $config = null)
+    {
         /* 上传文件 */
         $setting['callback'] = array($this, 'isFile');
-		$setting['removeTrash'] = array($this, 'removeTrash');
+        $setting['removeTrash'] = array($this, 'removeTrash');
         $Upload = new Upload($setting, $driver, $config);
-        $info   = $Upload->upload($files);
+        $info = $Upload->upload($files);
 
         /* 设置文件保存位置 */
-		$this->_auto[] = array('location', 'ftp' === strtolower($driver) ? 1 : 0, self::MODEL_INSERT);
+        $this->_auto[] = array('location', 'ftp' === strtolower($driver) ? 1 : 0, self::MODEL_INSERT);
 
-        if($info){ //文件上传成功，记录文件信息
+        if ($info) { //文件上传成功，记录文件信息
             foreach ($info as $key => &$value) {
                 /* 已经存在文件记录 */
-                if(isset($value['id']) && is_numeric($value['id'])){
+                if (isset($value['id']) && is_numeric($value['id'])) {
                     continue;
                 }
 
                 /* 记录文件信息 */
-                if($this->create($value) && ($id = $this->add())){
+                if ($this->create($value) && ($id = $this->add())) {
                     $value['id'] = $id;
                 } else {
                     //TODO: 文件上传成功，但是记录文件信息失败，需记录日志
@@ -75,15 +70,16 @@ class FileModel extends Model{
 
     /**
      * 下载指定文件
-     * @param  number  $root 文件存储根目录
-     * @param  integer $id   文件ID
-     * @param  string   $args     回调函数参数
+     * @param  number $root 文件存储根目录
+     * @param  integer $id 文件ID
+     * @param  string $args 回调函数参数
      * @return boolean       false-下载失败，否则输出下载文件
      */
-    public function download($root, $id, $callback = null, $args = null){
+    public function download($root, $id, $callback = null, $args = null)
+    {
         /* 获取下载文件信息 */
         $file = $this->find($id);
-        if(!$file){
+        if (!$file) {
             $this->error = '不存在该文件！';
             return false;
         }
@@ -93,9 +89,9 @@ class FileModel extends Model{
             case 0: //下载本地文件
                 $file['rootpath'] = $root;
                 return $this->downLocalFile($file, $callback, $args);
-			case 1: //下载FTP文件
-				$file['rootpath'] = $root;
-				return $this->downFtpFile($file, $callback, $args);
+            case 1: //下载FTP文件
+                $file['rootpath'] = $root;
+                return $this->downFtpFile($file, $callback, $args);
                 break;
             default:
                 $this->error = '不支持的文件存储类型！';
@@ -107,27 +103,29 @@ class FileModel extends Model{
 
     /**
      * 检测当前上传的文件是否已经存在
-     * @param  array   $file 文件上传数组
+     * @param  array $file 文件上传数组
      * @return boolean       文件信息， false - 不存在该文件
      */
-    public function isFile($file){
-        if(empty($file['md5'])){
+    public function isFile($file)
+    {
+        if (empty($file['md5'])) {
             throw new \Exception('缺少参数:md5');
         }
         /* 查找文件 */
-        $map = array('md5' => $file['md5'],'sha1'=>$file['sha1'],);
+        $map = array('md5' => $file['md5'], 'sha1' => $file['sha1'],);
         return $this->field(true)->where($map)->find();
     }
 
     /**
      * 下载本地文件
-     * @param  array    $file     文件信息数组
+     * @param  array $file 文件信息数组
      * @param  callable $callback 下载回调函数，一般用于增加下载次数
-     * @param  string   $args     回调函数参数
+     * @param  string $args 回调函数参数
      * @return boolean            下载失败返回false
      */
-    private function downLocalFile($file, $callback = null, $args = null){
-        if(is_file($file['rootpath'].$file['savepath'].$file['savename'])){
+    private function downLocalFile($file, $callback = null, $args = null)
+    {
+        if (is_file($file['rootpath'] . $file['savepath'] . $file['savename'])) {
             /* 调用回调函数新增下载数 */
             is_callable($callback) && call_user_func($callback, $args);
 
@@ -140,7 +138,7 @@ class FileModel extends Model{
             } else {
                 header('Content-Disposition: attachment; filename="' . $file['name'] . '"');
             }
-            readfile($file['rootpath'].$file['savepath'].$file['savename']);
+            readfile($file['rootpath'] . $file['savepath'] . $file['savename']);
             exit;
         } else {
             $this->error = '文件已被删除！';
@@ -148,34 +146,36 @@ class FileModel extends Model{
         }
     }
 
-	/**
-	 * 下载ftp文件
-	 * @param  array    $file     文件信息数组
-	 * @param  callable $callback 下载回调函数，一般用于增加下载次数
-	 * @param  string   $args     回调函数参数
-	 * @return boolean            下载失败返回false
-	 */
-	private function downFtpFile($file, $callback = null, $args = null){
-		/* 调用回调函数新增下载数 */
-		is_callable($callback) && call_user_func($callback, $args);
+    /**
+     * 下载ftp文件
+     * @param  array $file 文件信息数组
+     * @param  callable $callback 下载回调函数，一般用于增加下载次数
+     * @param  string $args 回调函数参数
+     * @return boolean            下载失败返回false
+     */
+    private function downFtpFile($file, $callback = null, $args = null)
+    {
+        /* 调用回调函数新增下载数 */
+        is_callable($callback) && call_user_func($callback, $args);
 
-		$host = C('DOWNLOAD_HOST.host');
-		$root = explode('/', $file['rootpath']);
-		$file['savepath'] = $root[3].'/'.$file['savepath'];
+        $host = C('DOWNLOAD_HOST.host');
+        $root = explode('/', $file['rootpath']);
+        $file['savepath'] = $root[3] . '/' . $file['savepath'];
 
-		$data = array($file['savepath'], $file['savename'], $file['name'], $file['mime']);
-		$data = json_encode($data);
-		$key = think_encrypt($data, C('DATA_AUTH_KEY'), 600);
+        $data = array($file['savepath'], $file['savename'], $file['name'], $file['mime']);
+        $data = json_encode($data);
+        $key = think_encrypt($data, C('DATA_AUTH_KEY'), 600);
 
-		header("Location:http://{$host}/onethink.php?key={$key}");
-	}
+        header("Location:http://{$host}/onethink.php?key={$key}");
+    }
 
-	/**
-	 * 清除数据库存在但本地不存在的数据
-	 * @param $data
-	 */
-	public function removeTrash($data){
-		$this->where(array('id'=>$data['id'],))->delete();
-	}
+    /**
+     * 清除数据库存在但本地不存在的数据
+     * @param $data
+     */
+    public function removeTrash($data)
+    {
+        $this->where(array('id' => $data['id'],))->delete();
+    }
 
 }

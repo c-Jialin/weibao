@@ -1,11 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | OneThink [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
-// +----------------------------------------------------------------------
 
 /**
  * 后台公共文件
@@ -94,7 +87,6 @@ function get_attribute_type($type = '')
  * 获取对应状态的文字信息
  * @param int $status
  * @return string 状态文字 ，false 未获取到
- * @author huajie <banhuajie@163.com>
  */
 function get_status_title($status = null)
 {
@@ -143,7 +135,6 @@ function show_status_op($status)
  * 获取文档的类型文字
  * @param string $type
  * @return string 状态文字 ，false 未获取到
- * @author huajie <banhuajie@163.com>
  */
 function get_document_type($type = null)
 {
@@ -196,7 +187,6 @@ function get_config_group($group = 0)
  *                                          '字段名2'=>array(映射关系数组),
  *                                           ......
  *                                       )
- * @author 朱亚杰 <zhuyajie@topthink.net>
  * @return array
  *
  *  array(
@@ -223,7 +213,6 @@ function int_to_string(&$data, $map = array('status' => array(1 => '正常', -1 
 
 /**
  * 动态扩展左侧菜单,base.html里用到
- * @author 朱亚杰 <zhuyajie@topthink.net>
  */
 function extra_menu($extra_menu, &$base_menu)
 {
@@ -240,7 +229,6 @@ function extra_menu($extra_menu, &$base_menu)
  * 获取参数的所有父级分类
  * @param int $cid 分类id
  * @return array 参数分类和父类的信息集合
- * @author huajie <banhuajie@163.com>
  */
 function get_parent_category($cid)
 {
@@ -270,7 +258,6 @@ function get_parent_category($cid)
  * 检测验证码
  * @param  integer $id 验证码ID
  * @return boolean     检测结果
- * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 function check_verify($code, $id = 1)
 {
@@ -282,7 +269,6 @@ function check_verify($code, $id = 1)
  * 获取当前分类的文档类型
  * @param int $id
  * @return array 文档类型数组
- * @author huajie <banhuajie@163.com>
  */
 function get_type_bycate($id = null)
 {
@@ -304,7 +290,6 @@ function get_type_bycate($id = null)
  * 获取当前文档的分类
  * @param int $id
  * @return array 文档类型数组
- * @author huajie <banhuajie@163.com>
  */
 function get_cate($cate_id = null)
 {
@@ -364,7 +349,6 @@ function parse_field_attr($string)
  * 获取行为数据
  * @param string $id 行为id
  * @param string $field 需要获取的字段
- * @author huajie <banhuajie@163.com>
  */
 function get_action($id = null, $field = null)
 {
@@ -384,7 +368,6 @@ function get_action($id = null, $field = null)
  * @param mixed $value 条件，可用常量或者数组
  * @param string $condition 条件字段
  * @param string $field 需要返回的字段，不传则返回整个数据
- * @author huajie <banhuajie@163.com>
  */
 function get_document_field($value = null, $condition = 'id', $field = null)
 {
@@ -407,7 +390,6 @@ function get_document_field($value = null, $condition = 'id', $field = null)
  * 获取行为类型
  * @param intger $type 类型
  * @param bool $all 是否返回全部类型
- * @author huajie <banhuajie@163.com>
  */
 function get_action_type($type, $all = false)
 {

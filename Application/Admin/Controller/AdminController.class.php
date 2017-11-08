@@ -1,6 +1,7 @@
 <?php
 
 namespace Admin\Controller;
+
 use Think\Controller;
 use Admin\Model\AuthRuleModel;
 use Admin\Model\AuthGroupModel;

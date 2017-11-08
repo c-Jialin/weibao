@@ -18,8 +18,6 @@ class CaseController extends AdminController
      *      返回true则表示当前访问有权限
      *      返回false则表示当前访问无权限
      *      返回null，则会进入checkRule根据节点授权判断权限
-     *
-     * @author 朱亚杰  <xcoolcc@gmail.com>
      */
     protected function checkDynamic()
     {
@@ -57,7 +55,6 @@ class CaseController extends AdminController
 
     /**
      * 显示左边菜单，进行权限控制
-     * @author huajie <banhuajie@163.com>
      */
     protected function getMenu()
     {
@@ -139,41 +136,16 @@ class CaseController extends AdminController
             $CaseList = M('case')->select();
         }
         if ($uid == 1) {
-            $where = array(
-                'turn_related' => $uid,
-                'management_status' => ''
-            );
+            $where = array('turn_related' => $uid, 'management_status' => '');
         }
         if ($uid == 2) {
-            $where = array(
-                'trial_status' => 1,
-                'last_instance_status' => '',
-            );
+            $where = array('trial_status' => 1, 'last_instance_status' => '',);
         }
         if ($uid == 3) {
-            $where = (
-                'turn_related = ' . $uid . '
-    			AND
-    			management_status =""
-   				or
-    			visit_status = 1
-    			AND
-    			visit_suggestion = ""'
-            );
+            $where = ('turn_related = ' . $uid . ' AND management_status ="" or visit_status = 1 AND visit_suggestion = ""');
         }
         if ($uid == 4) {
-            $where = (
-            'trial_status = ""
-    			OR
-    			last_instance_status = 1
-    			AND
-    			dispatch_instance = ""
-    			OR
-    			management_status = 1
-    			AND
-    			finish_suggestion = ""
-    			'
-            );
+            $where = ('trial_status = "" OR last_instance_status = 1 AND dispatch_instance = "" OR management_status = 1 AND finish_suggestion = ""');
         }
         $this->CaseList = M('case')->where($where)->select();
         $this->uid = $uid;
@@ -211,9 +183,9 @@ class CaseController extends AdminController
         $this->shequ = M('area_top')->where(array('type_id' => 4))->select();
         $usid = array();
         foreach ($uid as $key => $value) {
-            if(is_array($value)){
+            if (is_array($value)) {
                 $usid[$key] = $value['group_id'];
-            }else{
+            } else {
                 $usid[$key] = $value['group_id'];
             }
         }
@@ -331,51 +303,21 @@ class CaseController extends AdminController
         $this->meta_title = '待处理案件';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         if (UID == 1) {
-            $where = (
-            'finish_suggestion = ""
-    		OR
-    		visit_status = 1
-    		AND
-    		visit_suggestion = ""
-    		'
-            );
+            $where = ('finish_suggestion = "" OR visit_status = 1 AND visit_suggestion = ""');
         }
         if ($uid == 1) {
-            $where = (
-            'case_status = "diaodu"
-    			and
-    			turn_related = 1
-    			'
-            );
+            $where = ('case_status = "diaodu" and turn_related = 1');
         }
         if ($uid == 2) {
-            $where = (
-            'case_status = "chushen"'
-            );
+            $where = ('case_status = "chushen"');
         }
         if ($uid == 3) {
-            $where = (
-            'case_status = "diaodu"
-    			and
-    			turn_related = 3
-    			or
-    			case_status = "weihuifang"
-    			'
-            );
+            $where = ('case_status = "diaodu" and turn_related = 3 or case_status = "weihuifang"');
         }
         if ($uid == 4) {
-            $where = (
-            'case_status = "caiji"
-    			or
-    			case_status = "shenpi"
-    			or
-    			case_status = "chuzhi"
-    			'
-            );
+            $where = ('case_status = "caiji" or case_status = "shenpi" or case_status = "chuzhi"');
         }
-
         $count = M('case')->where($where)->order('fill_in_time desc')->count();
-
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
@@ -396,51 +338,21 @@ class CaseController extends AdminController
         $this->meta_title = '正在处理';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         if (UID == 1) {
-            $where = (
-            'finish_suggestion = ""
-    		OR
-    		visit_status = 1
-    		AND
-    		visit_suggestion = ""
-    		'
-            );
+            $where = ('finish_suggestion = "" OR visit_status = 1 AND visit_suggestion = ""');
         }
         if ($uid == 1) {
-            $where = (
-            'case_status = "diaodu"
-    			and
-    			turn_related = 1
-    			'
-            );
+            $where = ('case_status = "diaodu" and turn_related = 1');
         }
         if ($uid == 2) {
-            $where = (
-            'case_status = "chushen"'
-            );
+            $where = ('case_status = "chushen"');
         }
         if ($uid == 3) {
-            $where = (
-            'case_status = "diaodu"
-    			and
-    			turn_related = 3
-    			or
-    			case_status = "weihuifang"
-    			'
-            );
+            $where = ('case_status = "diaodu" and turn_related = 3 or case_status = "weihuifang"');
         }
         if ($uid == 4) {
-            $where = (
-            'case_status = "caiji"
-    			or
-    			case_status = "shenpi"
-    			or
-    			case_status = "chuzhi"
-    			'
-            );
+            $where = ('case_status = "caiji" or case_status = "shenpi" or case_status = "chuzhi"');
         }
-
         $count = M('case')->where($where)->order('fill_in_time desc')->count();
-
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
@@ -458,9 +370,7 @@ class CaseController extends AdminController
     public function guidang()
     {
         $this->meta_title = '归档案件';
-
         $count = M('case')->where('case_status = "jiean" or case_status = "huifang"')->order('fill_in_time desc')->count();
-
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
@@ -478,15 +388,8 @@ class CaseController extends AdminController
     public function wancheng()
     {
         $this->meta_title = '完成处理';
-        $where = (
-        'case_status = "jiean"
-    			 or 
-    			 case_status = "huifang"
-    			 '
-        );
-
+        $where = ('case_status = "jiean" or case_status = "huifang"');
         $count = M('case')->where($where)->order('fill_in_time desc')->count();
-
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;

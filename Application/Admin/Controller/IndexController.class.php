@@ -6,7 +6,6 @@ namespace Admin\Controller;
  */
 class IndexController extends AdminController
 {
-
     /**
      * 首页
      */

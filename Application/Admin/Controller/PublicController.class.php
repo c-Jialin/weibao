@@ -2,13 +2,14 @@
 
 namespace Admin\Controller;
 
+use Think\Controller;
 use User\Api\UserApi;
 
 /**
  * 用户控制器
  * 包括用户中心，用户登录及注册
  */
-class PublicController extends \Think\Controller
+class PublicController extends Controller
 {
     /* 登录页面 */
     public function login($username = '', $password = '', $verify = '')
