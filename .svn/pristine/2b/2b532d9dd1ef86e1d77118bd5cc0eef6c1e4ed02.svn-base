@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>湘潭市未成年人社会保护信息系统</title>
+		<link rel="stylesheet" type="text/css" href="../../../../Public/Admin/css/xtwcn/bootstrap.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../Public/Admin/css/xtwcn/index.css"/>
+		<script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
+	</head>
+	<body>
+		<header class="header">
+		    <div class="top">
+		    	<img src="__PUBLIC__/Admin/images/xtwcn/logo.png" class="logo"/>
+		    	<h2>湘潭市未成年保护系统</h2>
+		    	<ul class="right">
+		    		<li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href=""><img src="__PUBLIC__/Admin/images/xtwcn/returnhome.png"><br><span >返回首页</span></a></li>
+		    		<li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href=""><img src="__PUBLIC__/Admin/images/xtwcn/changepass.png"><br><span >修改密码</span></a></li>
+		    		<li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href=""><img src="__PUBLIC__/Admin/images/xtwcn/reload.png"><br><span >重新登录</span></a></li>
+		    	</ul>
+		    </div>
+		    <div class="bottom">
+		    	<ul>
+		    		<li><a href="">案件调度</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="">信息采集</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="">正在处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="">待处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="">完成处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="">所有案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		    	</ul>
+		    	<form class="form-inline">
+				  <div class="form-group">
+				    <label for="search" class="sr-only">Password</label>
+				    <input type="text" class="form-control" id="search" placeholder="">
+				  </div>
+				  <a href=""><img src="__PUBLIC__/Admin/images/xtwcn/search-btn.png"></a>
+				</form>
+		    		
+		    </div>
+		</header>
+		<div class="page container">
+			<div class="jindu">
+				<h3 class="title">案件：岳塘区李小明1类4级孤儿求助事件</h3>
+				<div class="tips"><span>已经处置：28天</span><span>当前阶段：信息采集</span><span>指挥调度责任人：王科长</span><span>社会责任人：李科长</span></div>
+				<div class="stage">
+					<span class="<?php if($act == ''){?>active<?php }?>">采集</span><span class="solid">→</span>
+					<span class="<?php if($act == 'chushen'){?>active<?php }?>">初审</span><span class="solid">→</span>
+					<span class="<?php if($act == 'zhongshen'){?>active<?php }?>">终审</span><span class="solid">→</span>
+					<span class="<?php if($act == 'diaodu'){?>active<?php }?>">调度</span><span class="solid">→</span>
+					<span class="<?php if($act == 'chuzhi'){?>active<?php }?>">协同处置</span><span class="solid">→</span>
+					<span>结案</span>
+				</div>
+			</div>
+			<div class="information">
+				<div class="title <?php if($act == ''){?>
+						active
+					<?php }?>" data-toggle="collapse" href="#xinxicaiji"  aria-expanded="<?php if($act == ''){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">信息采集<span class="caret"></span></div>
+				<div class="collapse <?php if($act == ''){?>in<?php }?>" id="xinxicaiji">
+				<table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 14px;">
+						<form action="{:U('Case/index')}" method="post">
+						<tbody>
+							<tr>
+								<td class="tips"><span>流程采集人</span> <span>xxxx</span> <span>案件编号：123456</span></td>
+							</tr>
+							<tr>
+								<td class="td_input" align="left">县/市/区：</td>
+								<td class="td_input" align="left">
+									<select class="select" name="area_code" id="City">
+										<option value="请选择">请选择</option>
+										<option value="1111">11111</option>
+									</select>
+								</td>
+								<td align="right">街/镇：</td>
+								<td class="td_input" align="left">
+									<select class="select" name="street_code" id="Town"></select>
+								</td>
+								<td align="right">村/社区：</td>
+								<td class="td_input" align="left"><select class="select" name="community_code" id="Country"></select></td>
+								<td align="right">编号：</td>
+								<td class="td_input"><input type="text" class="input" name="case_number" style="width:150px;" value=""></td>
+							</tr>
+						</tbody>
+					</table>
+				<div class="relative" style=" width:855px; padding:2px; border:solid 2px #666;">
+				<div id="upload1" class="absolute upload1" style="display:none;">
+				</div>
+			<table cellpadding="0" cellspacing="0" border="0" class="table_2" style=" width:855px;">
+				<tbody><tr>
+					<td class="td_item" style="width:100px;">姓名</td>
+					<td class="td_input" style="width:110px;"><input type="text" class="input" name="name" value=""></td>
+					<td class="td_item" style="width:80px;">性别</td>
+					<td class="td_input" style="width:120px;">
+					<label>【<input type="radio" class="radio" name="sex" value="1">】男</label>
+					<label>【<input type="radio" class="radio" name="sex" value="2">】女</label></td>
+					<td class="td_item" style="width:100px; ">民族</td>
+					<td class="td_input" style="width:80px;"><input type="text" class="input" name="nation" value=""></td>
+					<td rowspan="5" style="width:164px; line-height:22px; padding:0;" id="file">
+						 <label class="label">照片<br>（点击上传）<input type="file" name="photo" id="mypic" multiple accept="image/*" onchange="handleFiles(this)" ></label>
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">出生年月</td>
+					<td class="td_input" colspan="5">
+						<select name="birthday" class="select" style="width:55px;">
+							<option value="1980">1980</option><option value="1981">1981</option><option value="1982">1982</option><option value="1983">1983</option><option value="1984">1984</option><option value="1985">1985</option><option value="1986">1986</option><option value="1987">1987</option><option value="1988">1988</option><option value="1989">1989</option><option value="1990">1990</option><option value="1991">1991</option><option value="1992">1992</option><option value="1993">1993</option><option value="1994">1994</option><option value="1995">1995</option><option value="1996">1996</option><option value="1997">1997</option><option value="1998">1998</option><option value="1999">1999</option><option value="2000">2000</option><option value="2001">2001</option><option value="2002">2002</option><option value="2003">2003</option><option value="2004">2004</option><option value="2005">2005</option><option value="2006">2006</option><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option><option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option><option value="2036">2036</option><option value="2037">2037</option><option value="2038">2038</option><option value="2039">2039</option><option value="2040">2040</option><option value="2041">2041</option><option value="2042">2042</option><option value="2043">2043</option><option value="2044">2044</option><option value="2045">2045</option><option value="2046">2046</option><option value="2047">2047</option><option value="2048">2048</option><option value="2049">2049</option><option value="2050">2050</option><option value="2051">2051</option><option value="2052">2052</option><option value="2053">2053</option><option value="2054">2054</option><option value="2055">2055</option><option value="2056">2056</option><option value="2057">2057</option><option value="2058">2058</option><option value="2059">2059</option><option value="2060">2060</option><option value="2061">2061</option><option value="2062">2062</option><option value="2063">2063</option><option value="2064">2064</option><option value="2065">2065</option><option value="2066">2066</option><option value="2067">2067</option><option value="2068">2068</option><option value="2069">2069</option><option value="2070">2070</option><option value="2071">2071</option><option value="2072">2072</option><option value="2073">2073</option><option value="2074">2074</option><option value="2075">2075</option><option value="2076">2076</option><option value="2077">2077</option><option value="2078">2078</option><option value="2079">2079</option><option value="2080">2080</option><option value="2081">2081</option><option value="2082">2082</option><option value="2083">2083</option><option value="2084">2084</option><option value="2085">2085</option><option value="2086">2086</option><option value="2087">2087</option><option value="2088">2088</option><option value="2089">2089</option><option value="2090">2090</option><option value="2091">2091</option><option value="2092">2092</option><option value="2093">2093</option><option value="2094">2094</option><option value="2095">2095</option><option value="2096">2096</option><option value="2097">2097</option><option value="2098">2098</option><option value="2099">2099</option><option value="2100">2100</option>
+						</select>年
+						
+				</tr>
+				<tr>
+					<td class="td_item">户籍所在地</td>
+					<td class="td_input" colspan="5">
+						<!-- <input type="" class="td-input" name="household_pro_code" id="Register" value=""> -->
+						<select class="select left" name="household_pro_code" id="City1" style="float:left;"></select>
+						<select class="select left" name="household_city_code" id="Town1" style="float:left;"></select>
+						<select class="select left" name="household_area_code" id="Country1" style="float:left;"></select>
+						
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">家庭住址</td>
+					<td class="td_input" colspan="5">
+						<select class="select left" name="home_pro_code" id="City1" style="float:left;"><option value="请选择">请选择</option></select>
+						<select class="select left" name="home_city_code" id="Town1" style="float:left;"></select>
+						<select class="select left" name="home_area_code" id="Country1" style="float:left;"></select>
+						<input type="text" class="input left" style="width:35%" name="home_address" value="">
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">健康状况</td>
+					<td class="td_input" colspan="5">
+					<label>【<input type="radio" class="radio" name="health" value="1">】健康</label>
+					<label>【<input type="checkbox" class="radio" name="health" value="2">】肢体残疾</label>
+					<label>【<input type="checkbox" class="radio" name="health" value="3">】智力缺陷</label>
+					<label>【<input type="checkbox" class="radio" name="health" value="4">】精神疾病</label>
+					<label>【<input type="checkbox" class="radio" name="health" value="5">】传染病</label>
+					<label>【<input type="checkbox" class="radio" name="health" value="6">】盲人</label><br>
+					<label>【<input type="checkbox" class="radio" name="health" value="7">】聋哑</label>
+					<label>【<input type="checkbox" class="radio" name="health" value="8">】吸毒史</label>
+					<label>【<input type="checkbox" class="radio" name="health" value="9">】其它重病</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">性格状况</td>
+					<td class="td_input" colspan="3">
+					<label>【<input type="radio" class="radio" name="character" value="1">】内向</label>
+					<label>【<input type="radio" class="radio" name="character" value="2">】外向</label>
+					<label>【<input type="radio" class="radio" name="character" value="3">】中性</label>
+					<label>【<input type="radio" class="radio" name="character" value="4">】孤僻</label></td>
+					<td class="td_item">入学状况</td>
+					<td class="td_input" colspan="2">
+					<label>【<input type="radio" class="radio" name="admission_status" value="1">】未</label>　
+					<label>【<input type="radio" class="radio" name="admission_status" value="2">】在校</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">家庭主要成员<br>（监护人）</td>
+					<td colspan="6" valign="top" style="padding:0 0;">
+					<table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+						<tbody><tr>
+							<td style="width:40px;">监护人</td>
+							<td style="width:60px;">姓名</td>
+							<td style="width:60px;">关系</td>
+							<td style="width:40px;">年龄</td>
+							<td style="width:60px;">文化程度</td>
+							<td style="width:60px;">健康状况</td>
+							<td style="width:100px;">工作单位</td>
+							<td style="width:80px;">联系电话</td>
+							<td style="border-right:none; width:60px;">月收入</td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" class="input" name="family_members_0" value="1"></td>
+							<td><input type="text" class="input" name="family_members_1" value=""></td>
+							<td><input type="text" class="input" name="family_members_2" value=""></td>
+							<td><input type="text" class="input" name="family_members_3" value=""></td>
+							<td><input type="text" class="input" name="family_members_4" value=""></td>
+							<td><input type="text" class="input" name="family_members_5" value=""></td>
+							<td><input type="text" class="input" name="family_members_6" value=""></td>
+							<td><input type="text" class="input" name="family_members_7" value=""></td>
+							<td style="border-right:none;"><input type="text" class="input" name="family_members_8" value=""></td>
+						</tr>
+						<tr>
+							<td style="border-bottom:none;"><input type="checkbox" class="input" name="Mfamily_members2_0" value="1"></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members2_1" value=""></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members2_2" value=""></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members2_3" value=""></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members2_4" value=""></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members2_5" value=""></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members2_6" value=""></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members2_7" value=""></td>
+							<td style="border-bottom:none; border-right:none;"><input type="text" class="input" name="family_members2_8" value=""></td>
+						</tr>
+					</tbody></table>
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">家庭结构</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="radio" class="radio" name="family_structure" value="1">】双亲健在</label>　
+					<label>【<input type="radio" class="radio" name="family_structure" value="2">】单亲家庭</label>　
+					<label>【<input type="radio" class="radio" name="family_structure" value="3">】孤儿</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">监护状况</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="radio" class="radio" name="guardianship" value="1">】父母监护</label>　
+					<label>【<input type="radio" class="radio" name="guardianship" value="2">】其他亲属抚养</label>　
+					<label>【<input type="radio" class="radio" name="guardianship" value="3">】机构抚养</label>　
+					<label>【<input type="radio" class="radio" name="guardianship" value="4">】无人监护</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">生活情境</td>
+					<td class="td_input" colspan="3">
+					<label>【<input type="radio" class="radio" name="life_status" value="1">】留守</label>　
+					<label>【<input type="radio" class="radio" name="life_status" value="2">】流动</label>　
+					<label>【<input type="radio" class="radio" name="life_status" value="3">】正常</label></td>
+					<td class="td_item">享受救助</td>
+					<td class="td_input" colspan="2">
+					<label>【<input type="checkbox" class="radio" name="enjoy_relief_type" value="1">】低保</label>　
+					<label>【<input type="checkbox" class="radio" name="enjoy_relief_type" value="2">】医保</label>　
+					<label>【<input type="checkbox" class="radio" name="enjoy_relief_type" value="3">】孤补</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">住房类型</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="radio" class="radio" name="housing_type" value="1">】固定住所</label>　
+					<label>【<input type="radio" class="radio" name="housing_type" value="2">】临时租住</label>　
+					<label>【<input type="radio" class="radio" name="housing_type" value="3">】借住</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">内心困境</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="checkbox" class="radio" name="inner_predicament" value="1">】父母关系不好</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament" value="2">】缺少亲友陪伴</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament" value="3">】朋辈关系不好</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament" value="4">】学习成绩不佳</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament" value="5">】无人理解自己</label><br>
+					<label>【<input type="checkbox" class="radio" name="inner_predicament" value="6">】感觉自己不如别人</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament" value="7">】其他</label>
+					<label><input type="text" class="input" style="width:300px;" name="Heart_other" value=""></label></td>
+				</tr>
+				
+				<tr>
+					<td class="td_item">成长困境<br>及风险等级</td>
+					<td colspan="6" valign="top" style="padding:0 0;">
+						<table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+							<tbody><tr>
+								<td class="td_input">1、孤儿或因法定监护人服刑、重病、重残等原因实际无人监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">2、因家庭暴力、遭受侵害等原因得不到适当监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">3、因家庭困境面临辍学和失去基本生活保障的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">4、有工读教育、特训学校教育、违法犯罪经历及严重偏差行为的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">5、被遗弃、拐卖、肋迫及故意伤害等原因陷入成长受阻碍的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">6、父母一方或双方外出，临时监护不到位的留守未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="Ggrowth_dilemma6" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input" style="border-bottom:none;">7、生理、心理和精神状态异常或失去生活自理、学习等能力的未成年人</td>
+								<td class="td_input" style="border-right:none; border-bottom:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="0">】零级</label></td>
+							</tr>
+							
+						</tbody></table>
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">主要困境描述</td>
+					<td style="border-right: 0;border-bottom: 0;"><input name="main_dilemma"></td>
+					
+			</tbody>
+			</table>
+			</div>
+				<div style="width: 855px;margin: auto;margin-top: 10px;border-bottom:1px solid rgb(65,199,214);padding-bottom: 10px;">
+					<label>填表人：<input type="text" class="input" style="width:300px;" name="Heart_other" value=""></label>
+					<label style="float: right;">填表日期：<input type="text" class="input" style="width:300px;" name="Heart_other" value=""></label>
+					<div style="clear: both;"></div>
+				</div>
+				<div align="center">
+					<button type="submit" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block;margin-right: 20px;">确认登记</button>
+					<button type="submit" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block">清空重置</button>
+				</div>
+			</div>
+			</form>
+
+			<div class="title <?php if($act == 'chushen'){?>active<?php }?>"  data-toggle="collapse" href="#chushen"  aria-expanded="<?php if($act == 'chushen'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">初审<span class="caret"></span></div>
+			<div id="chushen" class="submit collapse <?php if($act == 'chushen'){?>in<?php }?>">
+			<form action="{:U('Case/trial')}" method="post">
+				<div style="margin-bottom: 8px;">指挥中心或专业机构评估风险风险等级</div>
+				<table class="table_2">
+					<tr>
+					<td class="td_item">成长困境<br>及风险等级</td>
+					<td colspan="6" valign="top" style="padding:0 0;">
+						<table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+							<tbody><tr>
+								<td class="td_input">1、孤儿或因法定监护人服刑、重病、重残等原因实际无人监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">2、因家庭暴力、遭受侵害等原因得不到适当监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">3、因家庭困境面临辍学和失去基本生活保障的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">4、有工读教育、特训学校教育、违法犯罪经历及严重偏差行为的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">5、被遗弃、拐卖、肋迫及故意伤害等原因陷入成长受阻碍的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">6、父母一方或双方外出，临时监护不到位的留守未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="Ggrowth_dilemma6" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="0">】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input" style="border-bottom:none;">7、生理、心理和精神状态异常或失去生活自理、学习等能力的未成年人</td>
+								<td class="td_input" style="border-right:none; border-bottom:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="1">】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="2">】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="3">】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="4">】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="5">】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="0">】零级</label></td>
+							</tr>
+							
+						</tbody></table>
+					</td>
+				</tr>
+				</table>
+				<div class="li">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="radio" class="radio" name="trial_status" value="1"> <span class="radio-text">初审通过，提交终审</span></label>&emsp;
+						<select class="select" name="trial_person">
+							<option value="">选择终审人员</option>
+						</select>
+					</div>
+					<div class="right" style="margin-left: 20%;"> 
+						<label><input type="radio" class="radio" name="trial_status" value="2"> <span class="radio-text">初审不通过，驳回</span></label>&emsp;
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">初审意见 </div>
+					<div class="right"> 
+						<label><input type="radio" class="radio" name="trial_status" value="3"> <span class="radio-text">经过部门的信息核对，确认信息准确无误，情况属实</span></label>&emsp;<label><input type="radio" class="radio" name="trial_status" value="4"> <span class="radio-text">经过部门的信息核对，信息存在问题，驳回。</span></label>&emsp;
+						<textarea name="trial_suggestion" value=""></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">初审人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>
+						<span class="span-bottom">初审日期</span>
+						<span class="span-bottom"><?php echo date("Y-m-d",time())?></span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+				</form>
+			</div>
+			<div class="title <?php if($act == 'zhongshen'){?>active<?php }?>"  data-toggle="collapse" href="#zhongshen"  aria-expanded="<?php if($act == 'zhongshen'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">终审<span class="caret"></span></div>
+			<form action="{:U('Case/last_instance')}" method="post">
+			<div id="zhongshen" class="submit collapse <?php if($act == 'zhongshen'){?>in<?php }?>">
+				<div class="li">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="radio" class="radio" name="last_instance_status" value="1"> <span class="radio-text">终审通过</span></label><br>
+						<label><input type="radio" class="radio" name="last_instance_status" value="2"> <span class="radio-text">终审不通过，驳回</span></label>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">终审意见 </div>
+					<div class="right"> 
+						<textarea name="last_instance_instance"></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">终审人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>
+						<span class="span-bottom">终审日期</span>
+						<span class="span-bottom">2015-8-9</span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			</form>
+			<div class="title <?php if($act == 'diaodu'){?>active<?php }?>"  data-toggle="collapse" href="#diaodu"  aria-expanded="<?php if($act == 'diaodu'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">调度<span class="caret"></span></div>
+			<form action="{:U('Case/dispatch')}" method="post">
+			<div id="diaodu" class="submit collapse <?php if($act == 'diaodu'){?>in<?php }?>">
+				<div class="li">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="checkbox" name="checkbox1" value="1" /><span class="radio-text"> 报警110</span> 
+							<select class="select" name="police_station">
+								<option value="">委派部门</option>
+							</select>
+						</label>&emsp;
+						<label><input type="checkbox" name="checkbox2" value="1"/><span class="radio-text"> 转专业机构</span> 
+							<select class="select" name="turn_professional">
+								<option value="">选择机构</option>
+							</select>
+						</label>&emsp;
+						<label><input type="checkbox" name="checkbox3" value="1"/><span class="radio-text"> 转相关部门</span> 
+							<select class="select" name="turn_related">
+								<option value="0">选择部门</option>
+								<option value="1">市政</option>
+								<option value="3">社区</option>
+							</select>
+						</label>&emsp;
+						<label><input type="checkbox" name="checkbox4" value="1"/><span class="radio-text"> 专社区服务</span> 
+							<select class="select" name="special_community">
+								<option value="">选择部门</option>
+							</select>
+						</label>&emsp;
+						<label><input type="checkbox" name="checkbox5" value="1"/><span class="radio-text"> 转中心求助</span> 
+							<select class="select" name="transfer_assistance">
+								<option value="">选择部门</option>
+							</select>
+						</label>&emsp;
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">调度意见 </div>
+					<div class="right"> 
+						<textarea name="dispatch_instance"></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">调度人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>
+						<span class="span-bottom">调度日期</span>
+						<span class="span-bottom"><?php echo date("Y-m-d",time())?></span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			</form>
+
+			<div class="title <?php if($act == 'chuzhi'){?>active<?php }?>"  data-toggle="collapse" href="#chuzhi"  aria-expanded="<?php if($act == 'chuzhi'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">处置<span class="caret"></span></div>
+				<form action="{:U('Case/deal_with')}" method="post">
+				<div class="submit collapse chuzhi <?php if($act == 'chuzhi'){?>in<?php }?>">
+					<div class="li zhuchibeizhu">
+						<div class="left">处置备注 </div>
+						<div class="right"> 
+
+							<label><input type="radio" class="radio" name="management_status" value="1"> <span class="radio-text">处置完成,提交指挥中心</span></label><br>
+							<label><input type="radio" class="radio" name="management_status" value="2"> <span class="radio-text">驳回</span></label>
+
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div class="li">
+						<div class="left">流程操作 </div>
+						<div class="right"> 
+
+							<textarea name="management_record"></textarea>
+
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div class="li">
+						<div class="left">处置人 </div>
+						<div class="right"> 
+							<span class="span-bottom">湘潭市民政局XXX</span>
+							&nbsp;
+							<span class="span-bottom">处置日期</span>
+							<span class="span-bottom">2015-x-x</span>
+							&nbsp;
+							<label>手动设置处置日期 <input type="datetime-local" style="font-size:12px;line-height:12px;"></label>
+							<span id="addchuzhi" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加处置</span>
+							<!-- <br>
+							<span class="span-bottom">添加人</span><span class="span-bottom">湘潭市民政局XXX</span>&emsp;
+							<span class="span-bottom">添加日期</span>
+							<span class="span-bottom">2015-x-x</span>
+							 -->
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+
+					<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+				</div>
+			</form>
+			<div class="title <?php if($act == 'jiean'){?>active<?php }?>"  data-toggle="collapse" href="#jiean"  aria-expanded="<?php if($act == 'jiean'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">当前阶段：结案 <span class="caret"></span></div>
+			<form action="{:U('Case/finish')}" method="post">
+			<div id="jiean" class="submit collapse">
+				结案表：
+				<table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 12px;">
+						<tbody>
+							<tr>
+								<td class="td_input" align="left">县/市/区：</td>
+								<td class="td_input" align="left">永兴县</td>
+								<td align="right">街/镇：</td>
+								<td class="td_input" align="left">塘马门口镇</td>
+								<td align="right">村/社区：</td>
+								<td class="td_input" align="left">马仰村</td>
+								<td align="right">编号：</td>
+								<td class="td_input">4333333333333</td>
+							</tr>
+						</tbody>
+				</table>
+				<table cellpadding="0" cellspacing="0" border="0" class="table_2" style=" width:800px;">
+				<tbody>
+					<tr>
+					<td class="td_item" style="width:100px;">姓名</td>
+					<td class="td_input" style="width:110px;">XXX</td>
+					<td class="td_item" style="width:80px;">性别</td>
+					<td class="td_input" style="width:120px;"><label>男</label></td>
+					<td class="td_item" style="width:100px; ">出生年月</td>
+					<td class="td_input" style="width:80px;">2013年9月</td>
+				</tr>
+				<tr>
+					<td class="td_item">接收日期</td>
+					<td class="td_input" colspan="3">2014/04/12</td>
+					<td class="td_item">结案日期</td>
+					<td class="td_input"></td>
+				</tr>
+				<tr>
+					<td class="td_item">初始机构评估<br>最高风险等级</td>
+					<td class="td_input" colspan="5">
+						零级
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">中期评估<br>最高风险等级</td>
+					<td class="td_input" colspan="5">
+						零级
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">困境回顾</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">提供帮扶情况</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">专业反思</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">目标评估及建议</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				</table>
+				<br>
+				<div class="li" style="margin-bottom: 8px;">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="radio" class="radio" name="zhongshenradio"> <span class="radio-text">结案完成</span></label><br>
+					</div>
+					<div class="left">选择回访部门 </div>
+					<div class="right"> 
+						<select class="select">
+							<option value="">社区专员</option>
+						</select>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">结案意见 </div>
+					<div class="right"> 
+						<textarea></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">结案人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>&nbsp
+						<span class="span-bottom">结案日期</span>
+						<span class="span-bottom">2015-8-9</span>
+						&nbsp;
+						<label>手动设置处置日期 <input type="datetime-local" style="font-size:12px;line-height:12px;"></label>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			</form>
+
+			<div class="title"  data-toggle="collapse" href=".huifang"  aria-expanded="false" aria-controls="collapseExample">回访<span class="caret"></span></div>
+			<form class="huifangform">
+			<div class="submit collapse huifang">
+				<div class="li">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="radio" class="radio" name="huifangradio" > <span class="radio-text">指定回访</span></label><br>
+						<label><input type="radio" class="radio" name="huifangradio" > <span class="radio-text">周期性回访</span></label>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li huifangjilu">
+					<div class="left">回访记录 </div>
+					<div class="right"> 
+						<textarea></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">回访人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>
+						&nbsp;
+						<span class="span-bottom">回访日期</span>
+						<span class="span-bottom">2015-x-x</span>
+						&nbsp;
+						<label>手动设置日期 <input type="datetime-local" style="font-size:12px;line-height:12px;"></label>
+						<br>
+						<span class="span-bottom">添加人</span><span class="span-bottom">湘潭市民政局XXX</span>&emsp;
+						<span class="span-bottom">添加日期</span>
+						<span class="span-bottom">2015-x-x</span>
+						<span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<br>
+				<div style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;">完成回访</div>
+			</div>
+			</form>
+			<br>
+			<?php 
+				$group_id = M('auth_group_access')->where(array('uid'=>UID))->getField('group_id');
+			?>
+			</div>
+		</div>
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/bootstrap.min.js" ></script>
+	<script>
+	/* 表单禁用 */
+		var uid = '<?php echo $group_id;?>';
+		if(uid == 1){
+			$(function(){
+				$('#chushen input').prop('disabled','disabled');
+				$('#chushen select').prop('disabled','disabled');
+				$('#chushen textarea').prop('disabled','disabled');
+				$('#zhongshen input').prop('disabled','disabled');
+				$('#zhongshen select').prop('disabled','disabled');
+				$('#zhongshen textarea').prop('disabled','disabled');
+				$('#diaodu input').prop('disabled','disabled');
+				$('#diaodu select').prop('disabled','disabled');
+				$('#diaodu textarea').prop('disabled','disabled');
+				$('#xinxicaiji input').prop('disabled','disabled');
+				$('#xinxicaiji select').prop('disabled','disabled');
+				$('#xinxicaiji textarea').prop('disabled','disabled');
+			})
+		}else if(uid == 2){
+			$(function(){
+				$('#jiean input').prop('disabled','disabled');
+				$('#jiean select').prop('disabled','disabled');
+				$('#jiean textarea').prop('disabled','disabled');
+				$('#xinxicaiji input').prop('disabled','disabled');
+				$('#xinxicaiji select').prop('disabled','disabled');
+				$('#xinxicaiji textarea').prop('disabled','disabled');
+				$('#diaodu input').prop('disabled','disabled');
+				$('#diaodu select').prop('disabled','disabled');
+				$('#diaodu textarea').prop('disabled','disabled');
+				$('#chuzhi input').prop('disabled','disabled');
+				$('#chuzhi select').prop('disabled','disabled');
+				$('#chuzhi textarea').prop('disabled','disabled');
+			})
+		}else if(uid == 3){
+			$(function(){
+				$('#zhongshen input').prop('disabled','disabled');
+				$('#zhongshen select').prop('disabled','disabled');
+				$('#zhongshen textarea').prop('disabled','disabled');
+				$('#diaodu input').prop('disabled','disabled');
+				$('#diaodu select').prop('disabled','disabled');
+				$('#diaodu textarea').prop('disabled','disabled');
+				$('#chushen input').prop('disabled','disabled');
+				$('#chushen select').prop('disabled','disabled');
+				$('#chushen textarea').prop('disabled','disabled');
+			})
+		}else if(uid == 4){
+			$(function(){
+				$('#zhongshen input').prop('disabled','disabled');
+				$('#zhongshen select').prop('disabled','disabled');
+				$('#zhongshen textarea').prop('disabled','disabled');
+				$('#xinxicaiji input').prop('disabled','disabled');
+				$('#xinxicaiji select').prop('disabled','disabled');
+				$('#xinxicaiji textarea').prop('disabled','disabled');
+				$('#chuzhi input').prop('disabled','disabled');
+				$('#chuzhi select').prop('disabled','disabled');
+				$('#chuzhi textarea').prop('disabled','disabled');
+			})
+		}
+			
+		
+		$(function(){
+			var text='<div class="li zhuchibeizhu"><div class="left">处置备注 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
+			var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
+			$('.title').click(function(){
+				$(this).children('.caret').toggleClass('caret-active');
+			})
+			$('#addchuzhi').click(function(){
+				$('.zhuchibeizhu:eq(0)').append(text);
+				
+			})
+			$('#addhuifang').click(function(){
+				$('.huifangjilu:eq(0)').append(strVar);
+			})
+		})
+
+	</script>
+	</body>
+</html>

@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>湘潭市未成年人社会保护信息系统</title>
+		<link rel="stylesheet" type="text/css" href="../../../../Public/Admin/css/xtwcn/bootstrap.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../Public/Admin/css/xtwcn/index.css"/>
+		<script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
+	</head>
+	<body>
+		<header class="header">
+		    <div class="top">
+		    	<img src="__PUBLIC__/Admin/images/xtwcn/logo.png" class="logo"/>
+		    	<!-- <h2>湘潭市未成年保护系统</h2> -->
+		    	<ul class="right">
+		    		<li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href="{:U('Index/index')}"><img src="__PUBLIC__/Admin/images/xtwcn/returnhome.png"><br><span >返回首页</span></a></li>
+		    		<li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href="{:U('User/updatepassword')}"><img src="__PUBLIC__/Admin/images/xtwcn/changepass.png"><br><span >修改密码</span></a></li>
+		    		<li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href="{:U('Public/logout')}"><img src="__PUBLIC__/Admin/images/xtwcn/reload.png"><br><span >重新登录</span></a></li>
+		    	</ul>
+		    </div>
+		    <div class="bottom">
+		    	<ul>
+		    		<li><a href="{:U('Case/suoyou')}">所有案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>   
+                    <li><a href="{:U('Case/zaichu')}">正在处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="{:U('Case/daichu')}">待处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="{:U('Case/wancheng')}">完成处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		            <li><a href="{:U('Case/guidang')}">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+		    	</ul>
+		    	<form class="form-inline">
+				  <div class="form-group">
+				    <label for="search" class="sr-only">Password</label>
+				    <input type="text" class="form-control" id="search" placeholder="">
+				  </div>
+				  <a href=""><img src="__PUBLIC__/Admin/images/xtwcn/search-btn.png"></a>
+				</form>
+		    		
+		    </div>
+		</header>
+				<?php
+					$id  = $_GET['id'];
+					$act = $_GET['act']; 
+				?>
+		<div class="page container">
+			<div class="jindu">
+				<h3 class="title">案件：
+				<?php echo $List['community_code'];
+					  echo $List['name'];
+				?></h3>
+				<div class="tips"><span>已经处置：未处置</span><span>当前阶段：<?php getStage($List['case_status'])?></span><span>指挥调度责任人：无</span><span>社会责任人：<?php echo $List['fill_in_person']?></span></div>
+				<div class="stage">
+					<span class="<?php if($act == ''){?>active<?php }?>">采集</span><span class="solid">→</span>
+					<span class="<?php if($act == 'chushen'){?>active<?php }?>">初审</span><span class="solid">→</span>
+					<span class="<?php if($act == 'zhongshen'){?>active<?php }?>">终审</span><span class="solid">→</span>
+					<span class="<?php if($act == 'diaodu'){?>active<?php }?>">调度</span><span class="solid">→</span>
+					<span class="<?php if($act == 'chuzhi'){?>active<?php }?>">协同处置</span><span class="solid">→</span>
+					<span class="<?php if($act == 'jiean'){?>active<?php }?>">结案</span></span><span class="solid">→</span>
+					<span class="<?php if($act == 'huifang'){?>active<?php }?>">回访</span></span>
+				</div>
+			</div>
+			<div class="information">
+				<div class="title <?php if($act == ''){?>
+						active
+					<?php }?>" data-toggle="collapse" href="#xinxicaiji"  aria-expanded="<?php if($act == ''){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">
+					信息采集<span class="caret"></span></div>
+				<div class="collapse <?php if($act == ''){?>in<?php }?>" id="xinxicaiji">
+				<table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 14px;">
+						<form action="{:U('Case/index')}" method="post" enctype="multipart/form-data">
+						<tbody>
+							<tr>
+								<td class="tips" colspan="8"><span>流程采集人</span> <span>xxxx</span> <span>案件编号：123456</span></td>
+							</tr>
+							<tr>
+								<td class="td_input" align="left">县/市/区：</td>
+								<td class="td_input" align="left">
+									<select class="select" name="area_code" id="City">
+										<option value="请选择">请选择</option>
+										<option value="1111">湘潭市</option>
+										<option value="1111"> 岳塘区</option>
+										<option value="1111"> 雨湖区</option>
+										<option value="1111">  湘乡市</option>
+										<option value="1111">韶山市</option>
+										<option value="1111">  湘潭县</option>
+									</select>
+								</td>
+								<td align="right">街/镇：</td>
+								
+								<td class="td_input" align="left">
+									<select class="select" name="street_code" id="Town"></select>
+								</td>
+								<td align="right">村/社区：</td>
+								<td class="td_input" align="left"><select class="select" name="community_code" id="Country"></select></td>
+								<td align="right">编号：</td>
+								<td class="td_input"><input type="text" class="input" name="case_number" style="width:150px;" value=""></td>
+							</tr>
+						</tbody>
+					</table>
+				<div class="relative" style=" width:855px;">
+				<div id="upload1" class="absolute upload1" style="display:none;">
+				</div>
+			<table cellpadding="0" cellspacing="0" border="0" class="table_2" style=" width:855px;">
+				<tbody><tr>
+					<td class="td_item" style="width:100px;" >姓名</td>
+					<td class="td_input" style="width:110px;"><input type="text" class="input" name="name" value="<?php echo $List['name'];?>"></td>
+					<td class="td_item" style="width:80px;">性别</td>
+					<td class="td_input" style="width:120px;">
+					<label>【<input type="radio" class="radio" name="sex" value="2"
+					<?php if($List['sex'] == 2){?>
+						checked
+					<?php }?>
+					>】男</label>
+					<label>【<input type="radio" class="radio" name="sex" value="1"
+					<?php if($List['sex'] == 1){?>
+						checked
+					<?php }?>
+					>】女</label></td>
+					<td class="td_item" style="width:100px; ">民族</td>
+					<td class="td_input" style="width:80px;"><input type="text" class="input" name="nation" value="<?php echo $List['nation'];?>"></td>
+					<td rowspan="5" style="width:164px; line-height:22px; padding:0;" id="file">	 
+					<label class="label" style="color:#000000" style="position: relative;"><img name="photo" src="/Uploads/uploadscase/user/<?php echo $List['photo'];?>" style="width:188px;height:238px;"></label>
+				</tr>
+				<tr>
+					<td class="td_item">出生年月</td>
+					<td class="td_input" colspan="5">
+						<?php echo $List['birthday'];?>
+				</tr>
+				<tr>
+					<td class="td_item">户籍所在地</td>
+					<td class="td_input" colspan="5">
+						<!-- <input type="" class="td-input" name="household_pro_code" id="Register" value=""> -->
+						<?php echo getPraName($List['household_pro_code']);?>
+						<?php echo getPraName($List['household_city_code']);?>
+						<?php echo getPraName($List['household_area_code']);?>
+							
+					<!-- 	<select class="select left" name="household_pro_code" id="City1" style="float:left;" onChange="nav(this,1)" >
+							<option value=0>选择省</option>
+			    		<?php
+			    			
+							//foreach ($list as $v) {?>
+			    			<option value="<?php //echo $v['region_id']?>"
+			    				<?php //if($list['region_id'] == $List['household_pro_code']){?>
+				    					selected
+				    				<?php //}?>
+			    			><?php //echo $v['region_name']?></option>
+			    		<?php //}?>
+			    		</select>
+						<select class="select left" name="household_city_code" id="Town1" style="float:left;" onChange="nav(this,2)">
+								<option value=0>请选择市</option>
+								<option value="<?php //echo //$v['region_id']?>"
+				    				<?php //if($list['region_id'] == $List['household_city_code']){?>
+				    					selected
+				    				<?php //}?>
+			    				><?php //echo $v['region_name']?></option>
+						</select>
+						<select class="select left" name="household_area_code" id="Country1" style="float:left;">
+								<option>请选择区</option>
+								<option value="<?php //echo $v['region_id']?>"
+				    				<?php //if($list['region_id'] == $List['household_city_code']){?>
+				    					selected
+				    				<?php //}?>
+			    				><?php //echo $v['region_name']?></option>
+						</select> -->
+						
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">家庭住址</td>
+					<td class="td_input" colspan="5">
+						<!-- <select class="select left" name="home_pro_code" id="sheng1" style="float:left;" onChange="nav1(this,1)" >
+						<option value=0>选择省</option>
+		    		<?php //foreach ($list as $v) {	
+    		        ?>
+		    		<option value="<?php //echo $v['region_id']?>"><?php //echo $v['region_name']?></option>
+		    		<?php //}?>
+						</select>
+						<select class="select left" name="home_city_code" id="shi1" style="float:left;" onChange="nav1(this,2)">
+						
+						<option value=0>请选择市</option>
+						
+						</select>
+						<select class="select left" name="home_area_code" id="qu1" style="float:left;">
+						
+						<option>选择区</option>
+						</select> -->
+						<?php echo getPraName($List['home_pro_code']);?>
+						<?php echo getPraName($List['home_city_code']);?>
+						<?php echo getPraName($List['home_area_code']);?>
+						<?php echo $List['home_address'];?>
+						<!-- <input type="text" name="home_address" style="display:inline-block;height:26px;width:240px;"> -->
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">健康状况</td>
+					<td class="td_input" colspan="5">
+					<label>【<input type="radio" class="radio healthradio" name="health" value="1"<?php if($List['health'] == 1){?>checked<?php }?>>】健康</label>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="2"<?php if(in_array(2,unserialize($List['health']))){?>checked<?php }?>>】肢体残疾</label>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="3"<?php if(in_array(3,unserialize($List['health']))){?>checked<?php }?>>】智力缺陷</label>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="4"<?php if(in_array(4,unserialize($List['health']))){?>checked<?php }?>>】精神疾病</label>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="5"<?php if(in_array(5,unserialize($List['health']))){?>checked<?php }?>>】传染病</label>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="6"<?php if(in_array(6,unserialize($List['health']))){?>checked<?php }?>>】盲人</label><br>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="7"<?php if(in_array(7,unserialize($List['health']))){?>checked<?php }?>>】聋哑</label>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="8"<?php if(in_array(8,unserialize($List['health']))){?>checked<?php }?>>】吸毒史</label>
+					<label>【<input type="checkbox" class="radio healthbox" name="health" value="9"<?php if(in_array(9,unserialize($List['health']))){?>checked<?php }?>>】其它重病</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">性格状况</td>
+					<td class="td_input" colspan="3">
+					<label>【<input type="radio" class="radio" name="character" value="1"<?php if($List['character'] == 1){?>checked<?php }?>>】内向</label>
+					<label>【<input type="radio" class="radio" name="character" value="2"<?php if($List['character'] == 2){?>checked<?php }?>>】外向</label>
+					<label>【<input type="radio" class="radio" name="character" value="3"<?php if($List['character'] == 3){?>checked<?php }?>>】中性</label>
+					<label>【<input type="radio" class="radio" name="character" value="4"<?php if($List['character'] == 4){?>checked<?php }?>>】孤僻</label></td>
+					<td class="td_item">入学状况</td>
+					<td class="td_input" colspan="2">
+					<label>【<input type="radio" class="radio" name="admission_status" value="1"<?php if($List['admission_status'] == 1){?>checked<?php }?>>】未</label>　
+					<label>【<input type="radio" class="radio" name="admission_status" value="2"<?php if($List['admission_status'] == 2){?>checked<?php }?>>】在校</label>
+					<label><input type="text" class="input xuexiao" style="width:100px;" name="entrance" value="<?php echo $List['entrance']?>"></label></td>
+				</tr>
+				<tr>
+					<td class="td_item">家庭主要成员<br>（监护人）</td>
+					<td colspan="6" valign="top" style="padding:0 0;">
+					<table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+						<tbody><tr>
+							<td style="width:40px;">监护人</td>
+							<td style="width:60px;">姓名</td>
+							<td style="width:60px;">关系</td>
+							<td style="width:40px;">年龄</td>
+							<td style="width:60px;">文化程度</td>
+							<td style="width:60px;">健康状况</td>
+							<td style="width:100px;">工作单位</td>
+							<td style="width:80px;">联系电话</td>
+							<td style="border-right:none; width:60px;">月收入</td>
+						</tr>
+						<tr><?php $family_members = unserialize($List['family_members']);?>
+							<td><input type="checkbox" class="input" name="family_jianhuren[]" value="1" <?php if(in_array(1,unserialize($List['family_jianhuren']))){?>checked<?php }?>></td>
+							<td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[0]?>"></td>
+							<td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[1]?>"></td>
+							<td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[2]?>"></td>
+							<td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[3]?>"></td>
+							<td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[4]?>"></td>
+							<td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[5]?>"></td>
+							<td><input type="text" class="input shouji" name="family_members[]" value="<?php echo $family_members[6]?>"></td>
+							<td style="border-right:none;"><input type="text" class="input " name="family_members[]" value="<?php echo $family_members[7]?>"  ></td>
+						</tr>
+						<tr>
+							<td style="border-bottom:none;"><input type="checkbox" class="input" name="family_jianhuren[]" value="2" <?php if(in_array(2,unserialize($List['family_jianhuren']))){?>checked<?php }?>></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[8]?>"></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[9]?>"></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[10]?>"></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[11]?>"></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[12]?>"></td>
+							<td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[13]?>"></td>
+							<td style="border-bottom:none;"><input type="text" class="input shouji" name="family_members1[]" value="<?php echo $family_members[14]?>"></td>
+							<td style="border-bottom:none; border-right:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[15]?>"></td>
+						</tr>
+					</tbody></table>
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">家庭结构</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="radio" class="radio" name="family_structure" value="1" <?php if($List['family_structure'] == 1){?>checked<?php }?>>】双亲健在</label>　
+					<label>【<input type="radio" class="radio" name="family_structure" value="2" <?php if($List['family_structure'] == 2){?>checked<?php }?>>】单亲家庭</label>　
+					<label>【<input type="radio" class="radio" name="family_structure" value="3" <?php if($List['family_structure'] == 3){?>checked<?php }?>>】孤儿</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">监护状况</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="radio" class="radio" name="guardianship" value="1" <?php if($List['guardianship'] == 1){?>checked<?php }?>>】父母监护</label>　
+					<label>【<input type="radio" class="radio" name="guardianship" value="2" <?php if($List['guardianship'] == 2){?>checked<?php }?>>】其他亲属抚养</label>　
+					<label>【<input type="radio" class="radio" name="guardianship" value="3" <?php if($List['guardianship'] == 3){?>checked<?php }?>>】机构抚养</label>　
+					<label>【<input type="radio" class="radio" name="guardianship" value="4" <?php if($List['guardianship'] == 4){?>checked<?php }?>>】无人监护</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">生活情境</td>
+					<td class="td_input" colspan="3">
+					<label>【<input type="radio" class="radio" name="life_status" value="1" <?php if($List['life_status'] == 1){?>checked<?php }?>>】留守</label>　
+					<label>【<input type="radio" class="radio" name="life_status" value="2" <?php if($List['life_status'] == 2){?>checked<?php }?>>】流动</label>　
+					<label>【<input type="radio" class="radio" name="life_status" value="3" <?php if($List['life_status'] == 3){?>checked<?php }?>>】正常</label></td>
+					<td class="td_item">享受救助</td>
+					<td class="td_input" colspan="2">
+					<label>【<input type="checkbox" class="radio" name="enjoy_relief_type[]" value="1" <?php if(in_array(1,unserialize($List['enjoy_relief_type']))){?>checked<?php }?>>】低保</label>　
+					<label>【<input type="checkbox" class="radio" name="enjoy_relief_type[]" value="2" <?php if(in_array(2,unserialize($List['enjoy_relief_type']))){?>checked<?php }?>>】医保</label>　
+					<label>【<input type="checkbox" class="radio" name="enjoy_relief_type[]" value="3" <?php if(in_array(3,unserialize($List['enjoy_relief_type']))){?>checked<?php }?>>】孤补</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">住房类型</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="radio" class="radio" name="housing_type" value="1" <?php if($List['housing_type'] == 1){?>checked<?php }?>>】固定住所</label>　
+					<label>【<input type="radio" class="radio" name="housing_type" value="2" <?php if($List['housing_type'] == 2){?>checked<?php }?>>】临时租住</label>　
+					<label>【<input type="radio" class="radio" name="housing_type" value="3" <?php if($List['housing_type'] == 3){?>checked<?php }?>>】借住</label></td>
+				</tr>
+				<tr>
+					<td class="td_item">内心困境</td>
+					<td class="td_input" colspan="6">
+					<label>【<input type="checkbox" class="radio" name="inner_predicament[]" value="1" <?php if(in_array(1,unserialize($List['inner_predicament']))){?>checked<?php }?>>】父母关系不好</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament[]" value="2" <?php if(in_array(2,unserialize($List['inner_predicament']))){?>checked<?php }?>>】缺少亲友陪伴</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament[]" value="3" <?php if(in_array(3,unserialize($List['inner_predicament']))){?>checked<?php }?>>】朋辈关系不好</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament[]" value="4" <?php if(in_array(4,unserialize($List['inner_predicament']))){?>checked<?php }?>>】学习成绩不佳</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament[]" value="5" <?php if(in_array(5,unserialize($List['inner_predicament']))){?>checked<?php }?>>】无人理解自己</label><br>
+					<label>【<input type="checkbox" class="radio" name="inner_predicament[]" value="6" <?php if(in_array(6,unserialize($List['inner_predicament']))){?>checked<?php }?>>】感觉自己不如别人</label>　
+					<label>【<input type="checkbox" class="radio" name="inner_predicament[]" value="7" <?php if(in_array(7,unserialize($List['inner_predicament']))){?>checked<?php }?>>】其他</label>
+					<label><input type="text" class="input" style="width:300px;" name="Heart_other" value="<?php echo $List['Heart_other']?>"></label></td>
+				</tr>
+				
+				<tr>
+					<td class="td_item">成长困境<br>及风险等级</td>
+					<td colspan="6" valign="top" style="padding:0 0;">
+						<table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+							<tbody><tr>
+								<td class="td_input">1、孤儿或因法定监护人服刑、重病、重残等原因实际无人监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="1" <?php if(in_array(1,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="2" <?php if(in_array(2,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="3" <?php if(in_array(3,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="4" <?php if(in_array(4,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="5" <?php if(in_array(5,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="6" <?php if(in_array(6,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">2、因家庭暴力、遭受侵害等原因得不到适当监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="7" <?php if(in_array(7,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="8" <?php if(in_array(8,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="9" <?php if(in_array(9,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="10" <?php if(in_array(10,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="11" <?php if(in_array(11,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="12" <?php if(in_array(12,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">3、因家庭困境面临辍学和失去基本生活保障的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="13" <?php if(in_array(13,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="14" <?php if(in_array(14,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="15" <?php if(in_array(15,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="16" <?php if(in_array(16,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="17" <?php if(in_array(17,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="18" <?php if(in_array(18,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">4、有工读教育、特训学校教育、违法犯罪经历及严重偏差行为的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="19" <?php if(in_array(19,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="20" <?php if(in_array(20,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="21" <?php if(in_array(21,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="22" <?php if(in_array(22,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="23" <?php if(in_array(23,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="24" <?php if(in_array(24,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">5、被遗弃、拐卖、肋迫及故意伤害等原因陷入成长受阻碍的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="25" <?php if(in_array(25,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="26" <?php if(in_array(26,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="27" <?php if(in_array(27,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="28" <?php if(in_array(28,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="29" <?php if(in_array(29,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="30" <?php if(in_array(30,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">6、父母一方或双方外出，临时监护不到位的留守未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="31" <?php if(in_array(31,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="32" <?php if(in_array(32,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="33" <?php if(in_array(33,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="34" <?php if(in_array(34,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="35" <?php if(in_array(35,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="36" <?php if(in_array(36,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input" style="border-bottom:none;">7、生理、心理和精神状态异常或失去生活自理、学习等能力的未成年人</td>
+								<td class="td_input" style="border-right:none; border-bottom:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="37" <?php if(in_array(37,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="38" <?php if(in_array(38,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="39" <?php if(in_array(39,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="40" <?php if(in_array(40,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="41" <?php if(in_array(41,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="42" <?php if(in_array(42,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							
+						</tbody></table>
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">主要困境描述</td>
+					<td colspan="6" style="padding:0;">
+					<textarea name="main_dilemma" id="main_dilemma"><?php echo $List['main_dilemma']?></textarea></td>
+					
+			</tbody>
+			</table>
+			</div>
+				<div style="width: 855px;margin: auto;margin-top: 10px;border-bottom:1px solid rgb(65,199,214);padding-bottom: 10px;">
+					<label>填表人：<input type="text" class="input" style="width:300px;" name="Heart_other" value=""></label>
+					<label style="float: right;"></label>
+					<div style="clear: both;"></div>
+				</div>
+				<div align="center">
+					<button type="submit" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block;margin-right: 20px;">确认登记</button>
+					<button type="submit" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block">清空重置</button>
+				</div>
+			</div>
+			</form>
+
+			<div class="title <?php if($act == 'chushen'){?>active<?php }?>"  data-toggle="collapse" href="#chushen"  aria-expanded="<?php if($act == 'chushen'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">初审<span class="caret"></span></div>
+			<div id="chushen" class="submit collapse <?php if($act == 'chushen'){?>in<?php }?>">
+			<form action="{:U('Case/trial')}" method="post">
+				<div style="margin-bottom: 8px;">指挥中心或专业机构评估风险风险等级</div>
+				<table class="table_2">
+					<tr>
+					<td class="td_item">成长困境<br>及风险等级</td>
+					<td colspan="6" valign="top" style="padding:0 0;">
+						<table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+							<tbody><tr>
+								<td class="td_input">1、孤儿或因法定监护人服刑、重病、重残等原因实际无人监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="1" <?php if(in_array(1,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="2" <?php if(in_array(2,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="3" <?php if(in_array(3,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="4" <?php if(in_array(4,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="5" <?php if(in_array(5,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma1" value="6" <?php if(in_array(6,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">2、因家庭暴力、遭受侵害等原因得不到适当监护的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="7" <?php if(in_array(7,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="8" <?php if(in_array(8,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="9" <?php if(in_array(9,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="10" <?php if(in_array(10,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="11" <?php if(in_array(11,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma2" value="12" <?php if(in_array(12,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">3、因家庭困境面临辍学和失去基本生活保障的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="13" <?php if(in_array(13,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="14" <?php if(in_array(14,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="15" <?php if(in_array(15,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="16" <?php if(in_array(16,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="17" <?php if(in_array(17,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma3" value="18" <?php if(in_array(18,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">4、有工读教育、特训学校教育、违法犯罪经历及严重偏差行为的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="19" <?php if(in_array(19,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="20" <?php if(in_array(20,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="21" <?php if(in_array(21,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="22" <?php if(in_array(22,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="23" <?php if(in_array(23,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma4" value="24" <?php if(in_array(24,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">5、被遗弃、拐卖、肋迫及故意伤害等原因陷入成长受阻碍的未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="25" <?php if(in_array(25,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="26" <?php if(in_array(26,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="27" <?php if(in_array(27,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="28" <?php if(in_array(28,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="29" <?php if(in_array(29,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma5" value="30" <?php if(in_array(30,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input">6、父母一方或双方外出，临时监护不到位的留守未成年人</td>
+								<td class="td_input" style="border-right:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="31" <?php if(in_array(31,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="32" <?php if(in_array(32,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="33" <?php if(in_array(33,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="34" <?php if(in_array(34,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="35" <?php if(in_array(35,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma6" value="36" <?php if(in_array(36,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							<tr>
+								<td class="td_input" style="border-bottom:none;">7、生理、心理和精神状态异常或失去生活自理、学习等能力的未成年人</td>
+								<td class="td_input" style="border-right:none; border-bottom:none;">
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="37" <?php if(in_array(37,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】一级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="38" <?php if(in_array(38,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】二级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="39" <?php if(in_array(39,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】三级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="40" <?php if(in_array(40,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】四级</label><br>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="41" <?php if(in_array(41,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】五级</label>
+								<label>【<input type="radio" class="radio" name="growth_dilemma7" value="42" <?php if(in_array(42,unserialize($List['growth_dilemma']))){?>checked<?php }?>>】零级</label></td>
+							</tr>
+							
+						</tbody></table>
+					</td>
+				</tr>
+				</table>
+				<div class="li">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="radio" class="radio" name="trial_status" value="1" <?php if($List['trial_status'] == 1){?>checked<?php }?>> <span class="radio-text">初审通过，提交终审</span></label>&emsp;
+						<select class="select" name="trial_person">
+							<option value="">选择终审人员</option>
+						</select>
+					</div>
+					<div class="right" style="margin-left: 20%;"> 
+						<label><input type="radio" class="radio" name="trial_status" value="2"> <span class="radio-text">初审不通过，驳回</span></label>&emsp;
+						
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">初审意见 </div>
+					<div class="right"> 
+						<textarea name="trial_suggestion"><?php echo $List['trial_suggestion']?></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">初审人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>
+						<span class="span-bottom">初审日期</span>
+						<span class="span-bottom">2015-8-9</span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+				</form>
+			</div>
+			<div class="title <?php if($act == 'zhongshen'){?>active<?php }?>"  data-toggle="collapse" href="#zhongshen"  aria-expanded="<?php if($act == 'zhongshen'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">审批<span class="caret"></span></div>
+			<form action="{:U('Case/last_instance')}" method="post">
+			<div id="zhongshen" class="submit collapse <?php if($act == 'zhongshen'){?>in<?php }?>">
+				<div class="li">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="radio" class="radio" name="last_instance_status" value="1" <?php if($List['last_instance_status'] == 1){?>checked<?php }?>> <span class="radio-text">审批通过</span></label><br>
+						<label><input type="radio" class="radio" name="last_instance_status" value="2"> <span class="radio-text">审批不通过，驳回</span></label>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">审批意见 </div>
+					<div class="right"> 
+						<textarea name="last_instance_instance"><?php echo $List['last_instance_instance']?></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">审批人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>
+						<span class="span-bottom">审批日期</span>
+						<span class="span-bottom">2015-8-9</span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			</form>
+			<div class="title <?php if($act == 'diaodu'){?>active<?php }?>"  data-toggle="collapse" href="#diaodu"  aria-expanded="<?php if($act == 'diaodu'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">调度<span class="caret"></span></div>
+			<form action="{:U('Case/dispatch')}" method="post">
+			<div id="diaodu" class="submit collapse <?php if($act == 'diaodu'){?>in<?php }?>">
+				<div class="li">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="checkbox" name="checkbox1" value="1" <?php if(in_array(1, unserialize($List['checkbox_status']))){?>checked<?php }?>/><span class="radio-text"> 报警110</span> 
+							<select class="select" name="police_station">
+								<option value="">委派部门</option>
+							</select>
+						</label>&emsp;
+						<label><input type="checkbox" name="checkbox2" value="2" <?php if(in_array(1, unserialize($List['checkbox_status']))){?>checked<?php }?>/><span class="radio-text"> 转专业机构</span> 
+							<select class="select" name="turn_professional">
+								<option value="">选择机构</option>
+							</select>
+						</label>&emsp;
+						<label><input type="checkbox" name="checkbox3" value="3" <?php if(in_array(1, unserialize($List['checkbox_status']))){?>checked<?php }?>/><span class="radio-text"> 转相关部门</span> 
+							<select class="select" name="turn_related">
+								<option value="">选择部门</option>
+								<option value="1" <?php if($List['turn_related'] == 1){?>selected<?php }?>>市级部门</option>
+								<option value="3" <?php if($List['turn_related'] == 3){?>selected<?php }?>>社区部门</option>
+							</select>
+						</label>&emsp;
+					<!-- 	<label><input type="checkbox" name="checkbox4" value="1"/><span class="radio-text"> 专社区服务</span> 
+							<select class="select" name="special_community">
+								<option value="">选择部门</option>
+							</select>
+						</label>&emsp;
+						<label><input type="checkbox" name="checkbox5" value="1"/><span class="radio-text"> 转中心求助</span> 
+							<select class="select" name="transfer_assistance">
+								<option value="">选择部门</option>
+							</select>
+						</label> -->&emsp;
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">调度意见 </div>
+					<div class="right"> 
+						<textarea name="dispatch_instance"><?php echo $List['dispatch_instance']?></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">调度人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>
+						<span class="span-bottom">调度日期</span>
+						<span class="span-bottom">2015-8-9</span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			</form>
+
+			<div class="title <?php if($act == 'chuzhi'){?>active<?php }?>"  data-toggle="collapse" href="#chuzhi"  aria-expanded="<?php if($act == 'chuzhi'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">处置<span class="caret"></span></div>
+				<form action="{:U('Case/deal_with')}" method="post">
+				<div id="chuzhi" class="submit collapse chuzhi <?php if($act == 'chuzhi'){?>in<?php }?>">
+					<div class="li zhuchibeizhu">
+						<div class="left">处置备注 </div>
+						<div class="right"> 
+
+							<label><input type="radio" class="radio" name="management_status" value="1" <?php if($List['management_status'] == 1){?>checked<?php }?>> <span class="radio-text">处置完成,提交指挥中心</span></label><br>
+							<label><input type="radio" class="radio" name="management_status" value="2"> <span class="radio-text">驳回</span></label>
+
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div class="li">
+						<div class="left">流程操作 </div>
+						<div class="right"> 
+						<?php 
+						$mange_list = unserialize($List['management_record']);
+						for($i=1;$i<=count($mange_list);$i++){?>
+							<textarea name="management_record"><?php echo $mange_list[$i-1]?></textarea>
+						<?php }?>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div class="li">
+						<div class="left">处置人 </div>
+						<div class="right"> 
+							<span class="span-bottom">湘潭市民政局XXX</span>
+							&nbsp;
+							<span class="span-bottom">处置日期</span>
+							<span class="span-bottom">2015-x-x</span>
+							&nbsp;
+							<label>手动设置处置日期 <input type="datetime-local" style="font-size:12px;line-height:12px;"></label>
+							<span id="addchuzhi" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加处置</span>
+							<!-- <br>
+							<span class="span-bottom">添加人</span><span class="span-bottom">湘潭市民政局XXX</span>&emsp;
+							<span class="span-bottom">添加日期</span>
+							<span class="span-bottom">2015-x-x</span>
+							 -->
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+
+					<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+				</div>
+			</form>
+			<div class="title <?php if($act == 'jiean'){?>active<?php }?>"  data-toggle="collapse" href="#jiean"  aria-expanded="<?php if($act == 'jiean'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">当前阶段：结案 <span class="caret"></span></div>
+			<form action="{:U('Case/finish')}" method="post">
+			<div id="jiean" class="submit collapse <?php if($act == 'jiean'){?>in<?php }?>">
+				结案表：
+				<table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 12px;">
+						<tbody>
+							<tr>
+								<td class="td_input" align="left">县/市/区：</td>
+								<td class="td_input" align="left"><?php echo getPraName($List['household_area_code'])?></td>
+								<td align="right">街/镇：</td>
+								<td class="td_input" align="left">塘马门口镇</td>
+								<td align="right">村/社区：</td>
+								<td class="td_input" align="left">马仰村</td>
+								<td align="right">编号：</td>
+								<td class="td_input">4333333333333</td>
+							</tr>
+						</tbody>
+				</table>
+				<table cellpadding="0" cellspacing="0" border="0" class="table_2" style=" width:800px;">
+				<tbody>
+					<tr>
+					<td class="td_item" style="width:100px;">姓名</td>
+					<td class="td_input" style="width:110px;"><?php echo $List['name']?></td>
+					<td class="td_item" style="width:80px;">性别</td>
+					<td class="td_input" style="width:120px;"><label><?php echo getSex($List['sex'])?></label></td>
+					<td class="td_item" style="width:100px; ">出生年月</td>
+					<td class="td_input" style="width:80px;"><?php echo $List['birthday']?></td>
+				</tr>
+				<tr>
+					<td class="td_item">接收日期</td>
+					<td class="td_input" colspan="3"><?php echo date("Y-m-d",$List['fill_in_time'])?></td>
+					<td class="td_item">结案日期</td>
+					<td class="td_input"><?php echo date("Y-m-d",time())?></td>
+				</tr>
+				<tr>
+					<td class="td_item">初始机构评估<br>最高风险等级</td>
+					<td class="td_input" colspan="5">
+						零级
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">中期评估<br>最高风险等级</td>
+					<td class="td_input" colspan="5">
+						零级
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">困境回顾</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">提供帮扶情况</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">专业反思</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				<tr>
+					<td class="td_item">目标评估及建议</td>
+					<td class="td_input" colspan="5">
+					</td>
+				</tr>
+				</table>
+				<br>
+				<div class="li" style="margin-bottom: 8px;">
+					<div class="left">流程操作 </div>
+					<div class="right"> 
+						<label><input type="checkbox" class="checkbox visit_form" name="visit_status" value="1" <?php if($List['visit_status'] == 1){?>checked<?php }?>> <span class="radio-text">回访</span></label>
+						<input type="radio" class="radio formRadio" name="visit_form" value="1" <?php if($List['visit_form'] == 1){?>checked<?php }?>><b class="radio-text">指定</b>
+						<input type="text" class="formText" name="visit_form1" style="height:28px;width:40px"><b class="radio-text">天</b>
+						&emsp;
+						<input type="radio" class="radio formRadio" name="visit_form" value="2" <?php if($List['visit_form'] == 2){?>checked<?php }?>><b class="radio-text">周期</b>
+						<?php $visway = unserialize($List['visit_way']);?>
+						<input type="text" class="formText" name="visit_form2_1" style="height:28px;width:40px" value="<?php echo $visway[0]?>"><b class="radio-text">天</b>
+						<input type="text" class="formText" name="visit_form2_2" style="height:28px;width:40px" value="<?php echo $visway[1]?>"><b class="radio-text">次</b>
+						<br>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">结案意见 </div>
+					<div class="right"> 
+						<textarea name="finish_suggestion"><?php echo $List['finish_suggestion']?></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">结案人 </div>
+					<div class="right"> 
+						<span class="span-bottom">湘潭市民政局XXX</span>&nbsp
+						<span class="span-bottom">结案日期</span>
+						<span class="span-bottom">2015-8-9</span>
+						&nbsp;
+						<label>手动设置处置日期 <input type="datetime-local" style="font-size:12px;line-height:12px;"></label>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			</form>
+
+			<div class="title <?php if($act == 'huifang'){?>active<?php }?>"  data-toggle="collapse" href=".huifang"  aria-expanded="<?php if($act == 'huifang'){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">当前阶段：回访<span class="caret"></span></div>
+			<form class="{:U('Case/visit')}" method="post">
+			<?php 
+				if($huifang == 1){
+			?>
+			<div class="submit collapse huifang <?php if($act == 'huifang'){?>in<?php }?>">
+				<div class="li">
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li huifangjilu">
+					<div class="left">回访记录 </div>
+					<div class="right"> 
+						<textarea name="visit_suggestion"></textarea>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">回访人 </div>
+					<div class="right"> 
+						<span class="span-bottom">{$member}</span>
+						&nbsp;
+						<span class="span-bottom">回访日期</span>
+						<span class="span-bottom">2015-x-x</span>
+						&nbsp;
+						<label>手动设置日期 <input type="datetime-local" style="font-size:12px;line-height:12px;"></label>
+						<br>
+						<span class="span-bottom">添加人</span><span class="span-bottom">湘潭市民政局XXX</span>&emsp;
+						<span class="span-bottom">添加日期</span>
+						<span class="span-bottom">2015-x-x</span>
+						<span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<br>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			<?php }else if($huifang == 2){?>
+				<div class="submit collapse huifang <?php if($act == 'huifang'){?>in<?php }?>">
+				<div class="li">
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li huifangjilu">
+					<div class="left">回访记录 </div>
+					<div class="right"> 
+					<?php 
+						$visit_suggestion = unserialize($List['visit_suggestion']);
+						for($i=1;$i<=$cishu.length;$i++){?>
+						<div>
+						<textarea name="visit_suggestion[]"><?php echo $visit_suggestion[$i-1]?></textarea><input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em" class="huifangsave"  />
+						</div>
+					<?php }?>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="li">
+					<div class="left">回访人 </div>
+					<div class="right"> 
+						<span class="span-bottom">{$member}</span>
+						&nbsp;
+						<span class="span-bottom">回访日期</span>
+						<span class="span-bottom">2015-x-x</span>
+						&nbsp;
+						<label>手动设置日期 <input type="datetime-local" style="font-size:12px;line-height:12px;"></label>
+						<br>
+						<span class="span-bottom">添加人</span><span class="span-bottom">湘潭市民政局XXX</span>&emsp;
+						<span class="span-bottom">添加日期</span>
+						<span class="span-bottom">2015-x-x</span>
+						<span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
+					</div>
+					<input type="hidden" name="id" value="<?php echo $id;?>">
+					<div style="clear: both;"></div>
+				</div>
+				<br>
+				<button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+			</div>
+			<?php }?>
+			</form>
+			<br>
+			<?php 
+				$group_id = M('auth_group_access')->where(array('uid'=>UID))->getField('group_id');
+			?>
+			</div>
+		</div>
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/bootstrap.min.js" ></script>
+	<!-- 新增编辑器引入文件 -->
+    <link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css" />
+    <script src="__STATIC__/kindeditor/kindeditor-min.js"></script>
+    <script src="__STATIC__/kindeditor/zh_CN.js"></script>
+    <!--图片上传-->
+    <script>
+	    window.URL = window.URL || window.webkitURL;
+	    var fileElem = document.getElementById("mypic"),
+	        fileList = document.getElementById("imgList");
+	
+	    function handleFiles(obj) {
+	        var files = obj.files,
+	            img = new Image();
+	        if (window.URL) {
+	            //File API
+	            fileList.src = window.URL.createObjectURL(files[0]); //创建一个object URL，并不是你的本地路径
+	            fileList.width = 160;
+	            fileList.onload = function(e) {
+	                window.URL.revokeObjectURL(this.src); //图片加载后，释放object URL
+	            }
+	        } else if (window.FileReader) {
+	            //opera不支持createObjectURL/revokeObjectURL方法。我们用FileReader对象来处理
+	            var reader = new FileReader();
+	            reader.readAsDataURL(files[0]);
+	            reader.onload = function(e) {
+	                fileList.src = this.result;
+	                fileList.width = 160;
+	               
+	            }
+	        } else {
+	            //ie
+	            obj.select();
+	            obj.blur();
+	            var nfile = document.selection.createRange().text;
+	            document.selection.empty();
+	            fileList.src = nfile;
+	            fileList.width = 160;
+	            img.onload = function() {
+	            }
+	            //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
+	        }
+	    }
+	</script>
+	<script>
+	/* 表单禁用 */
+	KindEditor.ready(function(K) {
+	
+	var ed = K.create('textarea[name="main_dilemma"]', {
+        resizeType : 1,
+        // uploadJson : "{:U('Base/uploadImg',array('path'=>'goods'))}",
+        allowPreviewEmoticons : false,
+        allowImageUpload : true,
+        items : [
+            'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+            'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+            'insertunorderedlist', '|', 'emoticons', 'image', 'multiimage','link'],
+       afterBlur: function () { this.sync(); }
+    }); 
+});        
+ 
+
+	$(function(){
+			$('.huifang').on('click','.huifangsave',function(){
+				var str = $(this).siblings('textarea').val();
+				var id  = '<?php echo $id;?>';
+				var va  = $('.huifangsave').index(this);
+				$.post('index.php?s=/Case/tihui',{id:id,str:str,va:va},function(res){
+					alert(res)
+				})
+			});
+			// $('.huifangsave').on('click',function(){
+			// 	alert($(this).siblings('textarea').val());
+			// });
+			$('.healthradio').click(function(){
+				$('.healthbox').prop('checked',false);
+			})
+			$('.healthbox').click(function(){
+				$('.healthradio').prop('checked',false);
+			})
+		})
+		var uid = '<?php echo $group_id;?>';
+		if(uid == 1){
+			$(function(){
+				$('#chushen input').prop('disabled','disabled');
+				$('#chushen select').prop('disabled','disabled');
+				$('#chushen textarea').prop('disabled','disabled');
+				$('#zhongshen input').prop('disabled','disabled');
+				$('#zhongshen select').prop('disabled','disabled');
+				$('#zhongshen textarea').prop('disabled','disabled');
+				$('#diaodu input').prop('disabled','disabled');
+				$('#diaodu select').prop('disabled','disabled');
+				$('#diaodu textarea').prop('disabled','disabled');
+				$('#xinxicaiji input').prop('disabled','disabled');
+				$('#xinxicaiji select').prop('disabled','disabled');
+				$('#xinxicaiji textarea').prop('disabled','disabled');
+			})
+		}else if(uid == 2){
+			$(function(){
+				$('#jiean input').prop('disabled','disabled');
+				$('#jiean select').prop('disabled','disabled');
+				$('#jiean textarea').prop('disabled','disabled');
+				$('#xinxicaiji input').prop('disabled','disabled');
+				$('#xinxicaiji select').prop('disabled','disabled');
+				$('#xinxicaiji textarea').prop('disabled','disabled');
+				$('#diaodu input').prop('disabled','disabled');
+				$('#diaodu select').prop('disabled','disabled');
+				$('#diaodu textarea').prop('disabled','disabled');
+				$('#chuzhi input').prop('disabled','disabled');
+				$('#chuzhi select').prop('disabled','disabled');
+				$('#chuzhi textarea').prop('disabled','disabled');
+			})
+		}else if(uid == 3){
+			$(function(){
+				$('#zhongshen input').prop('disabled','disabled');
+				$('#zhongshen select').prop('disabled','disabled');
+				$('#zhongshen textarea').prop('disabled','disabled');
+				$('#diaodu input').prop('disabled','disabled');
+				$('#diaodu select').prop('disabled','disabled');
+				$('#diaodu textarea').prop('disabled','disabled');
+				$('#chushen input').prop('disabled','disabled');
+				$('#chushen select').prop('disabled','disabled');
+				$('#chushen textarea').prop('disabled','disabled');
+			})
+		}else if(uid == 4){
+			$(function(){
+				$('#zhongshen input').prop('disabled','disabled');
+				$('#zhongshen select').prop('disabled','disabled');
+				$('#zhongshen textarea').prop('disabled','disabled');
+				$('#xinxicaiji input').prop('disabled','disabled');
+				$('#xinxicaiji select').prop('disabled','disabled');
+				$('#xinxicaiji textarea').prop('disabled','disabled');
+				$('#chuzhi input').prop('disabled','disabled');
+				$('#chuzhi select').prop('disabled','disabled');
+				$('#chuzhi textarea').prop('disabled','disabled');
+			})
+		}
+			
+		
+
+		$(function(){
+			var text='<div class="li zhuchibeizhu"><div class="left">处置备注 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
+			var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
+			$('.title').click(function(){
+				$(this).children('.caret').toggleClass('caret-active');
+			})
+			$('#addchuzhi').click(function(){
+				$('.zhuchibeizhu:last').after(text);
+				$('.zhuchibeizhu:last').children('.right').children('textarea').attr('name','management_record'+($('.zhuchibeizhu').length-1));
+			})
+			$('#addhuifang').click(function(){
+				$('.huifangjilu:last').after(strVar);
+				$('.huifangjilu:last').children('.right').children('textarea').attr('name','visit_suggestion'+($('.huifangjilu').length-1));
+			})
+		})
+
+	</script>
+	<script type="text/javascript">
+	function nav(obj,type){
+		$.post("{:U('Case/Linkage')}",{"id":obj.value,"type":type},function(res){
+			 
+			if(type==1){
+				if(obj.value>0){
+					$("#Town1").html(res);
+				}else{
+					$("#Town1").html("<option>请选择市</option>");
+				}
+				$("#Country1").html("<option>请选择区</option>");
+			}else if(type==2){
+				if(obj.value>0){
+					$("#Country1").html(res)
+				}else{
+					$("#Country1").html("<option>请选择区</option>");
+				}
+			}
+			
+			
+		})
+	}
+  </script>
+  
+ <script type="text/javascript">
+	function nav1(obj,type){
+		$.post("{:U('Case/Linkage')}",{"id":obj.value,"type":type},function(res){
+			 
+			if(type==1){
+				if(obj.value>0){
+					$("#shi1").html(res);
+				}else{
+					$("#shi1").html("<option>请选择市</option>");
+				}
+				$("#qu1").html("<option>请选择区</option>");
+			}else if(type==2){
+				if(obj.value>0){
+					$("#qu1").html(res)
+				}else{
+					$("#qu1").html("<option>请选择区</option>");
+				}
+			}
+			
+			
+		})
+	}
+  </script>
+	</body>
+</html>

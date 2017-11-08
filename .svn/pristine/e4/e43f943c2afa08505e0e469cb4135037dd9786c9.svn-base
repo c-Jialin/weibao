@@ -1,0 +1,58 @@
+<?php
+// +----------------------------------------------------------------------
+// | OneThink [ WE CAN DO IT JUST THINK IT ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
+// +----------------------------------------------------------------------
+
+namespace Admin\Controller;
+use User\Api\UserApi as UserApi;
+
+/**
+ * 后台首页控制器
+ * @author 麦当苗儿 <zuojiazi@vip.qq.com>
+ */
+class IndexController extends AdminController {
+
+    /**
+     * 后台首页
+     * @author 麦当苗儿 <zuojiazi@vip.qq.com>
+     */
+    public function index(){
+        if(UID){
+            if(IS_ROOT){ //管理员首页
+                $this->meta_title = '案件列表';
+                $uid = M('auth_group_access')->where(array('uid'=>UID))->getField('group_id');
+                $this->CaseList = M('case')->select();
+                $this->uid = $uid;
+                $this->display();
+            }else{ //普通用户首页
+                $this->meta_title = '案件列表';
+                $user_info = array(
+                    'username' => $_SESSION['onethink_admin']['user_auth']['username'],
+                    'last_login_time' => $_SESSION['onethink_admin']['user_auth']['last_login_time'],
+                    );
+                //根据用户id，查询用户上次登录ip
+                $ucenter_member = M('ucenter_member');
+                $where = array(
+                    'id' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
+                    );
+                $user_info['last_login_ip'] = $ucenter_member->where($where)->getField('last_login_ip');
+
+                $this->assign('user_info', $user_info);
+
+                $uid = M('auth_group_access')->where(array('uid'=>UID))->getField('group_id');
+           
+                $this->CaseList = M('case')->select();
+                $this->uid = $uid;
+                $this->display('ordinary_index');
+            }
+            
+        } else {
+            $this->redirect('Public/login');
+        }
+    }
+
+}

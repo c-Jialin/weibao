@@ -1,0 +1,55 @@
+普通用户首页页面
+<extend name="Public/base"/>
+
+<block name="sidebar"></block>
+
+<block name="style">
+    <style>
+        body{padding: 0}
+    </style>
+</block>
+
+<block name="body">
+    <!-- 主体 -->
+    <div id="indexMain" class="index-main">
+       <!-- 插件块 -->
+       <div class="container-span">
+       		<div class="span2" style="text-align: center;margin: 0 auto;float: center;">
+				<div class="columns-mod">
+					<div class="hd cf">
+						<h5>登录信息</h5>
+						<div class="title-opt">
+						</div>
+					</div>
+					<div class="bd">
+						<div class="sys-info">
+							<table>
+								<tbody><tr>
+									<th>用户</th>
+									<td><?php echo $user_info['username']; ?></td>
+								</tr>
+								<tr>
+									<th>上次登录时间</th>
+									<td><?php echo date('Y-m-d H:i', $user_info['last_login_time']); ?></td>
+								</tr>
+								<tr>
+									<th>上次登录ip</th>
+									<td><?php echo $user_info['last_login_ip']; ?></td>
+								</tr>
+							</tbody></table>
+						</div>
+					</div>
+				</div>
+			</div>
+       </div>
+    </div>
+</block>
+
+<block name="script">
+<script type="text/javascript">
+    $(function(){
+        $('.copyright').html('<div class="copyright"> ©2015 版权所有</div>');
+        $('.sidebar').remove();
+    })
+</script>
+</block>

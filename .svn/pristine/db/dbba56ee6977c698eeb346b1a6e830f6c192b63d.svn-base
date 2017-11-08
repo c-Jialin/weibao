@@ -1,0 +1,699 @@
+<?php
+// +----------------------------------------------------------------------
+// | OneThink [ WE CAN DO IT JUST THINK IT ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: huajie <banhuajie@163.com>
+// +----------------------------------------------------------------------
+namespace Admin\Controller;
+use Admin\Model\AuthGroupModel;
+use Think\Page;
+
+/**
+ * 后台内容控制器
+ * @author huajie <banhuajie@163.com>
+ */
+class CaseController extends AdminController {
+	 /**
+     * 检测需要动态判断的案件类目有关的权限
+     *
+     * @return boolean|null
+     *      返回true则表示当前访问有权限
+     *      返回false则表示当前访问无权限
+     *      返回null，则会进入checkRule根据节点授权判断权限
+     *
+     * @author 朱亚杰  <xcoolcc@gmail.com>
+     */
+    protected function checkDynamic(){
+        if(IS_ROOT){
+            return true;//管理员允许访问任何页面
+        }
+        $cates = AuthGroupModel::getAuthCategories(UID);
+        switch(strtolower(ACTION_NAME)){
+            case 'index':   //文档列表
+                $cate_id =  I('cate_id');
+                break;
+            case 'edit':    //编辑
+            case 'update':  //更新
+                $doc_id  =  I('id');
+                $cate_id =  M('Document')->where(array('id'=>$doc_id))->getField('category_id');
+                break;
+            case 'setstatus': //更改状态
+            case 'permit':    //回收站
+                $doc_id  =  (array)I('ids');
+                $cate_id =  M('Document')->where(array('id'=>array('in',$doc_id)))->getField('category_id',true);
+                $cate_id =  array_unique($cate_id);
+                break;
+        }
+        if(!$cate_id){
+            return null;//不明,需checkRule
+        }elseif( !is_array($cate_id) && in_array($cate_id,$cates) ) {
+            return true;//有权限
+        }elseif( is_array($cate_id) && $cate_id==array_intersect($cate_id,$cates) ){
+            return true;//有权限
+        }else{
+            return false;//无权限
+        }
+        return null;//不明,需checkRule
+    }
+
+    /**
+     * 显示左边菜单，进行权限控制
+     * @author huajie <banhuajie@163.com>
+     */
+    protected function getMenu(){
+        //获取动态分类
+        $cate_auth  =   AuthGroupModel::getAuthCategories(UID);	//获取当前用户所有的内容权限节点
+        $cate_auth  =   $cate_auth == null ? array() : $cate_auth;
+        $cate       =   M('Category')->where(array('status'=>1))->field('id,title,pid,allow_publish')->order('pid,sort')->select();
+
+        //没有权限的分类则不显示
+        if(!IS_ROOT){
+            foreach ($cate as $key=>$value){
+                if(!in_array($value['id'], $cate_auth)){
+                    unset($cate[$key]);
+                }
+            }
+        }
+
+        $cate           =   list_to_tree($cate);	//生成分类树
+
+        //获取分类id
+        $cate_id        =   I('param.cate_id');
+        $this->cate_id  =   $cate_id;
+
+        //是否展开分类
+        $hide_cate = false;
+        if(ACTION_NAME != 'recycle' && ACTION_NAME != 'draftbox' && ACTION_NAME != 'mydocument'){
+            $hide_cate  =   true;
+        }
+
+        //生成每个分类的url
+        foreach ($cate as $key=>&$value){
+            $value['url']   =   'Article/index?cate_id='.$value['id'];
+            if($cate_id == $value['id'] && $hide_cate){
+                $value['current'] = true;
+            }else{
+                $value['current'] = false;
+            }
+            if(!empty($value['_child'])){
+                $is_child = false;
+                foreach ($value['_child'] as $ka=>&$va){
+                    $va['url']      =   'Article/index?cate_id='.$va['id'];
+                    if(!empty($va['_child'])){
+                        foreach ($va['_child'] as $k=>&$v){
+                            $v['url']   =   'Article/index?cate_id='.$v['id'];
+                            $v['pid']   =   $va['id'];
+                            $is_child = $v['id'] == $cate_id ? true : false;
+                        }
+                    }
+                    //展开子分类的父分类
+                    if($va['id'] == $cate_id || $is_child){
+                        $is_child = false;
+                        if($hide_cate){
+                            $value['current']   =   true;
+                            $va['current']      =   true;
+                        }else{
+                            $value['current'] 	= 	false;
+                            $va['current']      =   false;
+                        }
+                    }else{
+                        $va['current']      =   false;
+                    }
+                }
+            }
+        }
+        $this->assign('nodes',      $cate);
+        $this->assign('cate_id',    $this->cate_id);
+
+        //获取面包屑信息
+        $nav = get_parent_category($cate_id);
+        $this->assign('rightNav',   $nav);
+
+        //获取回收站权限
+        $show_recycle = $this->checkRule('Admin/article/recycle');
+        $this->assign('show_recycle', IS_ROOT || $show_recycle);
+        //获取草稿箱权限
+        $this->assign('show_draftbox', C('OPEN_DRAFTBOX'));
+    }
+
+    //案件列表
+    public function case_list(){
+    	$this->CaseList = M('case')->select();
+    	$this->display();
+    }
+
+
+     
+	//信息采集
+	public function index(){
+		
+		if (IS_POST) {	
+		
+			$db=M('case');
+			if ($_POST['case_number']) {
+				
+				$data['case_number'] = $_POST['case_number'];
+			}
+			if($_POST['area_code']){
+				
+				$data['area_code'] = $_POST['area_code'];
+			}
+			
+			if($_POST['street_code']){
+
+				$data['street_code'] = $_POST['street_code'];
+			}
+			
+			if($_POST['community_code']){
+
+				$data['community_code'] = $_POST['community_code'];
+			}
+			
+			if($_POST['name']){
+
+				$data['name'] = $_POST['name'];
+			}
+			
+			if($_POST['sex']){
+				
+				$data['sex'] = $_POST['sex'];
+			}
+															
+			
+			if($_POST['nation']){
+				
+				$data['nation'] = $_POST['nation'];
+			}
+			
+			if($_POST['year']){
+				
+				$data['year'] = $_POST['year'];
+			}
+
+			if($_POST['month']){
+				
+				$data['month'] = $_POST['month'];
+			}
+			$data['birthday'] = $data['year'].$data['month'];
+			$data['birthday'] = str_insert($data['birthday'],4,"-");
+
+			if($_POST['household_pro_code']){
+				
+				$data['household_pro_code'] = $_POST['household_pro_code'];
+			}
+			
+			if($_POST['household_city_code']){
+				
+				$data['household_city_code'] = $_POST['household_city_code'];
+			}
+			
+			if($_POST['household_area_code']){
+				
+				$data['household_area_code'] = $_POST['household_area_code'];
+			}
+			
+			if($_POST['home_pro_code']){
+				
+				$data['home_pro_code'] = $_POST['home_pro_code'];
+			}
+			
+			if($_POST['home_city_code']){
+				
+				$data['home_city_code'] = $_POST['home_city_code'];
+			}
+			
+			if($_POST['home_area_code']){
+				
+				$data['home_area_code'] = $_POST['home_area_code'];
+			}
+			
+			if($_POST['home_address']){
+				
+				$data['home_address'] = $_POST['home_address'];
+			}
+			
+			if($_POST['health']){
+				
+				$data['health'] = $_POST['health'];
+			}
+			
+			if($_POST['character']){
+				
+				$data['character'] = $_POST['character'];
+			}
+			
+			if($_POST['admission_status']){
+				
+				$data['admission_status'] = $_POST['admission_status'];
+			}
+			
+			
+			//家庭成员分类
+			if($_POST['family_members_0']){
+
+				$mian[] = $_POST['family_members_0'];
+			}
+				
+			
+			if($_POST['family_members_1']){
+			
+				$mian[] = $_POST['family_members_1'];
+			}
+			
+			if($_POST['family_members_2']){
+					
+				$mian[] = $_POST['family_members_2'];
+			}
+			
+			if($_POST['family_members_3']){
+					
+				$mian[] = $_POST['family_members_3'];
+			}
+			
+			if($_POST['family_members_4']){
+					
+				$mian[] = $_POST['family_members_4'];
+			}
+			
+			if($_POST['family_members_5']){
+					
+				$mian[] = $_POST['family_members_5'];
+			}
+			
+			if($_POST['family_members_6']){
+					
+				$mian[] = $_POST['family_members_6'];
+			}
+			
+			if($_POST['family_members_7']){
+					
+				$mian[] = $_POST['family_members_7'];
+			}
+			
+			
+			if($_POST['family_members_8']){
+					
+				$mian[] = $_POST['family_members_8'];
+			}
+			
+			
+			
+			
+			if($_POST['family_members2_1']){
+					
+				$name[] = $_POST['family_members2_1'];
+			}
+
+			if($_POST['family_members2_2']){
+					
+				$name[] = $_POST['family_members2_2'];
+			}
+
+			if($_POST['family_members2_3']){
+					
+				$name[] = $_POST['family_members2_3'];
+			}
+			if($_POST['family_members2_4']){
+					
+				$name[] = $_POST['family_members2_4'];
+			}
+			
+			if($_POST['family_members2_5']){
+					
+				$name[] = $_POST['family_members2_5'];
+			}
+			
+			if($_POST['family_members2_6']){
+					
+				$name[] = $_POST['family_members2_6'];
+			}
+			
+			if($_POST['family_members2_7']){
+					
+				$name[] = $_POST['family_members2_7'];
+			}
+			
+			if($_POST['family_members2_8']){
+					
+				$name[] = $_POST['family_members2_8'];
+			}
+			
+			
+			$data1[] = serialize($name);
+			$data1[] = serialize($mian);
+			$data['family_members'] = serialize($data1);
+			
+			
+			
+			
+			
+			
+			if($_POST['family_structure']){
+				
+				$data['family_structure'] = $_POST['family_structure'];
+			}
+			
+			if($_POST['guardianship']){
+				
+				$data['guardianship'] = $_POST['guardianship'];
+			}
+			
+			if($_POST['life_status']){
+				
+				$data['life_status'] = $_POST['life_status'];
+			}
+			
+			if($_POST['enjoy_relief_type']){
+				
+				$data['enjoy_relief_type'] = $_POST['enjoy_relief_type'];
+			}
+			
+			if($_POST['housing_type']){
+				
+				$data['housing_type'] = $_POST['housing_type'];
+			}
+			
+			if($_POST['inner_predicament']){
+				
+				$data['inner_predicament'] = $_POST['inner_predicament'];
+			}
+			
+			//成长困境及成长等级
+				
+			if($_POST['growth_dilemma1']){
+			
+				$grow['growth_dilemma1']=$_POST['growth_dilemma1'];
+			}
+			
+			if($_POST['growth_dilemma2']){
+					
+				$grow['growth_dilemma2']=$_POST['growth_dilemma2'];
+			}
+			
+			if($_POST['growth_dilemma3']){
+					
+				$grow['growth_dilemma3']=$_POST['growth_dilemma3'];
+			}
+			
+			if($_POST['growth_dilemma4']){
+					
+				$grow['growth_dilemma4']=$_POST['growth_dilemma4'];
+			}
+			
+			if($_POST['growth_dilemma5']){
+					
+				$grow['growth_dilemma5']=$_POST['growth_dilemma5'];
+			}
+			
+			if($_POST['growth_dilemma6']){
+					
+				$grow['growth_dilemma6']=$_POST['growth_dilemma6'];
+			}
+			
+			if($_POST['growth_dilemma7']){
+					
+				$grow['growth_dilemma7']=$_POST['growth_dilemma7'];
+			}
+			
+			$data['growth_dilemma'] = serialize($grow);
+			
+			if($_POST['main_dilemma']){
+				
+				$data['main_dilemma'] = $_POST['main_dilemma'];
+			}
+			
+			if($_POST['fill_in_time']){
+				
+				$data['fill_in_time'] = $_POST['fill_in_time'];
+			}
+			
+			if($_POST['fill_in_person']){
+				
+				$data['fill_in_person'] = $_POST['fill_in_person'];
+					
+				
+			}
+			//图片上传
+			    if ($_FILES['photo']['name'] != '') {
+			    	
+				$uploadPath = uploads . 'case/' . user . '/';
+				if (!file_exists($uploadPath)) {
+					mkdir($uploadPath);
+					chmod($uploadPath, 0777);
+				}
+				$upload = new \Think\Upload(array(
+						'savePath'      => $uploadPath,
+						//'uploadReplace' => true // 覆盖同名文件
+				));
+				$uploadInfo = $upload->uploadOne($_FILES['photo']);
+				$data['photo'] = $uploadInfo['savename'];
+			}
+									
+
+
+	
+
+	 		$case = $db->add($data);
+			
+	 		if($case){
+
+	 			// $id = $db->where(array('name'=>$data['name']))->getField('id');
+	 			// $act = 'chushen';
+	 			echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/case_list.html';</script>";
+	 			// $this->success('操作成功，进行初审',U('index',array('id'=>$id,'act'=>$act)));
+
+
+	 		}else{
+
+
+	 			echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/case_list.html';</script>";
+
+	 		}
+
+		}else{
+			$this->list = M('area')->where(array('region_type'=>1))->select();
+			
+		
+			$this->display();
+		}
+		
+		
+	}
+	
+	//联动菜单
+	public function Linkage(){
+		
+		
+		
+		$id = $_POST['id'];
+		
+		$type = $_POST['type'];
+		
+		$list=M('area')->where(array('parent_id'=>$id))->select();
+		
+		
+		if($type==1){
+			$str="<option value=0 >请选择市</option>";
+		}else if($type==2){
+			$str="<option value=0 >请选择区</option>";
+		}
+		
+		foreach ($list as $v) {
+			$str.="<option value='{$v['region_id']}'>{$v['region_name']}</option>";
+		}
+		echo $str;
+		
+
+	}
+	
+	
+	
+	//案件初审
+	public function trial(){
+		if(IS_POST){
+			$data = $_POST;
+			$case = M('case');
+			if($data['trial_status'] == 1 || $data['trial_status'] == 3){
+				$saveCase = $case->where(array('id'=>$data['id']))->save($data);
+				if($saveCase){
+					// $act = 'zhongshen';
+					echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/case_list.html';</script>";
+					// $this->success('操作成功',U('index',array('id'=>$id,'act'=>$act)));
+				}else{
+					echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}
+			}else{
+				echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/case_list.html';</script>";
+			}
+		}else{
+			$this->act  = $_GET['act'];
+			$this->id   = I('id');
+			$this->time = M('case')->where(array('id'=>$this->id))->getField('fill_in_time');
+			$this->display();
+		}
+	}
+	
+	
+	
+
+	//案件终审
+	public function last_instance(){
+		if(IS_POST){
+			$data = $_POST;
+			$case = M('case');
+			if($data['last_instance_status'] == 1){
+				$saveCase = $case->where(array('id'=>$data['id']))->save($data);
+				if($saveCase){
+					// $act = 'diaodu';
+					echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}else{
+					echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}
+			}else if($data['last_instance_status'] == 2){
+				echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Case/case_list.html';</script>";
+			}
+		}else{
+			$this->act  = $_GET['act'];
+			$this->id   = I('id');
+			$this->display();	
+		}
+	}
+
+	//案件调度
+	public function dispatch(){
+		if(IS_POST){
+			$data = $_POST;
+			$case = M('case');
+			if($data['checkbox1']){
+				$addData['police_station']      = $data['police_station'];
+			}
+			if($data['checkbox2']){
+				$addData['turn_professional']   = $data['turn_professional'];
+			}
+			if($data['checkbox3']){
+				$addData['turn_related'] 	    = $data['turn_related'];
+			}
+			if($data['checkbox4']){
+				$addData['special_community']   = $data['special_community'];
+			}
+			if($data['checkbox5']){
+				$addData['transfer_assistance'] = $data['transfer_assistance'];
+			}
+			$addData['dispatch_instance']       = $data['dispatch_instance'];
+			
+			$saveCase = $case->where(array('id'=>$data['id']))->save($data);
+			if($saveCase){
+				// $act = 'chuzhi';
+				echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/case_list.html';</script>";
+			}else{
+				echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/case_list.html';</script>";
+			}
+		}else{
+			$this->act  = $_GET['act'];
+			$this->id   = I('id');
+			$this->display();	
+		}
+		
+	}
+
+	//案件处置
+	public function deal_with(){
+		if(IS_POST){
+			$case = M('case');
+			for($i = 1;$i <= count($_POST)-3;$i++){
+				if($_POST['management_record']){
+					$dataCount[] = $_POST['management_record'.$i];
+				}
+			};
+			array_unshift($dataCount,$_POST['management_record']);
+			$data['management_status'] = $_POST['management_status'];
+			$data['management_record'] = serialize($dataCount);
+			// dump($_POST);
+			// dump($data);die;
+			if($data['management_status'] == 1){
+				$saveCase = $case->where(array('id'=>$_POST['id']))->save($data);
+				if($saveCase){
+				// $act = 'chuzhi';
+					echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}else{
+					echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}
+			}else if($data['management_status'] == 2){
+				echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Case/case_list.html';</script>";
+			}
+		}else{
+			$this->act  = $_GET['act'];
+			$this->id   = I('id');
+			$this->display();	
+		}
+	}
+
+	//结案
+	public function finish(){
+		if(IS_POST){
+			$data = $_POST;
+			$case = M('case');
+			if(!empty($data['deal_with_time'])){
+				$data['deal_with_time'] = $data['deal_with_time'];
+			}else{
+				$data['deal_with_time'] = date("Y-m-d H:i:s",time());
+			}
+			if($data['finish_status'] == 1){
+				$saveCase = $case->where(array('id'=>$data['id']))->save($data);
+				if($saveCase){
+				// $act = 'chuzhi';
+					echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}else{
+					echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}
+			}else{
+				echo "<script>alert('案件未完成');window.location.href='index.php?s=/Case/case_list.html';</script>";
+			}
+		}else{
+			$this->id  = $_GET['id'];
+			$this->act = $_GET['act'];
+			$this->finishList = M('case')->where(array('id'=>$id))->find();
+			$this->display();	
+		}
+	}
+
+	//回访
+	public function visit(){
+		if(IS_POST){
+			$case = M('case');
+			if($_POST['visit_status']){
+				$data['visit_status'] = $_POST['visit_status'];
+			}
+			for($i = 1;$i <= count($_POST)-3;$i++){
+				if($_POST['visit_suggestion']){
+					$dataCount[] = $_POST['visit_suggestion'.$i];
+				}
+			};
+			array_unshift($dataCount,$_POST['visit_suggestion']);
+			$data['visit_suggestion'] = $_POST['visit_suggestion'];
+			$data['visit_suggestion'] = serialize($dataCount);
+			// dump($_POST);
+			// dump($data);die;
+			if(!empty($_POST['visit_time'])){
+				$data['visit_time'] = $_POST['visit_time'];
+			}else{
+				$data['visit_time'] = date("Y-m-d H:i:s",time());
+			}
+			$saveCase = $case->where(array('id'=>$_POST['id']))->save($data);
+				if($saveCase){
+				// $act = 'chuzhi';
+					echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}else{
+					echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/case_list.html';</script>";
+				}
+		}else{
+			$this->id  = $_GET['id'];
+			$this->act = $_GET['act'];
+			$this->display();
+		}
+	}
+
+
+}

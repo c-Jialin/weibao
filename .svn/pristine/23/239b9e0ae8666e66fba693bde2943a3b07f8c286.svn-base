@@ -1,0 +1,24 @@
+[ 2015-05-13T15:24:32+08:00 ] 127.0.0.1 /index.php?s=/admin/addons/adminlist/name/Wechat.html
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SHOW COLUMNS FROM `onethink_wechat_message`
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SELECT COUNT(*) AS tp_count FROM `onethink_wechat_message` WHERE ( `status` >= 0 ) LIMIT 1  
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SELECT * FROM `onethink_wechat_message` WHERE ( `status` >= 0 ) ORDER BY id desc LIMIT 0,10  
+
+[ 2015-05-13T15:24:34+08:00 ] 127.0.0.1 /index.php?s=/admin/addons/adminlist/name/Wechat.html
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SHOW COLUMNS FROM `onethink_wechat_message`
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SELECT COUNT(*) AS tp_count FROM `onethink_wechat_message` WHERE ( `status` >= 0 ) LIMIT 1  
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SELECT * FROM `onethink_wechat_message` WHERE ( `status` >= 0 ) ORDER BY id desc LIMIT 0,10  
+
+[ 2015-05-13T15:24:36+08:00 ] 127.0.0.1 /index.php?s=/admin/addons/adminlist/name/Wechat.html
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SHOW COLUMNS FROM `onethink_wechat_message`
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SELECT COUNT(*) AS tp_count FROM `onethink_wechat_message` WHERE ( `status` >= 0 ) LIMIT 1  
+ERR: 1146:Table 'onethink.onethink_wechat_message' doesn't exist
+ [ SQL语句 ] : SELECT * FROM `onethink_wechat_message` WHERE ( `status` >= 0 ) ORDER BY id desc LIMIT 0,10  
+

@@ -1,0 +1,104 @@
+<extend name="Public/base" />
+
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>用户列表</h2>
+	</div>
+	<div class="cf">
+		<!-- <div class="fl">
+            <a class="btn" href="{:U('User/add')}">新 增</a>
+            <button class="btn ajax-post" url="{:U('User/changeStatus',array('method'=>'resumeUser'))}" target-form="ids">启 用</button>
+            <button class="btn ajax-post" url="{:U('User/changeStatus',array('method'=>'forbidUser'))}" target-form="ids">禁 用</button>
+            <button class="btn ajax-post confirm" url="{:U('User/changeStatus',array('method'=>'deleteUser'))}" target-form="ids">删 除</button>
+        </div> -->
+
+        <!-- 高级搜索 -->
+		<div class="search-form fr cf">
+			<div class="sleft">
+				<input type="text" name="nickname" class="search-input" value="{:I('nickname')}" placeholder="请输入用户昵称或者ID">
+				<a class="sch-btn" href="javascript:;" id="search" url="{:U('index')}"><i class="btn-search"></i></a>
+			</div>
+		</div>
+    </div>
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+	<table class="">
+    <thead>
+        <tr>
+		<th class="" rowspan="2">序号</th>
+		<th class="" rowspan="2">登记时间</th>
+		<th class="" colspan="6" style="text-align:center">社会保护人员基本信息</th>
+		<th class="" rowspan="2">摸底上报风险等级</th>
+		<th class="" rowspan="2">机构评估风险等级</th>
+		<th class="" rowspan="2">帮扶后最高风险等级</th>
+		<th class="" rowspan="2">流程</th>
+		<th class="" rowspan="2">操作</th>
+		</tr>
+		<tr>
+			<th>姓名</th>
+			<th>性别</th>
+			<th>年龄</th>
+			<th>名族</th>
+			<th>家庭住址</th>
+			<th>健康状况</th>	
+		</tr>
+    </thead>
+    <tbody>
+		<?php
+			if (isset($CaseList) && !empty($CaseList)) { 
+             foreach ((array)$CaseList as $k => $v) { ?>
+		<tr>
+			<td><?php echo $k+1?></td>
+			<td><?php echo date("Y-m-d",$v['fill_in_time'])?></td>
+			<td><?php echo $v['name']?></td>
+			<td><?php echo getSex($v['sex'])?></td>
+			<td><?php echo $v['birthday']?></td>
+			<td><?php echo $v['nation']?></td>
+			<td><?php echo $v['home_address']?></td>
+			<td><?php echo $v['health']?></td>
+			<td>1</td>
+			<td>2</td>
+			<td>3</td>
+			<td><?php if($v['management_status'] == 1){?>处置完成<?php }else if($v['dispatch_instance'] != ''){?>调度完成<?php }else if($v['last_instance_status'] == 1){?>终审完成<?php }else if($v['trial_status'] == 1){?>初审完成<?php }else{?>采集完成<?php }?></td>
+			<td><?php if($v['management_status'] == 1){?><a href="index.php?s=/Case/finish/id/<?php echo $v['id'];?>/act/chuzhi.html">结案</a><?php }else if($v['dispatch_instance'] != ''){?><a href="index.php?s=/Case/index/id/<?php echo $v['id'];?>/act/chuzhi.html">处置</a><?php }else if($v['last_instance_status'] == 1){?><a <a href="index.php?s=/Case/index/id/<?php echo $v['id'];?>/act/diaodu.html">调度</a><?php }else if($v['trial_status'] == 1){?><a <a href="index.php?s=/Case/index/id/<?php echo $v['id'];?>/act/zhongshen.html">终审</a><?php }else{?><a href="index.php?s=/Case/index/id/<?php echo $v['id'];?>/act/chushen.html">初审</a><?php }?></td>
+		</tr>
+          <?php } } else { ?>
+          	<tr><td colspan="9" class="text-center">暂无数据</td></tr>
+           <?php } ?>
+	</tbody>
+    </table>
+	</div>
+    <div class="page">
+        {$_page}
+    </div>
+</block>
+
+<block name="script">
+	<script src="__STATIC__/thinkbox/jquery.thinkbox.js"></script>
+
+	<script type="text/javascript">
+	//搜索功能
+	$("#search").click(function(){
+		var url = $(this).attr('url');
+        var query  = $('.search-form').find('input').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+		window.location.href = url;
+	});
+	//回车搜索
+	$(".search-input").keyup(function(e){
+		if(e.keyCode === 13){
+			$("#search").click();
+			return false;
+		}
+	});
+    //导航高亮
+    highlight_subnav('{:U('User/index')}');
+	</script>
+</block>

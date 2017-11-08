@@ -1,0 +1,325 @@
+<?php
+// +----------------------------------------------------------------------
+// | OneThink [ WE CAN DO IT JUST THINK IT ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2013 http://www.onethink.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: huajie <banhuajie@163.com>
+// +----------------------------------------------------------------------
+namespace Admin\Controller;
+use Admin\Model\AuthGroupModel;
+use Think\Page;
+
+/**
+ * 后台内容控制器
+ * @author huajie <banhuajie@163.com>
+ */
+class CaseController extends AdminController {
+	 /**
+     * 检测需要动态判断的案件类目有关的权限
+     *
+     * @return boolean|null
+     *      返回true则表示当前访问有权限
+     *      返回false则表示当前访问无权限
+     *      返回null，则会进入checkRule根据节点授权判断权限
+     *
+     * @author 朱亚杰  <xcoolcc@gmail.com>
+     */
+    protected function checkDynamic(){
+        if(IS_ROOT){
+            return true;//管理员允许访问任何页面
+        }
+        $cates = AuthGroupModel::getAuthCategories(UID);
+        switch(strtolower(ACTION_NAME)){
+            case 'index':   //文档列表
+                $cate_id =  I('cate_id');
+                break;
+            case 'edit':    //编辑
+            case 'update':  //更新
+                $doc_id  =  I('id');
+                $cate_id =  M('Document')->where(array('id'=>$doc_id))->getField('category_id');
+                break;
+            case 'setstatus': //更改状态
+            case 'permit':    //回收站
+                $doc_id  =  (array)I('ids');
+                $cate_id =  M('Document')->where(array('id'=>array('in',$doc_id)))->getField('category_id',true);
+                $cate_id =  array_unique($cate_id);
+                break;
+        }
+        if(!$cate_id){
+            return null;//不明,需checkRule
+        }elseif( !is_array($cate_id) && in_array($cate_id,$cates) ) {
+            return true;//有权限
+        }elseif( is_array($cate_id) && $cate_id==array_intersect($cate_id,$cates) ){
+            return true;//有权限
+        }else{
+            return false;//无权限
+        }
+        return null;//不明,需checkRule
+    }
+
+    /**
+     * 显示左边菜单，进行权限控制
+     * @author huajie <banhuajie@163.com>
+     */
+    protected function getMenu(){
+        //获取动态分类
+        $cate_auth  =   AuthGroupModel::getAuthCategories(UID);	//获取当前用户所有的内容权限节点
+        $cate_auth  =   $cate_auth == null ? array() : $cate_auth;
+        $cate       =   M('Category')->where(array('status'=>1))->field('id,title,pid,allow_publish')->order('pid,sort')->select();
+
+        //没有权限的分类则不显示
+        if(!IS_ROOT){
+            foreach ($cate as $key=>$value){
+                if(!in_array($value['id'], $cate_auth)){
+                    unset($cate[$key]);
+                }
+            }
+        }
+
+        $cate           =   list_to_tree($cate);	//生成分类树
+
+        //获取分类id
+        $cate_id        =   I('param.cate_id');
+        $this->cate_id  =   $cate_id;
+
+        //是否展开分类
+        $hide_cate = false;
+        if(ACTION_NAME != 'recycle' && ACTION_NAME != 'draftbox' && ACTION_NAME != 'mydocument'){
+            $hide_cate  =   true;
+        }
+
+        //生成每个分类的url
+        foreach ($cate as $key=>&$value){
+            $value['url']   =   'Article/index?cate_id='.$value['id'];
+            if($cate_id == $value['id'] && $hide_cate){
+                $value['current'] = true;
+            }else{
+                $value['current'] = false;
+            }
+            if(!empty($value['_child'])){
+                $is_child = false;
+                foreach ($value['_child'] as $ka=>&$va){
+                    $va['url']      =   'Article/index?cate_id='.$va['id'];
+                    if(!empty($va['_child'])){
+                        foreach ($va['_child'] as $k=>&$v){
+                            $v['url']   =   'Article/index?cate_id='.$v['id'];
+                            $v['pid']   =   $va['id'];
+                            $is_child = $v['id'] == $cate_id ? true : false;
+                        }
+                    }
+                    //展开子分类的父分类
+                    if($va['id'] == $cate_id || $is_child){
+                        $is_child = false;
+                        if($hide_cate){
+                            $value['current']   =   true;
+                            $va['current']      =   true;
+                        }else{
+                            $value['current'] 	= 	false;
+                            $va['current']      =   false;
+                        }
+                    }else{
+                        $va['current']      =   false;
+                    }
+                }
+            }
+        }
+        $this->assign('nodes',      $cate);
+        $this->assign('cate_id',    $this->cate_id);
+
+        //获取面包屑信息
+        $nav = get_parent_category($cate_id);
+        $this->assign('rightNav',   $nav);
+
+        //获取回收站权限
+        $show_recycle = $this->checkRule('Admin/article/recycle');
+        $this->assign('show_recycle', IS_ROOT || $show_recycle);
+        //获取草稿箱权限
+        $this->assign('show_draftbox', C('OPEN_DRAFTBOX'));
+    }
+
+
+     
+	//信息采集
+	public function index(){
+		
+		if (IS_POST) {	
+		
+			$db=M('case');
+			if ($_POST['case_number']) {
+				
+				$data['case_number'] = $_POST['case_number'];
+			}
+			if($_POST['area_code']){
+				
+				$data['area_code'] = $_POST['area_code'];
+			}
+			
+			if($_POST['street_code']){
+
+				$data['street_code'] = $_POST['street_code'];
+			}
+			
+			if($_POST['community_code']){
+
+				$data['community_code'] = $_POST['community_code'];
+			}
+			
+			if($_POST['name']){
+
+				$data['name'] = $_POST['name'];
+			}
+			
+			if($_POST['sex']){
+				
+				$data['sex'] = $_POST['sex'];
+			}
+			
+			if( $_POST['photo']){
+				
+				$data['photo'] = $_POST['photo'];
+			}
+			
+			if($_POST['nation']){
+				
+				$data['nation'] = $_POST['nation'];
+			}
+			
+			if($_POST['birthday']){
+				
+				$data['birthday'] = $_POST['birthday'];
+			}
+			
+			if($_POST['household_pro_code']){
+				
+				$data['household_pro_code'] = $_POST['household_pro_code'];
+			}
+			
+			if($_POST['household_city_code']){
+				
+				$data['household_city_code'] = $_POST['household_city_code'];
+			}
+			
+			if($_POST['household_area_code']){
+				
+				$data['household_area_code'] = $_POST['household_area_code'];
+			}
+			
+			if($_POST['home_pro_code']){
+				
+				$data['home_pro_code'] = $_POST['home_pro_code'];
+			}
+			
+			if($_POST['home_city_code']){
+				
+				$data['home_city_code'] = $_POST['home_city_code'];
+			}
+			
+			if($_POST['home_area_code']){
+				
+				$data['home_area_code'] = $_POST['home_area_code'];
+			}
+			
+			if($_POST['home_address']){
+				
+				$data['home_address'] = $_POST['home_address'];
+			}
+			
+			if($_POST['health']){
+				
+				$data['health'] = $_POST['health'];
+			}
+			
+			if($_POST['character']){
+				
+				$data['character'] = $_POST['character'];
+			}
+			
+			if($_POST['admission_status']){
+				
+				$data['admission_status'] = $_POST['admission_status'];
+			}
+			
+			if($_POST['family_members']){
+				
+				$data['family_members'] = $_POST['family_members'];
+			}
+			
+			if($_POST['family_structure']){
+				
+				$data['family_structure'] = $_POST['family_structure'];
+			}
+			
+			if($_POST['guardianship']){
+				
+				$data['guardianship'] = $_POST['guardianship'];
+			}
+			
+			if($_POST['life_status']){
+				
+				$data['life_status'] = $_POST['life_status'];
+			}
+			
+			if($_POST['enjoy_relief_type']){
+				
+				$data['enjoy_relief_type'] = $_POST['enjoy_relief_type'];
+			}
+			
+			if($_POST['housing_type']){
+				
+				$data['housing_type'] = $_POST['housing_type'];
+			}
+			
+			if($_POST['inner_predicament']){
+				
+				$data['inner_predicament'] = $_POST['inner_predicament'];
+			}
+			
+			if($_POST['growth_dilemma']){
+				
+				$data['growth_dilemma'] = $_POST['growth_dilemma'];
+			}
+			
+			if($_POST['main_dilemma']){
+				
+				$data['main_dilemma'] = $_POST['main_dilemma'];
+			}
+			
+						
+
+	 		$case = $db->add($data);
+			
+		} else {
+			$this->display();
+		}
+	
+	}
+
+	//案件初审
+	public function trial(){
+		$this->display();
+	}
+
+	//案件终审
+	public function last_instance(){
+		$this->display();
+	}
+
+	//案件调度
+	public function dispatch(){
+		$this->display();
+	}
+
+	//案件处置
+	public function deal_with(){
+		$this->display();
+	}
+
+	//结案
+	public function finish(){
+		$this->display();
+	}
+
+
+
+}
