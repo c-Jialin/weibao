@@ -403,96 +403,16 @@ class CaseController extends AdminController
         $this->display();
     }
 
-    //信息采集
-    public function index()
+    //即将超时
+    public function jijiang()
     {
-        if (IS_POST) {
-            $db = M('case');
-            if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
-            if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
-            if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
-            if ($_POST['community_code']) $data['community_code'] = $_POST['community_code'];
-            if ($_POST['name']) $data['name'] = $_POST['name'];
-            if ($_POST['sex']) $data['sex'] = $_POST['sex'];
-            if ($_POST['nation']) $data['nation'] = $_POST['nation'];
-            if ($_POST['year']) $data['year'] = $_POST['year'];
-            if ($_POST['month']) $data['month'] = $_POST['month'];
-            $data['birthday'] = serialize(array($data['year'], $data['month']));
-            if ($_POST['household_pro_code']) $data['household_pro_code'] = $_POST['household_pro_code'];
-            if ($_POST['household_city_code']) $data['household_city_code'] = $_POST['household_city_code'];
-            if ($_POST['household_area_code']) $data['household_area_code'] = $_POST['household_area_code'];
-            if ($_POST['home_pro_code']) $data['home_pro_code'] = $_POST['home_pro_code'];
-            if ($_POST['home_city_code']) $data['home_city_code'] = $_POST['home_city_code'];
-            if ($_POST['home_area_code']) $data['home_area_code'] = $_POST['home_area_code'];
-            if ($_POST['home_address']) $data['home_address'] = $_POST['home_address'];
-            if ($_POST['health'] == 1) {
-                $data['health'] = $_POST['health'];
-            } else {
-                $data['health'] = serialize($_POST['health']);
-            }
-            if ($_POST['health_other']) $data['health_other'] = $_POST['health_other'];
-            if ($_POST['character']) $data['character'] = $_POST['character'];
-            if ($_POST['admission_status']) $data['admission_status'] = $_POST['admission_status'];
-            if ($_POST['admission_status'] == 2) $data['entrance'] = $_POST['entrance'];
-            //家庭成员分类
-            $data['family_jianhuren'] = serialize($_POST['family_jianhuren']);
-            $data1 = array_merge($_POST['family_members'], $_POST['family_members1']);
-            $data['family_members'] = serialize($data1);
-            if ($_POST['family_structure']) $data['family_structure'] = $_POST['family_structure'];
-            if ($_POST['family_other']) $data['family_other'] = $_POST['family_other'];
-            if ($_POST['guardianship']) $data['guardianship'] = $_POST['guardianship'];
-            if ($_POST['life_status']) $data['life_status'] = $_POST['life_status'];
-            if ($_POST['enjoy_relief_type']) $data['enjoy_relief_type'] = serialize($_POST['enjoy_relief_type']);
-            if ($_POST['housing_type']) $data['housing_type'] = $_POST['housing_type'];
-            if ($_POST['inner_predicament']) $data['inner_predicament'] = serialize($_POST['inner_predicament']);
-            if (in_array(7, $_POST['inner_predicament'])) $data['Heart_other'] = $_POST['Heart_other'];
-            //成长困境及成长等级
-            if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
-            if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
-            if ($_POST['growth_dilemma3']) $grow['growth_dilemma3'] = $_POST['growth_dilemma3'];
-            if ($_POST['growth_dilemma4']) $grow['growth_dilemma4'] = $_POST['growth_dilemma4'];
-            if ($_POST['growth_dilemma5']) $grow['growth_dilemma5'] = $_POST['growth_dilemma5'];
-            if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
-            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
-            $data['growth_dilemma'] = serialize($grow);
-            if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
-            $data['fill_in_time'] = time();
-            if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
-            //图片上传
-            if ($_FILES['photo']['name'] != '') {
-                $uploadPath = 'case/user/';
-                if (!file_exists($uploadPath)) {
-                    mkdir($uploadPath);
-                    chmod($uploadPath, 0777);
-                }
-                $upload = new \Think\Upload(array(
-                    'savePath' => $uploadPath,
-                    'subName' => false,
-                    'uploadReplace' => true // 覆盖同名文件
-                ));
-                $uploadInfo = $upload->uploadOne($_FILES['photo']);
-                $data['photo'] = $uploadInfo['savename'];
-            }
-            $data['case_status'] = 'caiji';
-            if ($_POST['xId']) {
-                $case = $db->where(array('id' => $_POST['xId']))->save($data);
-            } else {
-                $case = $db->add($data);
-            }
-            if ($case) {
-                echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
-            } else {
-                echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
-            }
-        } else {
-            $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
-            $this->Clist = $case;
-            $urse = M('ucenter_member');
-            $member = $urse->where(array('id' => UID))->getField('username');
-            $this->assign('member', $member);
-            $this->display();
-        }
+        echo __METHOD__;
+    }
+
+    //超时案件
+    public function chaoshi()
+    {
+        echo __METHOD__;
     }
 
     //处理数据
@@ -592,6 +512,101 @@ class CaseController extends AdminController
     {
         // $name = $_GET['ACTION_NAME'];
         // echo $name;
+    }
+
+    //信息采集
+    public function index()
+    {
+        if (IS_POST) {
+            $db = M('case');
+            if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
+            if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
+            if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
+            if ($_POST['community_code']) $data['community_code'] = $_POST['community_code'];
+            if ($_POST['name']) $data['name'] = $_POST['name'];
+            if ($_POST['sex']) $data['sex'] = $_POST['sex'];
+            if ($_POST['nation']) $data['nation'] = $_POST['nation'];
+            if ($_POST['year']) $data['year'] = $_POST['year'];
+            if ($_POST['month']) $data['month'] = $_POST['month'];
+            $data['birthday'] = serialize(array($data['year'], $data['month']));
+            if ($_POST['household_pro_code']) $data['household_pro_code'] = $_POST['household_pro_code'];
+            if ($_POST['household_city_code']) $data['household_city_code'] = $_POST['household_city_code'];
+            if ($_POST['household_area_code']) $data['household_area_code'] = $_POST['household_area_code'];
+            if ($_POST['home_pro_code']) $data['home_pro_code'] = $_POST['home_pro_code'];
+            if ($_POST['home_city_code']) $data['home_city_code'] = $_POST['home_city_code'];
+            if ($_POST['home_area_code']) $data['home_area_code'] = $_POST['home_area_code'];
+            if ($_POST['home_address']) $data['home_address'] = $_POST['home_address'];
+            if ($_POST['health'] == 1) {
+                $data['health'] = $_POST['health'];
+            } else {
+                $data['health'] = serialize($_POST['health']);
+            }
+            if ($_POST['health_other']) $data['health_other'] = $_POST['health_other'];
+            if ($_POST['character']) $data['character'] = $_POST['character'];
+            if ($_POST['admission_status']) $data['admission_status'] = $_POST['admission_status'];
+            if ($_POST['admission_status'] == 2) $data['entrance'] = $_POST['entrance'];
+            //家庭成员分类
+            $data['family_jianhuren'] = serialize($_POST['family_jianhuren']);
+            $data1 = array_merge($_POST['family_members'], $_POST['family_members1']);
+            $data['family_members'] = serialize($data1);
+            if ($_POST['family_structure']) $data['family_structure'] = $_POST['family_structure'];
+            if ($_POST['family_other']) $data['family_other'] = $_POST['family_other'];
+            if ($_POST['guardianship']) $data['guardianship'] = $_POST['guardianship'];
+            if ($_POST['life_status']) $data['life_status'] = $_POST['life_status'];
+            if ($_POST['enjoy_relief_type']) $data['enjoy_relief_type'] = serialize($_POST['enjoy_relief_type']);
+            if ($_POST['housing_type']) $data['housing_type'] = $_POST['housing_type'];
+            if ($_POST['inner_predicament']) $data['inner_predicament'] = serialize($_POST['inner_predicament']);
+            if (in_array(7, $_POST['inner_predicament'])) $data['Heart_other'] = $_POST['Heart_other'];
+            //成长困境及成长等级
+            if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
+            if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
+            if ($_POST['growth_dilemma3']) $grow['growth_dilemma3'] = $_POST['growth_dilemma3'];
+            if ($_POST['growth_dilemma4']) $grow['growth_dilemma4'] = $_POST['growth_dilemma4'];
+            if ($_POST['growth_dilemma5']) $grow['growth_dilemma5'] = $_POST['growth_dilemma5'];
+            if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
+            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
+            $data['growth_dilemma'] = serialize($grow);
+            if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
+            $data['fill_in_time'] = time();
+            if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
+            //图片上传
+            if ($_FILES['photo']['name'] != '') {
+                $uploadPath = 'case/user/';
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath);
+                    chmod($uploadPath, 0777);
+                }
+                $upload = new \Think\Upload(array(
+                    'savePath' => $uploadPath,
+                    'subName' => false,
+                    'uploadReplace' => true // 覆盖同名文件
+                ));
+                $uploadInfo = $upload->uploadOne($_FILES['photo']);
+                $data['photo'] = $uploadInfo['savename'];
+            }
+            $data['case_status'] = 'caiji';
+            $Case = D('case');
+            if (!$Case->create()) {
+                // 如果创建失败 表示验证没有通过 输出错误提示信息
+                $this->error($Case->getError(), '', 1);
+            } else {
+                if ($_POST['xId']) $data['id'] = $_POST['xId'];
+                $case = $Case->update($data);
+                if ($case) {
+                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                } else {
+                    echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                }
+            }
+        } else {
+            $this->Lage();
+            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $this->Clist = $case;
+            $urse = M('ucenter_member');
+            $member = $urse->where(array('id' => UID))->getField('username');
+            $this->assign('member', $member);
+            $this->display();
+        }
     }
 
     //案件初审

@@ -49,6 +49,7 @@ class AdminController extends Controller
                 //检测非动态权限
                 $rule = strtolower(MODULE_NAME . '/' . CONTROLLER_NAME . '/' . ACTION_NAME);
                 if (!$auth = $this->checkRule($rule, array('in', '1,2'))) {
+                    //Case跳过权限
                     if (!CONTROLLER_NAME == 'case') {
                         $this->error('未授权访问!');
                     }
@@ -436,7 +437,6 @@ class AdminController extends Controller
         $options['limit'] = $page->firstRow . ',' . $page->listRows;
 
         $model->setProperty('options', $options);
-
         return $model->field($field)->select();
     }
 

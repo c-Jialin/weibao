@@ -25,6 +25,9 @@ class IndexController extends MobileController
                     'last_login_time' => $_SESSION['onethink_admin']['user_auth']['last_login_time'],
                 );
                 $this->assign('user_info', $user_info);
+                echo '<pre>';
+                    print_r($user_info);
+                echo '</pre>';
                 $this->display();
             } else { //普通用户首页
                 $this->meta_title = '案件列表';

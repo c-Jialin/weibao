@@ -24,6 +24,10 @@ class UserController extends MobileController
         }
 
         $list = $this->lists('Member', $map);
+        $department = C('DEPARTMENT');
+        foreach ($list as &$v) {
+            $v['department'] = $department[$v['department']];
+        }
         int_to_string($list);
         $this->assign('_list', $list);
         $this->meta_title = '用户信息';
@@ -82,6 +86,7 @@ class UserController extends MobileController
     public function updatePassword()
     {
         $this->meta_title = '修改密码';
+        var_dump(I('get.uid'));
         $this->uid = I('get.uid');
         $this->display();
     }

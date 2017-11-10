@@ -244,6 +244,11 @@ class AuthManagerController extends MobileController
         $uid = I('uid');
         $auth_groups = D('AuthGroup')->getGroups();
         $user_groups = AuthGroupModel::getUserGroup($uid);
+        echo json_encode($user_groups);
+//        echo '<pre>';
+//            print_r($user_groups);
+//        echo '</pre>';
+//        exit;
         $ids = array();
         foreach ($user_groups as $value) {
             $ids[] = $value['group_id'];

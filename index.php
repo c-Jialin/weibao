@@ -29,7 +29,7 @@ function isMobile()
     }
     return false;
 }
-if (isMobile()) {
+if (!isMobile()) {
     $_GET['m'] = 'Admin';
 } else {
     $_GET['m'] = 'Mobile';

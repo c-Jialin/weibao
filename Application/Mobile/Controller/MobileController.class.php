@@ -27,7 +27,6 @@ class MobileController extends Controller
             S('DB_CONFIG_DATA', $config);
         }
         C($config); //添加配置
-
         // 是否是超级管理员
         define('IS_ROOT', is_administrator());
         if (!IS_ROOT && C('ADMIN_ALLOW_IP')) {
@@ -47,15 +46,17 @@ class MobileController extends Controller
                 //检测非动态权限
                 $rule = strtolower(MODULE_NAME . '/' . CONTROLLER_NAME . '/' . ACTION_NAME);
                 if (!$auth = $this->checkRule($rule, array('in', '1,2'))) {
-                    if (!CONTROLLER_NAME == 'case') {
+                    if (CONTROLLER_NAME != 'case') {
                         $this->error('未授权访问!');
                     }
+                    var_dump($rule);
                 }
             } elseif ($dynamic === false) {
                 $this->error('未授权访问!');
             }
         }
         define('IS_AUTH', $auth);
+        var_dump(IS_AUTH);
         $this->assign('__MENU__', $this->getMenus());
     }
 
@@ -74,7 +75,9 @@ class MobileController extends Controller
         if (!$Auth) {
             $Auth = new \Think\Auth();
         }
-        if (!$Auth->check($rule, UID, $type, $mode)) {
+        $url = explode('/', $rule);
+        $items = 'Admin/' . $url[1] . '/' . $url[2];
+        if (!$Auth->check($items, UID, $type, $mode)) {
             return false;
         }
         return true;

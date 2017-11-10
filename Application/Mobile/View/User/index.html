@@ -30,14 +30,16 @@
 	<table class="">
     <thead>
         <tr>
-		<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
-		<th class="">UID</th>
-		<th class="">昵称</th>
-		<th class="">登录次数</th>
-		<th class="">最后登录时间</th>
-		<th class="">最后登录IP</th>
-		<th class="">状态</th>
-		<th class="">操作</th>
+			<th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+			<th class="">UID</th>
+			<th class="">昵称</th>
+			<th class="">联系电话</th>
+			<th class="">所属部门</th>
+			<th class="">登录次数</th>
+			<th class="">最后登录时间</th>
+			<th class="">最后登录IP</th>
+			<th class="">状态</th>
+			<th class="">操作</th>
 		</tr>
     </thead>
     <tbody>
@@ -47,6 +49,8 @@
             <td><input class="ids" type="checkbox" name="id[]" value="{$vo.uid}" /></td>
 			<td>{$vo.uid} </td>
 			<td>{$vo.nickname}</td>
+			<td>{$vo.mobile}</td>
+			<td>{$vo.department}</td>
 			<td>{$vo.login}</td>
 			<td><span>{$vo.last_login_time|time_format}</span></td>
 			<td><span>{:long2ip($vo['last_login_ip'])}</span></td>

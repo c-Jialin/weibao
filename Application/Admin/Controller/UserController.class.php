@@ -24,6 +24,10 @@ class UserController extends AdminController
         }
 
         $list = $this->lists('Member', $map);
+        $department = C('DEPARTMENT');
+        foreach ($list as &$v) {
+            $v['department'] = $department[$v['department']];
+        }
         int_to_string($list);
         $this->assign('_list', $list);
         $this->meta_title = '用户信息';
@@ -35,8 +39,14 @@ class UserController extends AdminController
      */
     public function updateNickname()
     {
-        $nickname = M('Member')->getFieldByUid(UID, 'nickname');
-        $this->assign('nickname', $nickname);
+        $uid = I('get.uid');
+        if (!empty($uid)) {
+            $department = C('DEPARTMENT');
+            $this->assign('department', $department);
+            $nickname = M('Member')->getFieldByUid($uid, 'nickname');
+            $this->assign('nickname', $nickname);
+            $this->assign('uid', $uid);
+        }
         $this->meta_title = '修改昵称';
         $this->display();
     }
@@ -48,23 +58,25 @@ class UserController extends AdminController
     {
         //获取参数
         $nickname = I('post.nickname');
-        $password = I('post.password');
+        $uid = I('post.uid');
+        $mobile = I('post.mobile');
+        $department = I('post.department');
         empty($nickname) && $this->error('请输入昵称');
-        empty($password) && $this->error('请输入密码');
-
-        //密码验证
-        $User = new UserApi();
-        $uid = $User->login(UID, $password, 4);
-        ($uid == -2) && $this->error('密码不正确');
-
+        $list = array(
+            'nickname' => $nickname,
+            'mobile' => $mobile,
+            'department' => $department,
+        );
+        $data = array();
+        foreach ($list as $k => $v) {
+            if (!empty($v)) $data[$k] = $v;
+        }
         $Member = D('Member');
-        $data = $Member->create(array('nickname' => $nickname));
+        $data = $Member->create($data);
         if (!$data) {
             $this->error($Member->getError());
         }
-
         $res = $Member->where(array('uid' => $uid))->save($data);
-
         if ($res) {
             $user = session('user_auth');
             $user['username'] = $data['nickname'];
@@ -199,7 +211,7 @@ class UserController extends AdminController
         }
     }
 
-    public function add($username = '', $password = '', $repassword = '', $email = '', $mobile = '')
+    public function add($username = '', $password = '', $repassword = '', $email = '', $mobile = '', $department = '')
     {
         if (IS_POST) {
             /* 检测密码 */
@@ -209,9 +221,9 @@ class UserController extends AdminController
 
             /* 调用注册接口注册用户 */
             $User = new UserApi;
-            $uid = $User->register($username, $password, $email, $mobile);
+            $uid = $User->register($username, $password, $email, $mobile, $department);
             if (0 < $uid) { //注册成功
-                $user = array('uid' => $uid, 'nickname' => $username, 'status' => 1, 'mobile' => $mobile);
+                $user = array('uid' => $uid, 'nickname' => $username, 'status' => 1, 'mobile' => $mobile, 'department' => $department);
                 if (!M('Member')->add($user)) {
                     $this->error('用户添加失败！');
                 } else {
@@ -221,6 +233,8 @@ class UserController extends AdminController
                 $this->error($this->showRegError($uid));
             }
         } else {
+            $department = C('DEPARTMENT');
+            $this->assign('department', $department);
             $this->meta_title = '新增用户';
             $this->display();
         }
