@@ -193,7 +193,7 @@ class CaseController extends AdminController
         $this->display();
     }
 
-    //报名列表excel导出操作
+    //所有案件excel导出操作
 
     /**
      * @throws \PHPExcel_Exception
@@ -201,26 +201,38 @@ class CaseController extends AdminController
      */
     public function enrollListExcel()
     {
-        if (I('post.')) {
+        if (I('post.') && I('type') != 'choose') {
             set_time_limit(0);   //防止时间php脚本处理过期
-            $leix = I('leix');
-            $case = M('case');
-//            $meet_id = I('meet_id');
-            switch ($leix) {
+            $case    = M('case');
+            $type    = I('type'); 
+            $where   = [];
+            $sex     = I('sex');
+            if(!empty($sex))
+                $where['sex'] = $sex;
+            if(I('guidang') == 'yes')
+                $where['case_status'] = [['eq', 'jiean'], ['eq', 'huifang'], 'or'];
+            switch ($type) {
+                //全部导出+性别
                 case 'all' :
-                    $enroll_arr = $case->limit('0,3000')->select();
+                    $enroll_arr = $case->where($where)->limit('0,3000')->select();
                     break;
-            }
 
-            if ($leix != "all") {
-                $enroll_arr = $case->where(array('street_code' => $leix))->limit('0,3000')->select();
+                //街道+性别
+                default :
+                    $where['street_code'] = $type;
+                    $enroll_arr = $case->where($where)->limit('0,3000')->select();
+                    break;     
             }
-
             if (!empty($enroll_arr)) {
                 vendor('phpexcel');
                 // 首先创建一个新的对象  PHPExcel object
                 $objPHPExcel = new \PHPExcel();
                 // 给表格添加数据
+
+                //设置默认 垂直水平居中
+                $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical('center')->setHorizontal('center');
+
+
                 $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A1', '编号')
                     ->setCellValue('B1', '姓名')
@@ -239,6 +251,14 @@ class CaseController extends AdminController
 //                    ->setCellValue( 'H1', '支付方式' )
 //                    ->setCellValue( 'I1', '支付状态' )
 //                    ->setCellValue( 'J1', '备注' );
+
+                //设置单元格长度
+                $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(25);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(17);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('L')->setWidth(17);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(17);
                 //循环插入数据
                 foreach ($enroll_arr as $k => $v) {
                     $tel = unserialize($v['family_members']);
@@ -261,26 +281,29 @@ class CaseController extends AdminController
                     $qu = M('area_top')->where(array('region_id' => $v['area_code']))->getField('region_name');
                     $zhen = M('area_top')->where(array('region_id' => $v['street_code']))->getField('region_name');
                     $objPHPExcel->setActiveSheetIndex(0)
-                        ->setCellValue('A' . ($k + 2), $v['case_number'])
-                        ->setCellValue('B' . ($k + 2), $v['name'])
-                        ->setCellValue('C' . ($k + 2), getSex($v['sex']))
-                        ->setCellValue('D' . ($k + 2), getAge($v['birthday']))
-                        ->setCellValue('E' . ($k + 2), $v['nation'])
-                        ->setCellValue('F' . ($k + 2), $qu)
-                        ->setCellValue('G' . ($k + 2), $zhen)
-                        ->setCellValue('H' . ($k + 2), $v['home_address'])
-                        ->setCellValue('I' . ($k + 2), getHealth($v['health'], $v['id']))
-                        ->setCellValue('J' . ($k + 2), $tels)
-                        ->setCellValue('K' . ($k + 2), $mdfx)
-                        ->setCellValue('L' . ($k + 2), $jgfx)
-                        ->setCellValue('M' . ($k + 2), $bffx)
-                        ->setCellValue('N' . ($k + 2), getStage($v['case_status']));
+                        ->setCellValueExplicit('A' . ($k + 2), $v['case_number'], 's')
+                        ->setCellValueExplicit('B' . ($k + 2), $v['name'])
+                        ->setCellValueExplicit('C' . ($k + 2), getSex($v['sex']))
+                        ->setCellValueExplicit('D' . ($k + 2), getAge($v['birthday']))
+                        ->setCellValueExplicit('E' . ($k + 2), $v['nation'])
+                        ->setCellValueExplicit('F' . ($k + 2), $qu)
+                        ->setCellValueExplicit('G' . ($k + 2), $zhen)
+                        ->setCellValueExplicit('H' . ($k + 2), $v['home_address'])
+                        ->setCellValueExplicit('I' . ($k + 2), getHealth($v['health'], $v['id']))
+                        ->setCellValueExplicit('J' . ($k + 2), $tels, 's')
+                        ->setCellValueExplicit('K' . ($k + 2), $mdfx)
+                        ->setCellValueExplicit('L' . ($k + 2), $jgfx)
+                        ->setCellValueExplicit('M' . ($k + 2), $bffx)
+                        ->setCellValueExplicit('N' . ($k + 2), getStage($v['case_status']), TRUE);
 //                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
 //                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
 //                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
 //                        ->setCellValue( 'J'.($k+2), $v['beizhu']);
+                    $objPHPExcel->getActiveSheet()->getStyle('A' . ($k + 2))->getNumberFormat()
+                        ->setFormatCode('@');
+                    $objPHPExcel->getActiveSheet()->getStyle('J' . ($k + 2))->getNumberFormat()
+                        ->setFormatCode('@');
                 }
-
                 // 生成2003excel格式的xls文件
                 ob_end_clean();//清除缓冲区,避免乱码
                 header('Content-Type: application/vnd.ms-excel;charset=UTF-8');
@@ -291,9 +314,11 @@ class CaseController extends AdminController
                 $objWriter->save('php://output');
                 exit;
             } else {
-                exit('无数据!');
+                // exit('无数据!');
                 $this->error('无数据!');
             }
+        } else {
+            $this->error('无数据!', '', 20);
         }
     }
 
@@ -380,7 +405,7 @@ class CaseController extends AdminController
 
         $this->CaseList = M('case')->where('case_status = "jiean" or case_status = "huifang"')->limit($limit)->order('fill_in_time desc')->select();
         // echo M()->getLastSql();
-        $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
+        $this->shequ = M('area_top')->where(array('type_id' => 4))->select();
         $this->display();
     }
 

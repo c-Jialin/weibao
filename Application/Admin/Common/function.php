@@ -485,30 +485,57 @@ function getHealth($id, $v)
     return $res;
 }
 
-//当前阶段
-function getStage($str)
+//当前阶段 
+function getStage($str, $isExcel = fasle)
 {
-    $res = '';
-    if ($str == 'bohuiC') {
-        $res = '<font style="color:red">采集</font>';
-    } elseif ($str == 'caiji') {
-        $res = '<font style="color:red">初审</font>';
-    } else if ($str == 'chushen') {
-        $res = '<font style="color:red">审批</font>';
-    } else if ($str == 'shenpi') {
-        $res = '<font style="color:red">调度</font>';
-    } else if ($str == 'diaodu') {
-        $res = '<font style="color:red">处置</font>';
-    } else if ($str == 'chuzhi') {
-        $res = '<font style="color:red">结案</font>';
-    } else if ($str == 'jiean') {
-        $res = '<font style="color:red">回访</font>';
-    } else if ($str == 'weihuifang') {
-        $res = '<font style="color:red">回访</font>';
-    } else if ($str == 'huifang') {
-        $res = '<font style="color:red">完成处理</font>';
+    $res   = '';
+    $excel = '';//若是excel表格使用 则返回此
+    switch ($str) {
+        case 'bohuiC':
+            $excel = '采集';
+            $res   = '<font style="color:red">采集</font>';
+            break;
+
+        case 'caiji':
+            $excel = '初审';
+            $res   = '<font style="color:red">初审</font>';
+            break;
+
+        case 'chushen':
+            $excel = '审批';
+            $res   = '<font style="color:red">审批</font>';
+            break;
+
+        case 'shenpi':
+            $excel = '调度';
+            $res   = '<font style="color:red">调度</font>';
+            break;
+
+        case 'diaodu':
+            $excel = '处置';
+            $res   = '<font style="color:red">处置</font>';
+            break;
+
+        case 'chuzhi':
+            $excel = '结案';
+            $res   = '<font style="color:red">结案</font>';
+            break;
+
+        case 'jiean':
+        case 'weihuifang':
+            $excel = '回访';
+            $res   = '<font style="color:red">回访</font>';
+            break;
+
+        case 'huifang':
+            $excel = '完成处理';
+            $res   = '<font style="color:red">完成处理</font>';
+            break;
     }
-    return $res;
+    if($isExcel)
+        return $excel;
+    else
+        return $res;
 }
 
 //初级评估风险

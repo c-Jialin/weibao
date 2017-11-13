@@ -84,8 +84,8 @@
     <div class="information">
         <div class="title <?php if($act == 'chushen'){?>active<?php }?>" data-toggle="collapse" href="#chushen"
              aria-expanded="<?php if($act == 'chushen'){?>true<?php }else{?>false<?php }?>"
-             aria-controls="collapseExample">当前阶段：初审<span class="caret"></span></div>
-        <form action="{:U('Case/trial')}" method="post">
+             aria-controls="collapseExample">当前阶段：初审<a href='javascript:printForm()' class='print'>打印</a></div>
+        <form action="{:U('Case/trial')}" method="post" id='printContent'>
             <div id="chushen" class="submit collapse <?php if($act == 'chushen'){?>in<?php }?>">
                 <div style="margin-bottom: 8px;">指挥中心或专业机构评估风险风险等级</div>
                 <table class="table_2">
@@ -441,9 +441,9 @@
     $(function () {
         var text = '<div class="li zhuchibeizhu"><div class="left">处置备注 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
         var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
-        $('.title').click(function () {
+/*        $('.title').click(function () {
             $(this).children('.caret').toggleClass('caret-active');
-        })
+        })*/
         $('#addchuzhi').click(function () {
             $('.zhuchibeizhu:last').after(text);
             $('.zhuchibeizhu:last').children('.right').children('textarea').attr('name', 'management_record' + ($('.zhuchibeizhu').length - 1));
@@ -537,6 +537,47 @@
                 }
             }
         })
+    }
+
+(function ($) {
+    var printAreaCount = 0;
+    $.fn.printArea = function () {
+        var ele = $(this);
+        var idPrefix = "printArea_";
+        removePrintArea(idPrefix + printAreaCount);
+        printAreaCount++;
+        var iframeId = idPrefix + printAreaCount;
+        var iframeStyle = 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;';
+        iframe = document.createElement('IFRAME');
+        $(iframe).attr({
+            style: iframeStyle,
+            id: iframeId
+        });
+        document.body.appendChild(iframe);
+        var doc = iframe.contentWindow.document;
+        $(document).find("link").filter(function () {
+            return $(this).attr("rel").toLowerCase() == "stylesheet";
+        }).each(
+                function () {
+                    doc.write('<link type="text/css" rel="stylesheet" href="'
+                            + $(this).attr("href") + '" >');
+                });
+        doc.write('<div class="' + $(ele).attr("class") + '">' + $(ele).html()
+                + '</div>');
+        doc.close();
+        var frameWindow = iframe.contentWindow;
+        frameWindow.close();
+        frameWindow.focus();
+        frameWindow.print();
+    }
+    var removePrintArea = function (id) {
+        $("iframe#" + id).remove();
+    };
+})(jQuery);
+
+    function printForm(){
+        console.log('dss')
+        $('#printContent').printArea();
     }
 </script>
 </body>

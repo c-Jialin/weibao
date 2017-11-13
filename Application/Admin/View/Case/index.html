@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>湘潭市未成年人社会保护信息系统</title>
-    <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
+    <link rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
     <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
 </head>
@@ -82,10 +82,12 @@
         </div>
     </div>
     <div class="information">
-        <div class="title <?php if($act == ''){?> active <?php }?>" data-toggle="collapse" href="#xinxicaiji"
-             aria-expanded="<?php if($act == ''){?>true<?php }else{?>false<?php }?>" aria-controls="collapseExample">
-            当前阶段：信息采集<span class="caret"></span></div>
+        <div class="title <?php if($act == ''){?> active <?php }?>" href="#xinxicaiji">
+            当前阶段：信息采集<a href='javascript:printForm()' class='print'>打印</a></div>
         <form action="{:U('Case/index')}" method="post" enctype="multipart/form-data">
+    <link media='print' rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
+    <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
+    <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
             <div class="collapse <?php if($act == ''){?>in<?php }?>" id="xinxicaiji">
                 <table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 14px;">
                     <input type="hidden" name="xId" value="<?php echo $_GET['id'];?>"/>
@@ -145,10 +147,10 @@
                                                                              value="<?php echo $Clist['name'];?>"></td>
                             <td class="td_item" style="width:80px;">性别</td>
                             <td class="td_input" style="width:120px;">
-                                <label>【<input type="radio" class="radio" name="sex"
-                                               value="2" <?php if($Clist['sex'] == 2) echo 'checked'; ?>>】男</label>
-                                <label>【<input type="radio" class="radio" name="sex"
-                                               value="1" <?php if($Clist['sex'] == 1) echo 'checked'; ?>>】女</label>
+                                <label><input type="radio" class="radio" name="sex"
+                                               value="2" <?php if($Clist['sex'] == 2) echo 'checked'; ?>>男</label>
+                                <label><input type="radio" class="radio" name="sex"
+                                               value="1" <?php if($Clist['sex'] == 1) echo 'checked'; ?>>女</label>
                             </td>
                             <td class="td_item" style="width:100px; ">民族</td>
                             <td class="td_input" style="width:80px;"><input type="text" class="input" name="nation" value="<?php echo $Clist['nation'];?>"></td>
@@ -244,32 +246,32 @@
                         <tr>
                             <td class="td_item">健康状况</td>
                             <td class="td_input" colspan="5">
-                                <label>【<input type="radio" class="radio healthradio" name="health"
-                                               value="1"<?php if($Clist['health'] == 1){?>checked<?php }?>>】健康</label>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="radio" class="radio healthradio" name="health"
+                                               value="1"<?php if($Clist['health'] == 1){?>checked<?php }?>>健康</label>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="2"<?php if(in_array(2,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】肢体残疾</label>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                    checked<?php }?>>肢体残疾</label>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="3"<?php if(in_array(3,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】智力缺陷</label>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                    checked<?php }?>>智力缺陷</label>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="4"<?php if(in_array(4,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】精神疾病</label>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                    checked<?php }?>>精神疾病</label>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="5"<?php if(in_array(5,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】传染病</label>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                    checked<?php }?>>传染病</label>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="6"<?php if(in_array(6,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】盲人</label><br>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                    checked<?php }?>>盲人</label><br>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="7"<?php if(in_array(7,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】聋哑</label>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                    checked<?php }?>>聋哑</label>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="8"<?php if(in_array(8,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】吸毒史</label>
-                                <label>【<input type="checkbox" class="radio healthbox" name="health"
+                                    checked<?php }?>>吸毒史</label>
+                                <label><input type="checkbox" class="radio healthbox" name="health"
                                                value="9"<?php if(in_array(9,unserialize($Clist['health']))){?>
-                                    checked<?php }?>>】其它重病</label>
+                                    checked<?php }?>>其它重病</label>
                                 <input type="text" name="health_other"
                                        value="<?php if($Clist['health_other']){?><?php echo $Clist['health_other'];?><?php }?>"
                                        style="display:inline-block;height:26px;width:240px;line-height:26px;">
@@ -278,27 +280,27 @@
                         <tr>
                             <td class="td_item">性格状况</td>
                             <td class="td_input" colspan="3">
-                                <label>【<input type="radio" class="radio" name="character"
+                                <label><input type="radio" class="radio" name="character"
                                                value="1"<?php if($Clist['character'] == 1){?>checked<?php }?>
-                                    >】内向</label>
-                                <label>【<input type="radio" class="radio" name="character"
+                                    >内向</label>
+                                <label><input type="radio" class="radio" name="character"
                                                value="2"<?php if($Clist['character'] == 2){?>checked<?php }?>
-                                    >】外向</label>
-                                <label>【<input type="radio" class="radio" name="character"
+                                    >外向</label>
+                                <label><input type="radio" class="radio" name="character"
                                                value="3"<?php if($Clist['character'] == 3){?>checked<?php }?>
-                                    >】中性</label>
-                                <label>【<input type="radio" class="radio" name="character"
+                                    >中性</label>
+                                <label><input type="radio" class="radio" name="character"
                                                value="4"<?php if($Clist['character'] == 4){?>checked<?php }?>
-                                    >】孤僻</label>
+                                    >孤僻</label>
                             </td>
                             <td class="td_item">入学状况</td>
                             <td class="td_input" colspan="2">
-                                <label>【<input type="radio" class="radio" name="admission_status"
+                                <label><input type="radio" class="radio" name="admission_status"
                                                value="1"<?php if($Clist['admission_status'] == 1){?>checked<?php }?>
-                                    >】未</label>　
-                                <label>【<input type="radio" class="radio" name="admission_status"
+                                    >未</label>　
+                                <label><input type="radio" class="radio" name="admission_status"
                                                value="2"<?php if($Clist['admission_status'] == 2){?>checked<?php }?>
-                                    >】在校</label>
+                                    >在校</label>
                                 <label><input type="text" class="input xuexiao" style="width:100px;" name="entrance"
                                               value="<?php echo $Clist['entrance']?>"></label></td>
                         </tr>
@@ -351,19 +353,19 @@
                         <tr>
                             <td class="td_item">家庭结构</td>
                             <td class="td_input" colspan="6">
-                                <label>【<input type="radio" class="radio" name="family_structure"
+                                <label><input type="radio" class="radio" name="family_structure"
                                                value="1" <?php if($Clist['family_structure'] == 1){?>checked<?php }?>
-                                    >】双亲健在</label>　
-                                <label>【<input type="radio" class="radio" name="family_structure"
+                                    >双亲健在</label>　
+                                <label><input type="radio" class="radio" name="family_structure"
                                                value="2" <?php if($Clist['family_structure'] == 2){?>checked<?php }?>
-                                    >】单亲家庭</label>　
-                                <label>【<input type="radio" class="radio" name="family_structure"
+                                    >单亲家庭</label>　
+                                <label><input type="radio" class="radio" name="family_structure"
                                                value="3" <?php if($Clist['family_structure'] == 3){?>checked<?php }?>
-                                    >】孤儿</label>
-                                <label>【<input type="radio" class="radio jiating" name="family_structure"
-                                               value="4">】离异家庭</label>
-                                <label>【<input type="radio" class="radio" id="qitajiating" name="family_structure"
-                                               value="5">】其他</label>
+                                    >孤儿</label>
+                                <label><input type="radio" class="radio jiating" name="family_structure"
+                                               value="4">离异家庭</label>
+                                <label><input type="radio" class="radio" id="qitajiating" name="family_structure"
+                                               value="5">其他</label>
                                 <input type="text" name="family_other"
                                        value="<?php if($Clist['family_other']){?><?php echo $Clist['family_other'];?><?php }?>"
                                        id="qitajiainput"
@@ -372,82 +374,82 @@
                         <tr>
                             <td class="td_item">监护状况</td>
                             <td class="td_input" colspan="6">
-                                <label>【<input type="radio" class="radio" name="guardianship"
+                                <label><input type="radio" class="radio" name="guardianship"
                                                value="1" <?php if($Clist['guardianship'] == 1){?>checked<?php }?>
-                                    >】父母监护</label>　
-                                <label>【<input type="radio" class="radio" name="guardianship"
+                                    >父母监护</label>　
+                                <label><input type="radio" class="radio" name="guardianship"
                                                value="2" <?php if($Clist['guardianship'] == 2){?>checked<?php }?>
-                                    >】其他亲属抚养</label>　
-                                <label>【<input type="radio" class="radio" name="guardianship"
+                                    >其他亲属抚养</label>　
+                                <label><input type="radio" class="radio" name="guardianship"
                                                value="3" <?php if($Clist['guardianship'] == 3){?>checked<?php }?>
-                                    >】机构抚养</label>　
-                                <label>【<input type="radio" class="radio" name="guardianship"
+                                    >机构抚养</label>　
+                                <label><input type="radio" class="radio" name="guardianship"
                                                value="4" <?php if($Clist['guardianship'] == 4){?>checked<?php }?>
-                                    >】无人监护</label></td>
+                                    >无人监护</label></td>
                         </tr>
                         <tr>
                             <td class="td_item">生活情境</td>
                             <td class="td_input" colspan="3">
-                                <label>【<input type="radio" class="radio" name="life_status"
+                                <label><input type="radio" class="radio" name="life_status"
                                                value="1" <?php if($Clist['life_status'] == 1){?>checked<?php }?>
-                                    >】留守</label>　
-                                <label>【<input type="radio" class="radio" name="life_status"
+                                    >留守</label>　
+                                <label><input type="radio" class="radio" name="life_status"
                                                value="2" <?php if($Clist['life_status'] == 2){?>checked<?php }?>
-                                    >】流动</label>　
-                                <label>【<input type="radio" class="radio" name="life_status"
+                                    >流动</label>　
+                                <label><input type="radio" class="radio" name="life_status"
                                                value="3" <?php if($Clist['life_status'] == 3){?>checked<?php }?>
-                                    >】正常</label>
+                                    >正常</label>
                             </td>
                             <td class="td_item">享受救助</td>
                             <td class="td_input" colspan="2">
-                                <label>【<input type="checkbox" class="radio" name="enjoy_relief_type[]"
+                                <label><input type="checkbox" class="radio" name="enjoy_relief_type[]"
                                                value="1" <?php if(in_array(1,unserialize($Clist['enjoy_relief_type']))){?>
-                                    checked<?php }?>>】低保</label>　
-                                <label>【<input type="checkbox" class="radio" name="enjoy_relief_type[]"
+                                    checked<?php }?>>低保</label>　
+                                <label><input type="checkbox" class="radio" name="enjoy_relief_type[]"
                                                value="2" <?php if(in_array(2,unserialize($Clist['enjoy_relief_type']))){?>
-                                    checked<?php }?>>】医保</label>　
-                                <label>【<input type="checkbox" class="radio" name="enjoy_relief_type[]"
+                                    checked<?php }?>>医保</label>　
+                                <label><input type="checkbox" class="radio" name="enjoy_relief_type[]"
                                                value="3" <?php if(in_array(3,unserialize($Clist['enjoy_relief_type']))){?>
-                                    checked<?php }?>>】孤补</label></td>
+                                    checked<?php }?>>孤补</label></td>
                         </tr>
                         <tr>
                             <td class="td_item">住房类型</td>
                             <td class="td_input" colspan="6">
-                                <label>【<input type="radio" class="radio" name="housing_type"
+                                <label><input type="radio" class="radio" name="housing_type"
                                                value="1" <?php if($Clist['housing_type'] == 1){?>checked<?php }?>
-                                    >】固定住所</label>　
-                                <label>【<input type="radio" class="radio" name="housing_type"
+                                    >固定住所</label>　
+                                <label><input type="radio" class="radio" name="housing_type"
                                                value="2" <?php if($Clist['housing_type'] == 2){?>checked<?php }?>
-                                    >】临时租住</label>　
-                                <label>【<input type="radio" class="radio" name="housing_type"
+                                    >临时租住</label>　
+                                <label><input type="radio" class="radio" name="housing_type"
                                                value="3" <?php if($Clist['housing_type'] == 3){?>checked<?php }?>
-                                    >】借住</label>
+                                    >借住</label>
                             </td>
                         </tr>
                         <tr>
                             <td class="td_item">内心困境</td>
                             <td class="td_input" colspan="6">
-                                <label>【<input type="checkbox" class="radio" name="inner_predicament[]"
+                                <label><input type="checkbox" class="radio" name="inner_predicament[]"
                                                value="1" <?php if(in_array(1,unserialize($Clist['inner_predicament']))){?>
-                                    checked<?php }?>>】父母关系不好</label>　
-                                <label>【<input type="checkbox" class="radio" name="inner_predicament[]"
+                                    checked<?php }?>>父母关系不好</label>　
+                                <label><input type="checkbox" class="radio" name="inner_predicament[]"
                                                value="2" <?php if(in_array(2,unserialize($Clist['inner_predicament']))){?>
-                                    checked<?php }?>>】缺少亲友陪伴</label>　
-                                <label>【<input type="checkbox" class="radio" name="inner_predicament[]"
+                                    checked<?php }?>>缺少亲友陪伴</label>　
+                                <label><input type="checkbox" class="radio" name="inner_predicament[]"
                                                value="3" <?php if(in_array(3,unserialize($Clist['inner_predicament']))){?>
-                                    checked<?php }?>>】朋辈关系不好</label>　
-                                <label>【<input type="checkbox" class="radio" name="inner_predicament[]"
+                                    checked<?php }?>>朋辈关系不好</label>　
+                                <label><input type="checkbox" class="radio" name="inner_predicament[]"
                                                value="4" <?php if(in_array(4,unserialize($Clist['inner_predicament']))){?>
-                                    checked<?php }?>>】学习成绩不佳</label>　
-                                <label>【<input type="checkbox" class="radio" name="inner_predicament[]"
+                                    checked<?php }?>>学习成绩不佳</label>　
+                                <label><input type="checkbox" class="radio" name="inner_predicament[]"
                                                value="5" <?php if(in_array(5,unserialize($Clist['inner_predicament']))){?>
-                                    checked<?php }?>>】无人理解自己</label><br>
-                                <label>【<input type="checkbox" class="radio" name="inner_predicament[]"
+                                    checked<?php }?>>无人理解自己</label><br>
+                                <label><input type="checkbox" class="radio" name="inner_predicament[]"
                                                value="6" <?php if(in_array(6,unserialize($Clist['inner_predicament']))){?>
-                                    checked<?php }?>>】感觉自己不如别人</label>　
-                                <label>【<input type="checkbox" class="radio" name="inner_predicament[]"
+                                    checked<?php }?>>感觉自己不如别人</label>　
+                                <label><input type="checkbox" class="radio" name="inner_predicament[]"
                                                value="7" <?php if(in_array(7,unserialize($Clist['inner_predicament']))){?>
-                                    checked<?php }?>>】其他</label>
+                                    checked<?php }?>>其他</label>
                                 <label><input type="text" class="input" style="width:300px;" name="Heart_other"
                                               value="<?php echo $Clist['Heart_other']?>"></label></td>
                         </tr>
@@ -460,158 +462,158 @@
                                     <tr>
                                         <td class="td_input">1、孤儿或因法定监护人服刑、重病、重残等原因实际无人监护的未成年人</td>
                                         <td class="td_input" style="border-right:none;">
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                            <label><input type="radio" class="radio" name="growth_dilemma1"
                                                            value="1" <?php if(in_array(1,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】一级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                checked<?php }?>>一级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma1"
                                                            value="2" <?php if(in_array(2,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】二级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                checked<?php }?>>二级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma1"
                                                            value="3" <?php if(in_array(3,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】三级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                checked<?php }?>>三级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma1"
                                                            value="4" <?php if(in_array(4,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】四级</label><br>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                checked<?php }?>>四级</label><br>
+                                            <label><input type="radio" class="radio" name="growth_dilemma1"
                                                            value="5" <?php if(in_array(5,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】五级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                checked<?php }?>>五级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma1"
                                                            value="6" <?php if(in_array(6,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】零级</label></td>
+                                                checked<?php }?>>零级</label></td>
                                     </tr>
                                     <tr>
                                         <td class="td_input">2、因家庭暴力、遭受侵害等原因得不到适当监护的未成年人</td>
                                         <td class="td_input" style="border-right:none;">
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                            <label><input type="radio" class="radio" name="growth_dilemma2"
                                                            value="7" <?php if(in_array(7,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】一级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                checked<?php }?>>一级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma2"
                                                            value="8" <?php if(in_array(8,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】二级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                checked<?php }?>>二级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma2"
                                                            value="9" <?php if(in_array(9,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】三级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                checked<?php }?>>三级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma2"
                                                            value="10" <?php if(in_array(10,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】四级</label><br>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                checked<?php }?>>四级</label><br>
+                                            <label><input type="radio" class="radio" name="growth_dilemma2"
                                                            value="11" <?php if(in_array(11,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】五级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                checked<?php }?>>五级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma2"
                                                            value="12" <?php if(in_array(12,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】零级</label></td>
+                                                checked<?php }?>>零级</label></td>
                                     </tr>
                                     <tr>
                                         <td class="td_input">3、因家庭困境面临辍学和失去基本生活保障的未成年人</td>
                                         <td class="td_input" style="border-right:none;">
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                            <label><input type="radio" class="radio" name="growth_dilemma3"
                                                            value="13" <?php if(in_array(13,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】一级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                checked<?php }?>>一级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma3"
                                                            value="14" <?php if(in_array(14,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】二级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                checked<?php }?>>二级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma3"
                                                            value="15" <?php if(in_array(15,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】三级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                checked<?php }?>>三级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma3"
                                                            value="16" <?php if(in_array(16,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】四级</label><br>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                checked<?php }?>>四级</label><br>
+                                            <label><input type="radio" class="radio" name="growth_dilemma3"
                                                            value="17" <?php if(in_array(17,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】五级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                checked<?php }?>>五级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma3"
                                                            value="18" <?php if(in_array(18,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】零级</label></td>
+                                                checked<?php }?>>零级</label></td>
                                     </tr>
                                     <tr>
                                         <td class="td_input">4、有工读教育、特训学校教育、违法犯罪经历及严重偏差行为的未成年人</td>
                                         <td class="td_input" style="border-right:none;">
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                            <label><input type="radio" class="radio" name="growth_dilemma4"
                                                            value="19" <?php if(in_array(19,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】一级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                checked<?php }?>>一级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma4"
                                                            value="20" <?php if(in_array(20,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】二级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                checked<?php }?>>二级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma4"
                                                            value="21" <?php if(in_array(21,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】三级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                checked<?php }?>>三级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma4"
                                                            value="22" <?php if(in_array(22,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】四级</label><br>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                checked<?php }?>>四级</label><br>
+                                            <label><input type="radio" class="radio" name="growth_dilemma4"
                                                            value="23" <?php if(in_array(23,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】五级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                checked<?php }?>>五级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma4"
                                                            value="24" <?php if(in_array(24,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】零级</label></td>
+                                                checked<?php }?>>零级</label></td>
                                     </tr>
                                     <tr>
                                         <td class="td_input">5、被遗弃、拐卖、肋迫及故意伤害等原因陷入成长受阻碍的未成年人</td>
                                         <td class="td_input" style="border-right:none;">
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                            <label><input type="radio" class="radio" name="growth_dilemma5"
                                                            value="25" <?php if(in_array(25,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】一级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                checked<?php }?>>一级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma5"
                                                            value="26" <?php if(in_array(26,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】二级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                checked<?php }?>>二级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma5"
                                                            value="27" <?php if(in_array(27,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】三级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                checked<?php }?>>三级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma5"
                                                            value="28" <?php if(in_array(28,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】四级</label><br>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                checked<?php }?>>四级</label><br>
+                                            <label><input type="radio" class="radio" name="growth_dilemma5"
                                                            value="29" <?php if(in_array(29,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】五级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                checked<?php }?>>五级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma5"
                                                            value="30" <?php if(in_array(30,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】零级</label></td>
+                                                checked<?php }?>>零级</label></td>
                                     </tr>
                                     <tr>
                                         <td class="td_input">6、父母一方或双方外出，临时监护不到位的留守未成年人</td>
                                         <td class="td_input" style="border-right:none;">
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                            <label><input type="radio" class="radio" name="growth_dilemma6"
                                                            value="31" <?php if(in_array(31,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】一级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                checked<?php }?>>一级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma6"
                                                            value="32" <?php if(in_array(32,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】二级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                checked<?php }?>>二级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma6"
                                                            value="33" <?php if(in_array(33,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】三级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                checked<?php }?>>三级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma6"
                                                            value="34" <?php if(in_array(34,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】四级</label><br>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                checked<?php }?>>四级</label><br>
+                                            <label><input type="radio" class="radio" name="growth_dilemma6"
                                                            value="35" <?php if(in_array(35,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】五级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                checked<?php }?>>五级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma6"
                                                            value="36" <?php if(in_array(36,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】零级</label></td>
+                                                checked<?php }?>>零级</label></td>
                                     </tr>
                                     <tr>
                                         <td class="td_input" style="border-bottom:none;">
                                             7、生理、心理和精神状态异常或失去生活自理、学习等能力的未成年人
                                         </td>
                                         <td class="td_input" style="border-right:none; border-bottom:none;">
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                            <label><input type="radio" class="radio" name="growth_dilemma7"
                                                            value="37" <?php if(in_array(37,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】一级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                checked<?php }?>>一级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma7"
                                                            value="38" <?php if(in_array(38,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】二级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                checked<?php }?>>二级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma7"
                                                            value="39" <?php if(in_array(39,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】三级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                checked<?php }?>>三级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma7"
                                                            value="40" <?php if(in_array(40,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】四级</label><br>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                checked<?php }?>>四级</label><br>
+                                            <label><input type="radio" class="radio" name="growth_dilemma7"
                                                            value="41" <?php if(in_array(41,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】五级</label>
-                                            <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                checked<?php }?>>五级</label>
+                                            <label><input type="radio" class="radio" name="growth_dilemma7"
                                                            value="42" <?php if(in_array(42,unserialize($Clist['growth_dilemma']))){?>
-                                                checked<?php }?>>】零级</label></td>
+                                                checked<?php }?>>零级</label></td>
                                     </tr>
 
                                     </tbody>
@@ -644,9 +646,10 @@
     </div>
 </div>
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+<script src='__PUBLIC__/Admin/js/jquery.PrintArea.js'></script>
 <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/bootstrap.min.js"></script>
 <!-- 新增编辑器引入文件 -->
-<link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
+<link  rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
 <script src="__STATIC__/kindeditor/kindeditor-min.js"></script>
 <script src="__STATIC__/kindeditor/zh_CN.js"></script>
 <!--图片上传-->
@@ -784,9 +787,9 @@
     $(function () {
         var text = '<div class="li zhuchibeizhu"><div class="left">处置备注 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
         var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
-        $('.title').click(function () {
+/*        $('.title').click(function () {
             $(this).children('.caret').toggleClass('caret-active');
-        })
+        })*/
         $('#addchuzhi').click(function () {
             $('.zhuchibeizhu:last').after(text);
             $('.zhuchibeizhu:last').children('.right').children('textarea').attr('name', 'management_record' + ($('.zhuchibeizhu').length - 1));
@@ -880,6 +883,10 @@
                 }
             }
         })
+    }
+
+    function printForm(){
+        $('#xinxicaiji').printArea({mode: "popup"});
     }
 </script>
 </body>
