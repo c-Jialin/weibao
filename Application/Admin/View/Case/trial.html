@@ -84,8 +84,8 @@
     <div class="information">
         <div class="title <?php if($act == 'chushen'){?>active<?php }?>" data-toggle="collapse" href="#chushen"
              aria-expanded="<?php if($act == 'chushen'){?>true<?php }else{?>false<?php }?>"
-             aria-controls="collapseExample">当前阶段：初审<span class="caret"></span></div>
-        <form action="{:U('Case/trial')}" method="post">
+             aria-controls="collapseExample">当前阶段：初审<a href='javascript:printForm()' class='print'>打印</a></div>
+        <form action="{:U('Case/trial')}" method="post" id='printContent'>
             <div id="chushen" class="submit collapse <?php if($act == 'chushen'){?>in<?php }?>">
                 <div style="margin-bottom: 8px;">指挥中心或专业机构评估风险风险等级</div>
                 <table class="table_2">
@@ -280,16 +280,36 @@
                         <textarea name="trial_suggestion"
                                   value=""><?php if(!empty($Clist['trial_suggestion'])) echo $Clist['trial_suggestion']; ?></textarea>
                     </div>
-                    <div style="clear: both;"></div>
+                </div>
+                <div class="li">
+                    <div class="left">初审日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['trial_time'])) {?>
+                        <label>手动设置初审日期 <input type="datetime-local" name="trial_time" style="font-size:12px;line-height:12px;"></label>
+                        * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
+                        <?php } else { ?>
+                        <input type="text" class="input" name="trial_time" style="width:300px;" value="<?php echo $Clist['trial_time'] ?>">
+                        <?php } ?>
+                    </div>
                 </div>
                 <div class="li">
                     <div class="left">初审人</div>
                     <div class="right">
-                        <span class="span-bottom"><?php echo $member ?></span>
-                        <span class="span-bottom">初审日期</span>
-                        <span class="span-bottom">
-                            <?php if(!empty($Clist['trial_time'])){ echo $Clist['trial_time']; } else { echo date('Y-m-d', time()); }?>
-                        </span>
+                        <?php if (empty($Clist['trial_person'])) {?>
+                        <input type="text" class="input" style="width:300px;" name="trial_person" value="<?php echo $member ?>">
+                        <?php } else { ?>
+                        <input type="text" class="input" style="width:300px;" name="trial_person" value="<?php echo $Clist['trial_person'] ?>">
+                        <?php } ?>
+                    </div>
+                </div>
+                <div class="li">
+                    <div class="left">期望审批日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['expected_last_date'])) {?>
+                        <input type="text" class="input" name="expected_last_date" style="width:300px;" value="<?php echo date('Y-m-d', time() + 120 * 60 * 24)?>">
+                        <?php } else { ?>
+                        <input type="text" class="input" name="expected_last_date" style="width:300px;" value="<?php echo date('Y-m-d', $Clist['expected_last_date']) ?>">
+                        <?php } ?>
                     </div>
                     <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
                 </div>
@@ -441,9 +461,9 @@
     $(function () {
         var text = '<div class="li zhuchibeizhu"><div class="left">处置备注 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
         var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
-        $('.title').click(function () {
-            $(this).children('.caret').toggleClass('caret-active');
-        })
+        /*        $('.title').click(function () {
+         $(this).children('.caret').toggleClass('caret-active');
+         })*/
         $('#addchuzhi').click(function () {
             $('.zhuchibeizhu:last').after(text);
             $('.zhuchibeizhu:last').children('.right').children('textarea').attr('name', 'management_record' + ($('.zhuchibeizhu').length - 1));
@@ -537,6 +557,47 @@
                 }
             }
         })
+    }
+
+    (function ($) {
+        var printAreaCount = 0;
+        $.fn.printArea = function () {
+            var ele = $(this);
+            var idPrefix = "printArea_";
+            removePrintArea(idPrefix + printAreaCount);
+            printAreaCount++;
+            var iframeId = idPrefix + printAreaCount;
+            var iframeStyle = 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;';
+            iframe = document.createElement('IFRAME');
+            $(iframe).attr({
+                style: iframeStyle,
+                id: iframeId
+            });
+            document.body.appendChild(iframe);
+            var doc = iframe.contentWindow.document;
+            $(document).find("link").filter(function () {
+                return $(this).attr("rel").toLowerCase() == "stylesheet";
+            }).each(
+                function () {
+                    doc.write('<link type="text/css" rel="stylesheet" href="'
+                        + $(this).attr("href") + '" >');
+                });
+            doc.write('<div class="' + $(ele).attr("class") + '">' + $(ele).html()
+                + '</div>');
+            doc.close();
+            var frameWindow = iframe.contentWindow;
+            frameWindow.close();
+            frameWindow.focus();
+            frameWindow.print();
+        }
+        var removePrintArea = function (id) {
+            $("iframe#" + id).remove();
+        };
+    })(jQuery);
+
+    function printForm(){
+        console.log('dss')
+        $('#printContent').printArea();
     }
 </script>
 </body>

@@ -99,18 +99,20 @@
                     <div style="clear: both;"></div>
                 </div>
                 <div class="li">
-                    <div class="left">回访人</div>
+                    <div class="left">添加回访</div>
                     <div class="right">
-                        <span class="span-bottom">{$member}</span>
-                        &nbsp;
-                        <span class="span-bottom">回访日期</span>
-                        <span class="span-bottom">
-                            <?php if(!empty($Clist['visit_time'])){ echo $Clist['visit_time']; } else { echo date('Y-m-d', time()); }?>
-                        </span>
-                        &nbsp;
-                        <label>手动设置日期 <input type="datetime-local" name="visit_time" style="font-size:12px;line-height:12px;"></label>
-                        <br>
                         <span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
+                    </div>
+                </div>
+                <div class="li">
+                    <div class="left">回访日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['visit_time'])) {?>
+                        <label>手动设置回访日期 <input type="datetime-local" name="visit_time" style="font-size:12px;line-height:12px;"></label>
+                        * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
+                        <?php } else { ?>
+                        <input type="text" class="input" name="visit_time" style="width:300px;" value="<?php echo $Clist['visit_time'] ?>">
+                        <?php } ?>
                     </div>
                     <input type="hidden" name="id" value="<?php echo $id;?>">
                     <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
@@ -138,23 +140,26 @@
                     <div style="clear: both;"></div>
                 </div>
                 <div class="li">
-                    <div class="left">回访人</div>
+                    <div class="left">添加回访</div>
                     <div class="right">
-                        <span class="span-bottom">{$member}</span>
-                        &nbsp;
-                        <span class="span-bottom">回访日期</span>
-                        <span class="span-bottom">
-                            <?php if(!empty($Clist['visit_time'])){ echo $Clist['visit_time']; } else { echo date('Y-m-d', time()); }?>
-                        </span>
-                        &nbsp;
-                        <label>手动设置日期 <input type="datetime-local" name="visit_time" style="font-size:12px;line-height:12px;"></label>
-                        <br>
                         <span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
+                    </div>
+                </div>
+                <div class="li">
+                    <div class="left">回访日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['visit_time'])) {?>
+                        <label>手动设置回访日期 <input type="datetime-local" name="visit_time" style="font-size:12px;line-height:12px;"></label>
+                        * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
+                        <?php } else { ?>
+                        <input type="text" class="input" name="visit_time" style="width:300px;" value="<?php echo $Clist['visit_time'] ?>">
+                        <?php } ?>
                     </div>
                     <input type="hidden" name="id" value="<?php echo $id;?>">
                     <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
                 </div>
                 <br>
+                <input type="hidden" name="id" value="<?php echo $id;?>">
                 <button onclick="return auth()" type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
             </div>
             <?php }?>

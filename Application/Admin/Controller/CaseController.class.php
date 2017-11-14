@@ -201,26 +201,38 @@ class CaseController extends AdminController
      */
     public function enrollListExcel()
     {
-        if (I('post.')) {
+        if (I('post.') && I('type') != 'choose') {
             set_time_limit(0);   //防止时间php脚本处理过期
-            $leix = I('leix');
-            $case = M('case');
-//            $meet_id = I('meet_id');
-            switch ($leix) {
+            $case    = M('case');
+            $type    = I('type');
+            $where   = [];
+            $sex     = I('sex');
+            if(!empty($sex))
+                $where['sex'] = $sex;
+            if(I('guidang') == 'yes')
+                $where['case_status'] = [['eq', 'jiean'], ['eq', 'huifang'], 'or'];
+            switch ($type) {
+                //全部导出+性别
                 case 'all' :
-                    $enroll_arr = $case->limit('0,3000')->select();
+                    $enroll_arr = $case->where($where)->limit('0,3000')->select();
+                    break;
+
+                //街道+性别
+                default :
+                    $where['street_code'] = $type;
+                    $enroll_arr = $case->where($where)->limit('0,3000')->select();
                     break;
             }
-
-            if ($leix != "all") {
-                $enroll_arr = $case->where(array('street_code' => $leix))->limit('0,3000')->select();
-            }
-
             if (!empty($enroll_arr)) {
                 vendor('phpexcel');
                 // 首先创建一个新的对象  PHPExcel object
                 $objPHPExcel = new \PHPExcel();
                 // 给表格添加数据
+
+                //设置默认 垂直水平居中
+                $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical('center')->setHorizontal('center');
+
+
                 $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A1', '编号')
                     ->setCellValue('B1', '姓名')
@@ -239,6 +251,14 @@ class CaseController extends AdminController
 //                    ->setCellValue( 'H1', '支付方式' )
 //                    ->setCellValue( 'I1', '支付状态' )
 //                    ->setCellValue( 'J1', '备注' );
+
+                //设置单元格长度
+                $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(25);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(17);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('L')->setWidth(17);
+                $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(17);
                 //循环插入数据
                 foreach ($enroll_arr as $k => $v) {
                     $tel = unserialize($v['family_members']);
@@ -261,26 +281,29 @@ class CaseController extends AdminController
                     $qu = M('area_top')->where(array('region_id' => $v['area_code']))->getField('region_name');
                     $zhen = M('area_top')->where(array('region_id' => $v['street_code']))->getField('region_name');
                     $objPHPExcel->setActiveSheetIndex(0)
-                        ->setCellValue('A' . ($k + 2), $v['case_number'])
-                        ->setCellValue('B' . ($k + 2), $v['name'])
-                        ->setCellValue('C' . ($k + 2), getSex($v['sex']))
-                        ->setCellValue('D' . ($k + 2), getAge($v['birthday']))
-                        ->setCellValue('E' . ($k + 2), $v['nation'])
-                        ->setCellValue('F' . ($k + 2), $qu)
-                        ->setCellValue('G' . ($k + 2), $zhen)
-                        ->setCellValue('H' . ($k + 2), $v['home_address'])
-                        ->setCellValue('I' . ($k + 2), getHealth($v['health'], $v['id']))
-                        ->setCellValue('J' . ($k + 2), $tels)
-                        ->setCellValue('K' . ($k + 2), $mdfx)
-                        ->setCellValue('L' . ($k + 2), $jgfx)
-                        ->setCellValue('M' . ($k + 2), $bffx)
-                        ->setCellValue('N' . ($k + 2), getStage($v['case_status']));
+                        ->setCellValueExplicit('A' . ($k + 2), $v['case_number'], 's')
+                        ->setCellValueExplicit('B' . ($k + 2), $v['name'])
+                        ->setCellValueExplicit('C' . ($k + 2), getSex($v['sex']))
+                        ->setCellValueExplicit('D' . ($k + 2), getAge($v['birthday']))
+                        ->setCellValueExplicit('E' . ($k + 2), $v['nation'])
+                        ->setCellValueExplicit('F' . ($k + 2), $qu)
+                        ->setCellValueExplicit('G' . ($k + 2), $zhen)
+                        ->setCellValueExplicit('H' . ($k + 2), $v['home_address'])
+                        ->setCellValueExplicit('I' . ($k + 2), getHealth($v['health'], $v['id']))
+                        ->setCellValueExplicit('J' . ($k + 2), $tels, 's')
+                        ->setCellValueExplicit('K' . ($k + 2), $mdfx)
+                        ->setCellValueExplicit('L' . ($k + 2), $jgfx)
+                        ->setCellValueExplicit('M' . ($k + 2), $bffx)
+                        ->setCellValueExplicit('N' . ($k + 2), getStage($v['case_status']), TRUE);
 //                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
 //                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
 //                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
 //                        ->setCellValue( 'J'.($k+2), $v['beizhu']);
+                    $objPHPExcel->getActiveSheet()->getStyle('A' . ($k + 2))->getNumberFormat()
+                        ->setFormatCode('@');
+                    $objPHPExcel->getActiveSheet()->getStyle('J' . ($k + 2))->getNumberFormat()
+                        ->setFormatCode('@');
                 }
-
                 // 生成2003excel格式的xls文件
                 ob_end_clean();//清除缓冲区,避免乱码
                 header('Content-Type: application/vnd.ms-excel;charset=UTF-8');
@@ -291,9 +314,11 @@ class CaseController extends AdminController
                 $objWriter->save('php://output');
                 exit;
             } else {
-                exit('无数据!');
+                // exit('无数据!');
                 $this->error('无数据!');
             }
+        } else {
+            $this->error('无数据!');
         }
     }
 
@@ -569,6 +594,8 @@ class CaseController extends AdminController
             if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
             $data['fill_in_time'] = time();
             if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
+            //期望初审日期
+            if ($_POST['expected_trial_date']) $data['expected_trial_date'] = strtotime($_POST['expected_trial_date']);
             //图片上传
             if ($_FILES['photo']['name'] != '') {
                 $uploadPath = 'case/user/';
@@ -625,7 +652,10 @@ class CaseController extends AdminController
             if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
             if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
             $data['growth_dilemmas'] = serialize($grow);
-            $data['trial_time'] = date("Y-m-d", time());
+            if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
+            $data['trial_time'] = empty($_POST['trial_time']) ? date("Y-m-d H:i:s", time()) : $_POST['trial_time'];
+            //期望终审日期
+            if ($_POST['expected_last_date']) $data['expected_last_date'] = strtotime($_POST['expected_last_date']);
             if ($data['trial_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
@@ -651,7 +681,8 @@ class CaseController extends AdminController
             $this->act = $_GET['act'];
             $this->id = $_GET['id'];
             $urse = M('ucenter_member');
-            $this->member = $urse->where(array('id' => UID))->getField('username');
+            $member = $urse->where(array('id' => UID))->getField('username');
+            $this->assign('member', $member);
             $this->display();
         }
     }
@@ -663,7 +694,10 @@ class CaseController extends AdminController
             $data = $_POST;
             $case = M('case');
             $data['case_status'] = 'shenpi';
-            $data['last_instance_time'] = date("Y-m-d", time());
+            if ($_POST['last_instance_person']) $data['last_instance_person'] = $_POST['last_instance_person'];
+            $data['last_instance_time'] = empty($_POST['last_instance_time']) ? date("Y-m-d H:i:s", time()) : $_POST['last_instance_time'];
+            //期望调度日期
+            if ($_POST['expected_dispatch_date']) $data['expected_dispatch_date'] = strtotime($_POST['expected_dispatch_date']);
             if ($data['last_instance_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
@@ -708,7 +742,10 @@ class CaseController extends AdminController
             $check[] = $_POST['checkbox3'];
             $data['checkbox_status'] = serialize($check);
             $data['dispatch_instance'] = $_POST['dispatch_instance'];
-            $data['dispatch_time'] = date("Y-m-d", time());
+            if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
+            $data['dispatch_time'] = empty($_POST['dispatch_time']) ? date("Y-m-d H:i:s", time()) : $_POST['dispatch_time'];
+            //期望处置日期
+            if ($_POST['expected_management_date']) $data['expected_management_date'] = strtotime($_POST['expected_management_date']);
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -743,7 +780,10 @@ class CaseController extends AdminController
             $data['case_status'] = 'chuzhi';
             $data['management_status'] = $_POST['management_status'];
             $data['management_record'] = serialize($_POST['management_record']);
-            $data['deal_with_time'] = empty($_POST['deal_with_time']) ? date("Y-m-d", time()) : $_POST['deal_with_time'];
+            if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
+            $data['deal_with_time'] = empty($_POST['deal_with_time']) ? date("Y-m-d H:i:s", time()) : $_POST['deal_with_time'];
+            //期望处置日期
+            if ($_POST['expected_finish_date']) $data['expected_finish_date'] = strtotime($_POST['expected_finish_date']);
             if ($data['management_status'] == 1) {
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
@@ -813,7 +853,10 @@ class CaseController extends AdminController
             if (!empty($_POST['professional_Reflect'])) $data['professional_Reflect'] = $_POST['professional_Reflect'];
             if (!empty($_POST['recommendations'])) $data['recommendations'] = $_POST['recommendations'];
             if (!empty($_POST['growth_dilemmass'])) $data['growth_dilemmass'] = $_POST['growth_dilemmass'];
-            $data['finish_time'] = empty($_POST['finish_time']) ? date("Y-m-d", time()) : $_POST['finish_time'];
+            if ($_POST['finish_person']) $data['finish_person'] = $_POST['finish_person'];
+            $data['finish_time'] = empty($_POST['finish_time']) ? date("Y-m-d H:i:s", time()) : $_POST['finish_time'];
+            //期望处置日期
+            if ($_POST['expected_visit_date']) $data['expected_visit_date'] = strtotime($_POST['expected_visit_date']);
             if ($data['visit_status'] == 1) {
                 if ($data['visit_form'] == 1) {
                     $data['visit_way'] = $_POST['visit_form1'];

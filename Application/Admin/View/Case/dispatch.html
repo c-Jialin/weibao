@@ -125,16 +125,37 @@
                     </div>
                     <div style="clear: both;"></div>
                 </div>
+                <input type="hidden" name="id" value="<?php echo $_GET['id'];?>">
+                <div class="li">
+                    <div class="left">调度日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['dispatch_time'])) {?>
+                        <label>手动设置调度日期 <input type="datetime-local" name="dispatch_time" style="font-size:12px;line-height:12px;"></label>
+                        * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
+                        <?php } else { ?>
+                        <input type="text" class="input" name="dispatch_time" style="width:300px;" value="<?php echo $Clist['dispatch_time'] ?>">
+                        <?php } ?>
+                    </div>
+                </div>
                 <div class="li">
                     <div class="left">调度人</div>
                     <div class="right">
-                        <span class="span-bottom">湘潭市民政局{$member}</span>
-                        <span class="span-bottom">调度日期</span>
-                        <span class="span-bottom">
-                            <?php if(!empty($Clist['dispatch_time'])){ echo $Clist['dispatch_time']; } else { echo date('Y-m-d', time()); }?>
-                        </span>
+                        <?php if (empty($Clist['dispatch_person'])) {?>
+                        <input type="text" class="input" style="width:300px;" name="dispatch_person" value="<?php echo $member ?>">
+                        <?php } else { ?>
+                        <input type="text" class="input" style="width:300px;" name="dispatch_person" value="<?php echo $Clist['dispatch_person'] ?>">
+                        <?php } ?>
                     </div>
-                    <input type="hidden" name="id" value="<?php echo $_GET['id'];?>">
+                </div>
+                <div class="li">
+                    <div class="left">期望处置日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['expected_management_date'])) {?>
+                        <input type="text" class="input" name="expected_management_date" style="width:300px;" value="<?php echo date('Y-m-d', time() + 120 * 60 * 24)?>">
+                        <?php } else { ?>
+                        <input type="text" class="input" name="expected_management_date" style="width:300px;" value="<?php echo date('Y-m-d', $Clist['expected_management_date']) ?>">
+                        <?php } ?>
+                    </div>
                     <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
                 </div>
                 <button onclick="return auth()" type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>

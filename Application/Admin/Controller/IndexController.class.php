@@ -21,7 +21,6 @@ class IndexController extends AdminController
                     'username' => $_SESSION['onethink_admin']['user_auth']['username'],
                     'last_login_time' => $_SESSION['onethink_admin']['user_auth']['last_login_time'],
                 );
-                var_dump($uid);
                 $this->assign('user_info', $user_info);
                 $this->display();
             } else { //普通用户首页
@@ -40,9 +39,6 @@ class IndexController extends AdminController
                 $this->assign('user_info', $user_info);
 
                 $uid = M('auth_group_access')->field('group_id')->where(array('uid' => UID))->select();
-                echo '<pre>';
-                    print_r($uid);
-                echo '</pre>';
                 if ($uid == 1) {
                     $where = ('turn_related = 1 and case_status = diaodu');
                 }

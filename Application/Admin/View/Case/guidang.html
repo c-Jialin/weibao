@@ -33,6 +33,27 @@ body{padding: 0};
     </div>
     <div class="main-title" style="margin-top:63px">
     </div> -->
+    <!-- 数据列表 -->
+    <form action="{:U('Case/enrollListExcel')}" method="post">
+        <div style='float: right; margin-bottom: 2px;'>
+            <span>excel导出</span>
+            <select name='type' >
+                <option  value='choose'>请选择导出方式</option>
+                <option  value='all'>全部导出</option>
+                <volist name='shequ' id='vo'>
+                    <option value='{$vo.region_id}'>{$vo.region_name}</option>
+                </volist>
+            </select>
+            <select name='sex'>
+                <option value='0'>请选择性别</option>
+                <option value='2'>男</option>
+                <option value='1'>女</option>
+            </select>
+            <input type='hidden' name='guidang' value='yes'>
+            <input type='submit' class='btn' value='导出'>
+        </div>
+    </form>
+
     <div class="cf">
         <!-- <div class="fl">
             <a class="btn" href="{:U('User/add')}">新 增</a>

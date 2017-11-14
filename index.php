@@ -29,6 +29,7 @@ function isMobile()
     }
     return false;
 }
+
 if (!isMobile()) {
     $_GET['m'] = 'Admin';
 } else {

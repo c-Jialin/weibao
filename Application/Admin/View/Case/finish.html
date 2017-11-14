@@ -225,15 +225,34 @@
                     <div style="clear: both;"></div>
                 </div>
                 <div class="li">
+                    <div class="left">结案日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['finish_time'])) {?>
+                        <label>手动设置结案日期 <input type="datetime-local" name="finish_time" style="font-size:12px;line-height:12px;"></label>
+                        * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
+                        <?php } else { ?>
+                        <input type="text" class="input" name="finish_time" style="width:300px;" value="<?php echo $Clist['finish_time'] ?>">
+                        <?php } ?>
+                    </div>
+                </div>
+                <div class="li">
                     <div class="left">结案人</div>
                     <div class="right">
-                        <span class="span-bottom">{$member}</span>&nbsp
-                        <span class="span-bottom">结案日期</span>
-                        <span class="span-bottom">
-                            <?php if(!empty($Clist['finish_time'])){ echo $Clist['finish_time']; } else { echo date('Y-m-d', time()); }?>
-                        </span>
-                        &nbsp;
-                        <label>手动设置处置日期 <input type="datetime-local" name="finish_time" style="font-size:12px;line-height:12px;"></label>
+                        <?php if (empty($Clist['finish_person'])) {?>
+                        <input type="text" class="input" style="width:300px;" name="finish_person" value="<?php echo $member ?>">
+                        <?php } else { ?>
+                        <input type="text" class="input" style="width:300px;" name="finish_person" value="<?php echo $Clist['finish_person'] ?>">
+                        <?php } ?>
+                    </div>
+                </div>
+                <div class="li">
+                    <div class="left">期望回访日期</div>
+                    <div class="right">
+                        <?php if (empty($Clist['expected_visit_date'])) {?>
+                        <input type="text" class="input" name="expected_visit_date" style="width:300px;" value="<?php echo date('Y-m-d', time() + 120 * 60 * 24)?>">
+                        <?php } else { ?>
+                        <input type="text" class="input" name="expected_visit_date" style="width:300px;" value="<?php echo date('Y-m-d', $Clist['expected_visit_date']) ?>">
+                        <?php } ?>
                     </div>
                     <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
                 </div>

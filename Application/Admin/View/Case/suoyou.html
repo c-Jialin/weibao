@@ -42,20 +42,28 @@ body{padding: 0};
         </div> -->
 
         <!-- 高级搜索 -->
-        
+
     <!-- </div> -->
     <!-- 数据列表 -->
-    <div style="float: right; margin-bottom: 2px;">
-        <span>excel导出</span>
-        <select id="select_" >
-            <option class="" value="0">请选择导出方式</option>
-            <option class="" value="1">全部导出</option>
-            <volist name="shequ" id="vo">
-                <option class="" value="{$vo.region_id}">{$vo.region_name}</option>
-            </volist>
-        </select>
-        <form action="{:U('Case/enrollListExcel')}" method="post" id="myform_excle"></form>
-    </div>
+    <form action="{:U('Case/enrollListExcel')}" method="post" id="myform_excle">
+        <div style='float: right; margin-bottom: 2px;'>
+            <span>excel导出</span>
+            <select name='type' >
+                <option  value='choose'>请选择导出方式</option>
+                <option  value='all'>全部导出</option>
+                <volist name='shequ' id='vo'>
+                    <option value='{$vo.region_id}'>{$vo.region_name}</option>
+                </volist>
+            </select>
+            <select name='sex'>
+                <option value='0'>请选择性别</option>
+                <option value='2'>男</option>
+                <option value='1'>女</option>
+            </select>
+            <input type='submit' class='btn' value='导出'>
+        </div>
+    </form>
+
     <div class="data-table table-striped" >
     <table class="">
     <thead>
@@ -196,24 +204,24 @@ body{padding: 0};
 
 
 <script type="text/javascript">
-    $('#select_').change(function(){
+/*    $('#select_,#select_sex').change(function(){
         var option_value = $(this).find("option:selected").val();
-//        alert(option_value);
         switch (option_value){
             case '1' :
                 $('#myform_excle').children().remove();
                 $('#myform_excle').append('<span>全部:</span><input type="text" name="all" id="all" value="all"/> <input type="hidden" name="leix" value="all"/> <input type="hidden" name="meet_id" value="{:I(\'meet_id\')}"/> <input type="submit" class="btn" ></a>');
                 break;
+
             case option_value :
                 $('#myform_excle').children().remove();
                 $('#myform_excle').append('<span></span><input type="hidden" name="shequ" id="shequ" value="<?php echo getShequ('+option_value+')?>"/> <input type="hidden" name="leix" value="'+option_value+'"/> <input type="hidden" name="meet_id" value="{:I(\'meet_id\')}"/> <input type="submit" class="btn" ></a>');
                 break;
-//            case '3' :
-//                $('#myform_excle').children().remove();
-//                $('#myform_excle').append(' <span>编号:</span><input type="text" name="no_start" id="no_start" value=""/> - <input type="text" name="no_end" id="no_end" value=""/> <input type="hidden" name="leix" value="enroll_no"/> <input type="hidden" name="meet_id" value="{:I(\'meet_id\')}"/> <input type="submit" class="btn" ></a> ');
-//                break;
+           case '3' :
+               $('#myform_excle').children().remove();
+               $('#myform_excle').append(' <span>编号:</span><input type="text" name="no_start" id="no_start" value=""/> - <input type="text" name="no_end" id="no_end" value=""/> <input type="hidden" name="leix" value="enroll_no"/> <input type="hidden" name="meet_id" value="{:I(\'meet_id\')}"/> <input type="submit" class="btn" ></a> ');
+               break;
         }
-    });
+    });*/
     $(function(){
         var action = "<?php echo ACTION_NAME;?>";
         $("#action").val(action);
