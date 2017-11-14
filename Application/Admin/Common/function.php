@@ -486,7 +486,7 @@ function getHealth($id, $v)
 }
 
 //当前阶段
-function getStage($str, $isExcel = fasle)
+function getStage($str, $isExcel = false)
 {
     $res   = '';
     $excel = '';//若是excel表格使用 则返回此
@@ -515,11 +515,11 @@ function getStage($str, $isExcel = fasle)
             $excel = '结案';
             $res   = '<font style="color:red">结案</font>';
             break;
-        case 'jiean':
         case 'weihuifang':
             $excel = '回访';
             $res   = '<font style="color:red">回访</font>';
             break;
+        case 'jiean':
         case 'huifang':
             $excel = '完成处理';
             $res   = '<font style="color:red">完成处理</font>';

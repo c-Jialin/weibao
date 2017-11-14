@@ -612,6 +612,7 @@ class CaseController extends AdminController
                 $data['photo'] = $uploadInfo['savename'];
             }
             $data['case_status'] = 'caiji';
+            $data['collect_time'] = empty($_POST['collect_time']) ? date("Y-m-d H:i:s", time()) : $_POST['collect_time'];
             $Case = D('case');
             if (!$Case->create()) {
                 // 如果创建失败 表示验证没有通过 输出错误提示信息
@@ -654,13 +655,10 @@ class CaseController extends AdminController
             $data['growth_dilemmas'] = serialize($grow);
             if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
             $data['trial_time'] = empty($_POST['trial_time']) ? date("Y-m-d H:i:s", time()) : $_POST['trial_time'];
-            //期望终审日期
-            if ($_POST['expected_last_date']) $data['expected_last_date'] = strtotime($_POST['expected_last_date']);
             if ($data['trial_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
-                    // $this->success('操作成功',U('index',array('id'=>$id,'act'=>$act)));
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
@@ -696,8 +694,6 @@ class CaseController extends AdminController
             $data['case_status'] = 'shenpi';
             if ($_POST['last_instance_person']) $data['last_instance_person'] = $_POST['last_instance_person'];
             $data['last_instance_time'] = empty($_POST['last_instance_time']) ? date("Y-m-d H:i:s", time()) : $_POST['last_instance_time'];
-            //期望调度日期
-            if ($_POST['expected_dispatch_date']) $data['expected_dispatch_date'] = strtotime($_POST['expected_dispatch_date']);
             if ($data['last_instance_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
@@ -744,8 +740,6 @@ class CaseController extends AdminController
             $data['dispatch_instance'] = $_POST['dispatch_instance'];
             if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
             $data['dispatch_time'] = empty($_POST['dispatch_time']) ? date("Y-m-d H:i:s", time()) : $_POST['dispatch_time'];
-            //期望处置日期
-            if ($_POST['expected_management_date']) $data['expected_management_date'] = strtotime($_POST['expected_management_date']);
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -782,8 +776,6 @@ class CaseController extends AdminController
             $data['management_record'] = serialize($_POST['management_record']);
             if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
             $data['deal_with_time'] = empty($_POST['deal_with_time']) ? date("Y-m-d H:i:s", time()) : $_POST['deal_with_time'];
-            //期望处置日期
-            if ($_POST['expected_finish_date']) $data['expected_finish_date'] = strtotime($_POST['expected_finish_date']);
             if ($data['management_status'] == 1) {
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
@@ -855,8 +847,6 @@ class CaseController extends AdminController
             if (!empty($_POST['growth_dilemmass'])) $data['growth_dilemmass'] = $_POST['growth_dilemmass'];
             if ($_POST['finish_person']) $data['finish_person'] = $_POST['finish_person'];
             $data['finish_time'] = empty($_POST['finish_time']) ? date("Y-m-d H:i:s", time()) : $_POST['finish_time'];
-            //期望处置日期
-            if ($_POST['expected_visit_date']) $data['expected_visit_date'] = strtotime($_POST['expected_visit_date']);
             if ($data['visit_status'] == 1) {
                 if ($data['visit_form'] == 1) {
                     $data['visit_way'] = $_POST['visit_form1'];
@@ -915,8 +905,8 @@ class CaseController extends AdminController
             } else if ($way == 2) {
                 $data['visit_suggestion'] = serialize($_POST['visit_suggestion']);
             }
-            $data['visit_time'] = empty($_POST['visit_time']) ? date("Y-m-d H:i:s", time()) : $_POST['visit_time'];
             $data['case_status'] = 'huifang';
+            $data['visit_time'] = empty($_POST['visit_time']) ? date("Y-m-d H:i:s", time()) : $_POST['visit_time'];
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
