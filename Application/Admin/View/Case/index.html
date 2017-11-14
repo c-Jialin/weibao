@@ -6,6 +6,13 @@
     <title>湘潭市未成年人社会保护信息系统</title>
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
+
+    <!-- 打印专用css -->
+        <link media='print' rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
+        <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
+        <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
+    <!-- 打印end -->
+
     <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
 </head>
 <body>
@@ -85,9 +92,6 @@
         <div class="title <?php if($act == ''){?> active <?php }?>" href="#xinxicaiji">
             当前阶段：信息采集<a href='javascript:printForm()' class='print'>打印</a></div>
         <form action="{:U('Case/index')}" method="post" enctype="multipart/form-data">
-            <link media='print' rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
-            <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
-            <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
             <div class="collapse <?php if($act == ''){?>in<?php }?>" id="xinxicaiji">
                 <table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 14px;">
                     <input type="hidden" name="xId" value="<?php echo $_GET['id'];?>"/>
@@ -872,6 +876,7 @@
             }
         })
     }
+
     function nav3(obj, type) {
         $.post("{:U('Case/Linkage')}", {"id": obj.value, "type": type}, function (res) {
             if (type == 1) {
@@ -891,7 +896,7 @@
         })
     }
     function printForm(){
-        $('#xinxicaiji').printArea({mode: "popup"});
+        $('.information').printArea({popHt: 1000, popWd: 2000, mode: 'popup', popClose: true});
     }
 </script>
 </body>

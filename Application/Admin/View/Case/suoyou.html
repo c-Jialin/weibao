@@ -9,6 +9,7 @@ body{padding: 0};
 </block>
 
 <block name="body">
+
     <!-- 主体 -->
     <!-- <div id="indexMain" class="index-main"> -->
        <!-- 插件块 -->
@@ -45,24 +46,22 @@ body{padding: 0};
 
     <!-- </div> -->
     <!-- 数据列表 -->
-    <form action="{:U('Case/enrollListExcel')}" method="post" id="myform_excle">
-        <div style='float: right; margin-bottom: 2px;'>
-            <span>excel导出</span>
-            <select name='type' >
-                <option  value='choose'>请选择导出方式</option>
-                <option  value='all'>全部导出</option>
-                <volist name='shequ' id='vo'>
-                    <option value='{$vo.region_id}'>{$vo.region_name}</option>
-                </volist>
-            </select>
-            <select name='sex'>
-                <option value='0'>请选择性别</option>
-                <option value='2'>男</option>
-                <option value='1'>女</option>
-            </select>
-            <input type='submit' class='btn' value='导出'>
-        </div>
-    </form>
+    <div style='float: right; margin-bottom: 2px;'>
+        <span>excel导出</span>
+        <select name='type' id='enrollType'>
+            <option  value='choose'>请选择导出方式</option>
+            <option  value='all'>全部导出</option>
+            <volist name='shequ' id='vo'>
+                <option value='{$vo.region_id}'>{$vo.region_name}</option>
+            </volist>
+        </select>
+        <select name='sex' id='enrollSex'>
+            <option value='0'>请选择性别</option>
+            <option value='2'>男</option>
+            <option value='1'>女</option>
+        </select>
+        <a href='javascript:enrollCase()' class='btn'>导出</a>
+    </div>
 
     <div class="data-table table-striped" >
     <table class="">
@@ -202,7 +201,8 @@ body{padding: 0};
 </block>
 <block name="script">
 
-
+<link href='__PUBLIC__/static/layui/css/layui.css'>
+<script src='__PUBLIC__/static/layui/layui.all.js'></script>
 <script type="text/javascript">
 /*    $('#select_,#select_sex').change(function(){
         var option_value = $(this).find("option:selected").val();
@@ -235,8 +235,24 @@ body{padding: 0};
     })
     $(function(){
         // $('#main').attr({'id': 'indexMain','class': 'index-main'});
-        $('.copyright').html('<div class="copyright"> ©2013 <a href="http://www.topthink.net" target="_blank">topthink.net</a> 上海顶想信息科技有限公司版权所有</div>');
+        // $('.copyright').html('<div class="copyright"> ©2013 <a href="" target="_blank">topthink.net</a> </div>');
         $('.sidebar').remove();
-    })
+    });
+
+    //导出案件
+    var layer = layui.layer;
+    var url = "{:U('Case/enrollListExcel')}";
+    function enrollCase(){
+        var type = $('#enrollType').val();
+        var sex  = $('#enrollSex').val();
+        $.post(url, {type: type, sex: sex}, function(res) {
+            if(res.result == 1){
+                layer.msg(res.msg, {icon: 1, time: 4000});
+                location.href = res.url;
+            }
+            else
+                layer.alert(res.msg);
+        }, 'json');
+    }
 </script>
 </block>

@@ -495,14 +495,17 @@ function getStage($str, $isExcel = false)
             $excel = '采集';
             $res   = '<font style="color:red">采集</font>';
             break;
+
         case 'caiji':
             $excel = '初审';
             $res   = '<font style="color:red">初审</font>';
             break;
+
         case 'chushen':
             $excel = '审批';
             $res   = '<font style="color:red">审批</font>';
             break;
+
         case 'shenpi':
             $excel = '调度';
             $res   = '<font style="color:red">调度</font>';
@@ -511,15 +514,15 @@ function getStage($str, $isExcel = false)
             $excel = '处置';
             $res   = '<font style="color:red">处置</font>';
             break;
+
         case 'chuzhi':
             $excel = '结案';
             $res   = '<font style="color:red">结案</font>';
             break;
-        case 'weihuifang':
+        case 'jiean':        case 'weihuifang':
             $excel = '回访';
             $res   = '<font style="color:red">回访</font>';
             break;
-        case 'jiean':
         case 'huifang':
             $excel = '完成处理';
             $res   = '<font style="color:red">完成处理</font>';
