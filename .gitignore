@@ -3,3 +3,5 @@ Application/Common/Conf/config.php
 Application/Admin/Conf/config.php
 Application/User/Conf/config.php
 .idea/
+mysql.php
+onethink.sql
