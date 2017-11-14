@@ -211,7 +211,7 @@ class CaseController extends AdminController
 
             if(!empty($sex))
                 $where['sex'] = $sex;
-            
+
             if(I('guidang') == 'yes'){
                 $param['guidang'] = 'yes';
                 $where['case_status'] = [['eq', 'jiean'], ['eq', 'huifang'], 'or'];
@@ -262,9 +262,9 @@ class CaseController extends AdminController
                         ->setCellValue('L1', '机构评估风险等级')
                         ->setCellValue('M1', '帮扶后最高风险等级')
                         ->setCellValue('N1', '流程');
-    //                    ->setCellValue( 'H1', '支付方式' )
-    //                    ->setCellValue( 'I1', '支付状态' )
-    //                    ->setCellValue( 'J1', '备注' );
+                    //                    ->setCellValue( 'H1', '支付方式' )
+                    //                    ->setCellValue( 'I1', '支付状态' )
+                    //                    ->setCellValue( 'J1', '备注' );
 
                     //设置单元格长度
                     $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
@@ -309,10 +309,10 @@ class CaseController extends AdminController
                             ->setCellValueExplicit('L' . ($k + 2), $jgfx)
                             ->setCellValueExplicit('M' . ($k + 2), $bffx)
                             ->setCellValueExplicit('N' . ($k + 2), getStage($v['case_status']), TRUE);
-    //                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
-    //                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
-    //                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
-    //                        ->setCellValue( 'J'.($k+2), $v['beizhu']);
+                        //                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
+                        //                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
+                        //                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
+                        //                        ->setCellValue( 'J'.($k+2), $v['beizhu']);
                         $objPHPExcel->getActiveSheet()->getStyle('A' . ($k + 2))->getNumberFormat()
                             ->setFormatCode('@');
                         $objPHPExcel->getActiveSheet()->getStyle('J' . ($k + 2))->getNumberFormat()
@@ -402,7 +402,7 @@ class CaseController extends AdminController
         $this->display();
     }
 
-    //归档   
+    //归档
     public function guidang()
     {
         $this->meta_title = '归档案件';
@@ -605,8 +605,6 @@ class CaseController extends AdminController
             if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
             $data['fill_in_time'] = time();
             if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
-            //期望初审日期
-            if ($_POST['expected_trial_date']) $data['expected_trial_date'] = strtotime($_POST['expected_trial_date']);
             //图片上传
             if ($_FILES['photo']['name'] != '') {
                 $uploadPath = 'case/user/';
