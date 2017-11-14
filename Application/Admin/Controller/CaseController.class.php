@@ -201,16 +201,22 @@ class CaseController extends AdminController
      */
     public function enrollListExcel()
     {
-        if (I('post.') && I('type') != 'choose') {
+        $result = ['result' => 0, 'msg' => '无数据可导出'];
+        if (I('type') != 'choose') {
             set_time_limit(0);   //防止时间php脚本处理过期
             $case    = M('case');
             $type    = I('type');
-            $where   = [];
+            $where   = $param = [];
             $sex     = I('sex');
+
             if(!empty($sex))
                 $where['sex'] = $sex;
-            if(I('guidang') == 'yes')
+            
+            if(I('guidang') == 'yes'){
+                $param['guidang'] = 'yes';
                 $where['case_status'] = [['eq', 'jiean'], ['eq', 'huifang'], 'or'];
+            }
+
             switch ($type) {
                 //全部导出+性别
                 case 'all' :
@@ -223,103 +229,108 @@ class CaseController extends AdminController
                     $enroll_arr = $case->where($where)->limit('0,3000')->select();
                     break;
             }
+
             if (!empty($enroll_arr)) {
-                vendor('phpexcel');
-                // 首先创建一个新的对象  PHPExcel object
-                $objPHPExcel = new \PHPExcel();
-                // 给表格添加数据
-
-                //设置默认 垂直水平居中
-                $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical('center')->setHorizontal('center');
-
-
-                $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', '编号')
-                    ->setCellValue('B1', '姓名')
-                    ->setCellValue('C1', '性别')
-                    ->setCellValue('D1', '年龄')
-                    ->setCellValue('E1', '民族')
-                    ->setCellValue('F1', '区/县')
-                    ->setCellValue('G1', '街/镇')
-                    ->setCellValue('H1', '家庭住址')
-                    ->setCellValue('I1', '健康状况')
-                    ->setCellValue('J1', '联系方式')
-                    ->setCellValue('K1', '摸底上报风险等级')
-                    ->setCellValue('L1', '机构评估风险等级')
-                    ->setCellValue('M1', '帮扶后最高风险等级')
-                    ->setCellValue('N1', '流程');
-//                    ->setCellValue( 'H1', '支付方式' )
-//                    ->setCellValue( 'I1', '支付状态' )
-//                    ->setCellValue( 'J1', '备注' );
-
-                //设置单元格长度
-                $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
-                $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(25);
-                $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
-                $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(17);
-                $objPHPExcel->getActiveSheet()->getColumnDimension('L')->setWidth(17);
-                $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(17);
-                //循环插入数据
-                foreach ($enroll_arr as $k => $v) {
-                    $tel = unserialize($v['family_members']);
-                    $tels = $tel['6'];
-                    $fengxian = unserialize($v['growth_dilemma']);
-                    foreach ($fengxian as $v1) {
-                        $str1[] = getFengxian($v1);
-                    }
-                    $mdfx = max($str1);
-                    $fengxians = unserialize($v['growth_dilemmas']);
-                    foreach ($fengxians as $v2) {
-                        $str2[] = getFengxian($v2);
-                    }
-                    $jgfx = max($str2);
-                    $fengxianss = unserialize($v['growth_dilemmass']);
-                    foreach ($fengxianss as $v3) {
-                        $str3[] = getFengxian($v3);
-                    }
-                    $bffx = max($str3);
-                    $qu = M('area_top')->where(array('region_id' => $v['area_code']))->getField('region_name');
-                    $zhen = M('area_top')->where(array('region_id' => $v['street_code']))->getField('region_name');
-                    $objPHPExcel->setActiveSheetIndex(0)
-                        ->setCellValueExplicit('A' . ($k + 2), $v['case_number'], 's')
-                        ->setCellValueExplicit('B' . ($k + 2), $v['name'])
-                        ->setCellValueExplicit('C' . ($k + 2), getSex($v['sex']))
-                        ->setCellValueExplicit('D' . ($k + 2), getAge($v['birthday']))
-                        ->setCellValueExplicit('E' . ($k + 2), $v['nation'])
-                        ->setCellValueExplicit('F' . ($k + 2), $qu)
-                        ->setCellValueExplicit('G' . ($k + 2), $zhen)
-                        ->setCellValueExplicit('H' . ($k + 2), $v['home_address'])
-                        ->setCellValueExplicit('I' . ($k + 2), getHealth($v['health'], $v['id']))
-                        ->setCellValueExplicit('J' . ($k + 2), $tels, 's')
-                        ->setCellValueExplicit('K' . ($k + 2), $mdfx)
-                        ->setCellValueExplicit('L' . ($k + 2), $jgfx)
-                        ->setCellValueExplicit('M' . ($k + 2), $bffx)
-                        ->setCellValueExplicit('N' . ($k + 2), getStage($v['case_status']), TRUE);
-//                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
-//                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
-//                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
-//                        ->setCellValue( 'J'.($k+2), $v['beizhu']);
-                    $objPHPExcel->getActiveSheet()->getStyle('A' . ($k + 2))->getNumberFormat()
-                        ->setFormatCode('@');
-                    $objPHPExcel->getActiveSheet()->getStyle('J' . ($k + 2))->getNumberFormat()
-                        ->setFormatCode('@');
+                if(I('redirect') != 1){
+                    $param['redirect'] = 1;
+                    $param['sex']      = $sex;
+                    $param['type']     = $type;
+                    $result = ['result' => 1, 'msg' => '下载中,请稍等片刻', 'url' => U('Case/enrollListExcel', $param)];
                 }
-                // 生成2003excel格式的xls文件
-                ob_end_clean();//清除缓冲区,避免乱码
-                header('Content-Type: application/vnd.ms-excel;charset=UTF-8');
-                header('Content-Disposition: attachment;filename="enroll_' . time() . '.xls"');
-                header('Cache-Control: max-age=0');
+                else{
+                    vendor('phpexcel');
+                    // 首先创建一个新的对象  PHPExcel object
+                    $objPHPExcel = new \PHPExcel();
+                    // 给表格添加数据
 
-                $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-                $objWriter->save('php://output');
-                exit;
-            } else {
-                // exit('无数据!');
-                $this->error('无数据!');
+                    //设置默认 垂直水平居中
+                    $objPHPExcel->getDefaultStyle()->getAlignment()->setVertical('center')->setHorizontal('center');
+
+
+                    $objPHPExcel->setActiveSheetIndex(0)
+                        ->setCellValue('A1', '编号')
+                        ->setCellValue('B1', '姓名')
+                        ->setCellValue('C1', '性别')
+                        ->setCellValue('D1', '年龄')
+                        ->setCellValue('E1', '民族')
+                        ->setCellValue('F1', '区/县')
+                        ->setCellValue('G1', '街/镇')
+                        ->setCellValue('H1', '家庭住址')
+                        ->setCellValue('I1', '健康状况')
+                        ->setCellValue('J1', '联系方式')
+                        ->setCellValue('K1', '摸底上报风险等级')
+                        ->setCellValue('L1', '机构评估风险等级')
+                        ->setCellValue('M1', '帮扶后最高风险等级')
+                        ->setCellValue('N1', '流程');
+    //                    ->setCellValue( 'H1', '支付方式' )
+    //                    ->setCellValue( 'I1', '支付状态' )
+    //                    ->setCellValue( 'J1', '备注' );
+
+                    //设置单元格长度
+                    $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
+                    $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(25);
+                    $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
+                    $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(17);
+                    $objPHPExcel->getActiveSheet()->getColumnDimension('L')->setWidth(17);
+                    $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(17);
+                    //循环插入数据
+                    foreach ($enroll_arr as $k => $v) {
+                        $tel = unserialize($v['family_members']);
+                        $tels = $tel['6'];
+                        $fengxian = unserialize($v['growth_dilemma']);
+                        foreach ($fengxian as $v1) {
+                            $str1[] = getFengxian($v1);
+                        }
+                        $mdfx = max($str1);
+                        $fengxians = unserialize($v['growth_dilemmas']);
+                        foreach ($fengxians as $v2) {
+                            $str2[] = getFengxian($v2);
+                        }
+                        $jgfx = max($str2);
+                        $fengxianss = unserialize($v['growth_dilemmass']);
+                        foreach ($fengxianss as $v3) {
+                            $str3[] = getFengxian($v3);
+                        }
+                        $bffx = max($str3);
+                        $qu = M('area_top')->where(array('region_id' => $v['area_code']))->getField('region_name');
+                        $zhen = M('area_top')->where(array('region_id' => $v['street_code']))->getField('region_name');
+                        $objPHPExcel->setActiveSheetIndex(0)
+                            ->setCellValueExplicit('A' . ($k + 2), $v['case_number'], 's')
+                            ->setCellValueExplicit('B' . ($k + 2), $v['name'])
+                            ->setCellValueExplicit('C' . ($k + 2), getSex($v['sex']))
+                            ->setCellValueExplicit('D' . ($k + 2), getAge($v['birthday']))
+                            ->setCellValueExplicit('E' . ($k + 2), $v['nation'])
+                            ->setCellValueExplicit('F' . ($k + 2), $qu)
+                            ->setCellValueExplicit('G' . ($k + 2), $zhen)
+                            ->setCellValueExplicit('H' . ($k + 2), $v['home_address'])
+                            ->setCellValueExplicit('I' . ($k + 2), getHealth($v['health'], $v['id']))
+                            ->setCellValueExplicit('J' . ($k + 2), $tels, 's')
+                            ->setCellValueExplicit('K' . ($k + 2), $mdfx)
+                            ->setCellValueExplicit('L' . ($k + 2), $jgfx)
+                            ->setCellValueExplicit('M' . ($k + 2), $bffx)
+                            ->setCellValueExplicit('N' . ($k + 2), getStage($v['case_status']), TRUE);
+    //                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
+    //                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
+    //                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
+    //                        ->setCellValue( 'J'.($k+2), $v['beizhu']);
+                        $objPHPExcel->getActiveSheet()->getStyle('A' . ($k + 2))->getNumberFormat()
+                            ->setFormatCode('@');
+                        $objPHPExcel->getActiveSheet()->getStyle('J' . ($k + 2))->getNumberFormat()
+                            ->setFormatCode('@');
+                    }
+                    // 生成2003excel格式的xls文件
+                    ob_end_clean();//清除缓冲区,避免乱码
+                    header('Content-Type: application/vnd.ms-excel;charset=UTF-8');
+                    header('Content-Disposition: attachment;filename="enroll_' . time() . '.xls"');
+                    header('Cache-Control: max-age=0');
+
+                    $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+                    $objWriter->save('php://output');
+                    exit;
+                }
             }
-        } else {
-            $this->error('无数据!');
         }
+        exit(json_encode($result, JSON_UNESCAPED_UNICODE));
     }
 
     //待处理

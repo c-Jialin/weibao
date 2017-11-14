@@ -7,6 +7,12 @@
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
     <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
+
+    <!-- 打印专用css -->
+        <link media='print' rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
+        <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
+        <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
+    <!-- 打印end -->
 </head>
 <body>
 <header class="header">
@@ -82,9 +88,7 @@
         </div>
     </div>
     <div class="information">
-        <div class="title <?php if($act == 'chushen'){?>active<?php }?>" data-toggle="collapse" href="#chushen"
-             aria-expanded="<?php if($act == 'chushen'){?>true<?php }else{?>false<?php }?>"
-             aria-controls="collapseExample">当前阶段：初审<a href='javascript:printForm()' class='print'>打印</a></div>
+        <div class="title <?php if($act == 'chushen'){?>active<?php }?>" href="#chushen">当前阶段：初审<a href='javascript:printForm()' class='print'>打印</a></div>
         <form action="{:U('Case/trial')}" method="post" id='printContent'>
             <div id="chushen" class="submit collapse <?php if($act == 'chushen'){?>in<?php }?>">
                 <div style="margin-bottom: 8px;">指挥中心或专业机构评估风险风险等级</div>
@@ -321,6 +325,7 @@
     </div>
 </div>
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+<script src='__PUBLIC__/Admin/js/jquery.PrintArea.js'></script>
 <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/bootstrap.min.js"></script>
 <!-- 新增编辑器引入文件 -->
 <link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
@@ -559,45 +564,8 @@
         })
     }
 
-    (function ($) {
-        var printAreaCount = 0;
-        $.fn.printArea = function () {
-            var ele = $(this);
-            var idPrefix = "printArea_";
-            removePrintArea(idPrefix + printAreaCount);
-            printAreaCount++;
-            var iframeId = idPrefix + printAreaCount;
-            var iframeStyle = 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;';
-            iframe = document.createElement('IFRAME');
-            $(iframe).attr({
-                style: iframeStyle,
-                id: iframeId
-            });
-            document.body.appendChild(iframe);
-            var doc = iframe.contentWindow.document;
-            $(document).find("link").filter(function () {
-                return $(this).attr("rel").toLowerCase() == "stylesheet";
-            }).each(
-                function () {
-                    doc.write('<link type="text/css" rel="stylesheet" href="'
-                        + $(this).attr("href") + '" >');
-                });
-            doc.write('<div class="' + $(ele).attr("class") + '">' + $(ele).html()
-                + '</div>');
-            doc.close();
-            var frameWindow = iframe.contentWindow;
-            frameWindow.close();
-            frameWindow.focus();
-            frameWindow.print();
-        }
-        var removePrintArea = function (id) {
-            $("iframe#" + id).remove();
-        };
-    })(jQuery);
-
     function printForm(){
-        console.log('dss')
-        $('#printContent').printArea();
+        $('.information').printArea({popHt: 1000, popWd: 2000, mode: 'popup', popClose: true});
     }
 </script>
 </body>

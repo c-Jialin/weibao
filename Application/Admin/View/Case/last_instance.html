@@ -7,6 +7,13 @@
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
     <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
+
+    <!-- 打印专用css -->
+        <link media='print' rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
+        <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
+        <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
+    <!-- 打印end -->
+
 </head>
 <body>
 <header class="header">
@@ -82,9 +89,7 @@
         </div>
     </div>
     <div class="information">
-        <div class="title <?php if($act == 'zhongshen'){?>active<?php }?>" data-toggle="collapse" href="#zhongshen"
-             aria-expanded="<?php if($act == 'zhongshen'){?>true<?php }else{?>false<?php }?>"
-             aria-controls="collapseExample">当前阶段：审批<span class="caret"></span></div>
+        <div class="title <?php if($act == 'zhongshen'){?>active<?php }?>" href="#zhongshen">当前阶段：审批<a href='javascript:printForm()' class='print'>打印</a></div>
         <form action="{:U('Case/last_instance')}" method="post">
             <div id="zhongshen" class="submit collapse <?php if($act == 'zhongshen'){?>in<?php }?>">
                 <div class="li">
@@ -145,6 +150,7 @@
     </div>
 </div>
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
+<script src='__PUBLIC__/Admin/js/jquery.PrintArea.js'></script>
 <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/bootstrap.min.js"></script>
 <!-- 新增编辑器引入文件 -->
 <link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
@@ -378,6 +384,10 @@
                 }
             }
         })
+    }
+
+    function printForm(){
+        $('.information').printArea({popHt: 1000, popWd: 2000, mode: 'popup', popClose: true});
     }
 </script>
 </body>
