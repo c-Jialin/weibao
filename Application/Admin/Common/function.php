@@ -528,10 +528,7 @@ function getStage($str, $isExcel = false)
             $res   = '<font style="color:red">完成处理</font>';
             break;
     }
-    if($isExcel)
-        return $excel;
-    else
-        return $res;
+    return $isExcel ? $excel : $res;
 }
 
 
