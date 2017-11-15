@@ -519,13 +519,10 @@ function getStage($str, $isExcel = false)
             $excel = '结案';
             $res   = '<font style="color:red">结案</font>';
             break;
-
-        case 'weihuifang':
+        case 'jiean':        case 'weihuifang':
             $excel = '回访';
             $res   = '<font style="color:red">回访</font>';
             break;
-
-        case 'jiean':
         case 'huifang':
             $excel = '完成处理';
             $res   = '<font style="color:red">完成处理</font>';

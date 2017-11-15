@@ -131,17 +131,7 @@
                         <?php } ?>
                     </div>
                 </div>
-                <div class="li">
-                    <div class="left">期望调度日期</div>
-                    <div class="right">
-                        <?php if (empty($Clist['expected_dispatch_date'])) {?>
-                        <input type="text" class="input" name="expected_dispatch_date" style="width:300px;" value="<?php echo date('Y-m-d', time() + 120 * 60 * 24)?>">
-                        <?php } else { ?>
-                        <input type="text" class="input" name="expected_dispatch_date" style="width:300px;" value="<?php echo date('Y-m-d', $Clist['expected_dispatch_date']) ?>">
-                        <?php } ?>
-                    </div>
-                    <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
-                </div>
+                <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
                 <button onclick="return auth()" type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
             </div>
         </form>

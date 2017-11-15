@@ -6,6 +6,17 @@
 -- 生成日期: 2017 年 09 月 19 日 11:00
 -- 服务器版本: 5.5.53
 -- PHP 版本: 5.4.45
+CREATE TABLE IF NOT EXISTS `onethink_case_manage` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `node` varchar(128) NOT NULL DEFAULT '' COMMENT '案件节点',
+  `node_name` varchar(64) NOT NULL DEFAULT '' COMMENT '案件节点名',
+  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态（1受理，2处理，3完成）',
+  `create_time` varchar(15) DEFAULT NULL COMMENT '执行行为的时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='案件管理'
+
+
+
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
