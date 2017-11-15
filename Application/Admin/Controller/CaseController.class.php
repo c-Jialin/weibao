@@ -985,6 +985,11 @@ class CaseController extends AdminController
         }
     }
 
+    //
+    public function statistics()
+    {
+        $this->display();
+    }
     //搜索
 //    public function search(){
 //        $this->CaseList = M('case')->where(array('name'=>array('like',"%".$_POST['search']."%")))->select();

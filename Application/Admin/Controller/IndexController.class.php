@@ -21,6 +21,12 @@ class IndexController extends AdminController
                     'username' => $_SESSION['onethink_admin']['user_auth']['username'],
                     'last_login_time' => $_SESSION['onethink_admin']['user_auth']['last_login_time'],
                 );
+                $case  = M('case');
+                $where = [];
+                $where['case_status'] = [['neq', 'jiean'], ['neq', 'huifang']]; 
+                $this->handling = $case->count();
+                $this->waiting  = $case->where($where)->count();
+
                 $this->assign('user_info', $user_info);
                 $this->display();
             } else { //普通用户首页

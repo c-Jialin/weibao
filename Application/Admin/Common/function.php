@@ -486,7 +486,7 @@ function getHealth($id, $v)
 }
 
 //当前阶段
-function getStage($str, $isExcel = fasle)
+function getStage($str, $isExcel = false)
 {
     $res   = '';
     $excel = '';//若是excel表格使用 则返回此
