@@ -7,7 +7,6 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) die('require PHP > 5.3.0 !');
  * 项目正式部署后请设置为false
  */
 define('APP_DEBUG', true);
-
 /**
  *绑定模块3.2.0版本写法
  */

@@ -42,7 +42,7 @@ class AdminController extends Controller
         $access = $this->accessControl();
         $auth = ($access === true) ? $access : false;
         // 权限节点
-        $node = null;
+        $node = '';
         if ($access === false) {
             $this->error('403:禁止访问');
         } elseif ($access === null) {
@@ -61,7 +61,7 @@ class AdminController extends Controller
                 $this->error('未授权访问!');
             }
         }
-        define('IS_NODE', $node);
+        define('IS_NODE', implode(',', $node));
         define('IS_AUTH', $auth);
         $this->assign('__MENU__', $this->getMenus());
     }
@@ -91,12 +91,12 @@ class AdminController extends Controller
     {
         $Auth = new \Think\Auth();
         $auth = $Auth->getAuthList(UID, 1);
-        $field = array('add', 'trial', 'last_instance', 'dispatch', 'deal_with', 'finish', 'visit');
+        $field = array('index', 'trial', 'last_instance', 'dispatch', 'deal_with', 'finish', 'visit');
         $data = array();
         foreach ($auth as $v) {
             $list = explode('/', $v);
             if ($list[1] == 'case' && in_array($list[2], $field)) {
-                    $data[] = $list[2];
+                $data[] = $list[2] == 'index' ? 'add' : $list[2];
             }
         }
         return $data;
