@@ -12,6 +12,7 @@ class IndexController extends AdminController
     public function index()
     {
         if (UID) {
+            $case  = M('case');
             $where = [];
             if (IS_ROOT) { //管理员首页
                 $this->meta_title = '案件列表';
@@ -24,7 +25,7 @@ class IndexController extends AdminController
                 );
 
                 //案件统计
-                $case  = M('case');
+
                 $where['case_status'] = [['neq', 'jiean'], ['neq', 'huifang']];
                 $this->handling = $case->count();
                 $this->waiting  = $case->where($where)->count();
