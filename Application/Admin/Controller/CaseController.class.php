@@ -204,15 +204,15 @@ class CaseController extends AdminController
         $result = ['result' => 0, 'msg' => '无数据可导出'];
         if (I('type') != 'choose') {
             set_time_limit(0);   //防止时间php脚本处理过期
-            $case    = M('case');
-            $type    = I('type');
-            $where   = $param = [];
-            $sex     = I('sex');
+            $case = M('case');
+            $type = I('type');
+            $where = $param = [];
+            $sex = I('sex');
 
-            if(!empty($sex))
+            if (!empty($sex))
                 $where['sex'] = $sex;
 
-            if(I('guidang') == 'yes'){
+            if (I('guidang') == 'yes') {
                 $param['guidang'] = 'yes';
                 $where['case_status'] = [['eq', 'jiean'], ['eq', 'huifang'], 'or'];
             }
@@ -231,13 +231,12 @@ class CaseController extends AdminController
             }
 
             if (!empty($enroll_arr)) {
-                if(I('redirect') != 1){
+                if (I('redirect') != 1) {
                     $param['redirect'] = 1;
-                    $param['sex']      = $sex;
-                    $param['type']     = $type;
+                    $param['sex'] = $sex;
+                    $param['type'] = $type;
                     $result = ['result' => 1, 'msg' => '下载中,请稍等片刻', 'url' => U('Case/enrollListExcel', $param)];
-                }
-                else{
+                } else {
                     vendor('phpexcel');
                     // 首先创建一个新的对象  PHPExcel object
                     $objPHPExcel = new \PHPExcel();
@@ -442,13 +441,85 @@ class CaseController extends AdminController
     //即将超时
     public function jijiang()
     {
-        echo __METHOD__;
+        $this->meta_title = '即将超时案件';
+        $status = getStatusFromAuth();
+        $where = array("case_status" => array("in", implode(',', $status['status'])));
+        $list = M('case')->where($where)->order('fill_in_time desc')->select();
+        $count = $this->countOverTimeCases($list, false);
+        import('Think', 'ThinkPHP/Library/Think/Page');
+        $pagesize = 25;
+        $p = I('p') ? I('p') : 1;
+        $start = ($p - 1) * $pagesize;
+        $page = new Page(count($count), $pagesize);
+        $this->Page = $page->show();
+        $list = array();
+        $s = 0;
+        for ($i = $start; $i < count($count); $i++, $s++) {
+            if ($s < $pagesize) {
+                $list[] = $count[$i];
+            }
+        }
+        $this->CaseList = $list;
+        $this->display();
     }
 
     //超时案件
     public function chaoshi()
     {
-        echo __METHOD__;
+        $this->meta_title = '超时案件';
+        $status = getStatusFromAuth();
+        $where = array("case_status" => array("in", implode(',', $status['status'])));
+        $list = M('case')->where($where)->order('fill_in_time desc')->select();
+        $count = $this->countOverTimeCases($list, true);
+        import('Think', 'ThinkPHP/Library/Think/Page');
+        $pagesize = 25;
+        $p = I('p') ? I('p') : 1;
+        $start = ($p - 1) * $pagesize;
+        $page = new Page(count($count), $pagesize);
+        $this->Page = $page->show();
+        $list = array();
+        $s = 0;
+        for ($i = $start; $i < count($count); $i++, $s++) {
+            if ($s < $pagesize) {
+                $list[] = $count[$i];
+            }
+        }
+        $this->CaseList = $list;
+        $this->display();
+    }
+
+    /**
+     * 计算 超时/即将超时 案件数
+     * return array $overtime 返回数组包含键值overtiming, overtimed
+     * overtiming为即将超时, overtimed为已经超时
+     */
+    private function countOverTimeCases($cases, $action = true)
+    {
+        //初始化返回结果
+        $list = [];
+        $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
+        $rules = rebuidArray($rules, 'node');
+        $now = time();
+        foreach ($cases as $k => $v) {
+            $status = $v['case_status'];
+            $key = translate($status);
+            //现阶段该执行的状态的时间
+            $caseTime = strtotime($v[$key['now'] . '_time']);
+            if (!empty($caseTime)) {
+                //下一阶段该执行的状态的时间
+                $nextTime = strtotime($v[$key['next'] . '_time']);
+                //下一阶段为false为驳回
+                $time = empty($nextTime) ? $caseTime : $nextTime;
+                $overtiming = $time + $rules[$status]['warn_time'] * 3600;
+                $overtimed = $time + $rules[$status]['execute_time'] * 3600;
+                if ($action) {
+                    if ($now >= $overtimed) $list[] = $v;//超时
+                } else {
+                    if ($now >= $overtiming) $list[] = $v;//即将超时
+                }
+            }
+        }
+        return $list;
     }
 
     //处理数据
@@ -621,7 +692,7 @@ class CaseController extends AdminController
                 $data['photo'] = $uploadInfo['savename'];
             }
             $data['case_status'] = 'caiji';
-            $data['collect_time'] = empty($_POST['collect_time']) ? date("Y-m-d H:i:s", time()) : $_POST['collect_time'];
+            $data['add_time'] = date("Y-m-d H:i:s", time());
             $Case = D('case');
             if (!$Case->create()) {
                 // 如果创建失败 表示验证没有通过 输出错误提示信息
@@ -663,7 +734,7 @@ class CaseController extends AdminController
             if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
             $data['growth_dilemmas'] = serialize($grow);
             if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
-            $data['trial_time'] = empty($_POST['trial_time']) ? date("Y-m-d H:i:s", time()) : $_POST['trial_time'];
+            $data['trial_time'] = date("Y-m-d H:i:s", time());
             if ($data['trial_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
@@ -672,7 +743,8 @@ class CaseController extends AdminController
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
             } else {
-                $case->where(array('id' => $data['id']))->setField('case_status', 'bohuiC');
+                $arr = array('add_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
+                $case->where(array('id' => $data['id']))->save($arr);
                 echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
@@ -702,7 +774,7 @@ class CaseController extends AdminController
             $case = M('case');
             $data['case_status'] = 'shenpi';
             if ($_POST['last_instance_person']) $data['last_instance_person'] = $_POST['last_instance_person'];
-            $data['last_instance_time'] = empty($_POST['last_instance_time']) ? date("Y-m-d H:i:s", time()) : $_POST['last_instance_time'];
+            $data['last_instance_time'] = date("Y-m-d H:i:s", time());
             if ($data['last_instance_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
@@ -711,7 +783,8 @@ class CaseController extends AdminController
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
             } else if ($data['last_instance_status'] == 2) {
-                $case->where(array('id' => $data['id']))->setField('case_status', 'bohuiCs');
+                $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
+                $case->where(array('id' => $data['id']))->save($arr);
                 echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
@@ -748,7 +821,7 @@ class CaseController extends AdminController
             $data['checkbox_status'] = serialize($check);
             $data['dispatch_instance'] = $_POST['dispatch_instance'];
             if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
-            $data['dispatch_time'] = empty($_POST['dispatch_time']) ? date("Y-m-d H:i:s", time()) : $_POST['dispatch_time'];
+            $data['dispatch_time'] = date("Y-m-d H:i:s", time());
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -784,7 +857,7 @@ class CaseController extends AdminController
             $data['management_status'] = $_POST['management_status'];
             $data['management_record'] = serialize($_POST['management_record']);
             if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
-            $data['deal_with_time'] = empty($_POST['deal_with_time']) ? date("Y-m-d H:i:s", time()) : $_POST['deal_with_time'];
+            $data['deal_with_time'] = date("Y-m-d H:i:s", time());
             if ($data['management_status'] == 1) {
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
@@ -793,7 +866,8 @@ class CaseController extends AdminController
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
             } else if ($data['management_status'] == 2) {
-                $case->where(array('id' => $_POST['id']))->setField('case_status', 'bohuiCz');
+                $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
+                $case->where(array('id' => $data['id']))->save($arr);
                 echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
@@ -855,7 +929,7 @@ class CaseController extends AdminController
             if (!empty($_POST['recommendations'])) $data['recommendations'] = $_POST['recommendations'];
             if (!empty($_POST['growth_dilemmass'])) $data['growth_dilemmass'] = $_POST['growth_dilemmass'];
             if ($_POST['finish_person']) $data['finish_person'] = $_POST['finish_person'];
-            $data['finish_time'] = empty($_POST['finish_time']) ? date("Y-m-d H:i:s", time()) : $_POST['finish_time'];
+            $data['finish_time'] = date("Y-m-d H:i:s", time());
             if ($data['visit_status'] == 1) {
                 if ($data['visit_form'] == 1) {
                     $data['visit_way'] = $_POST['visit_form1'];
@@ -915,7 +989,7 @@ class CaseController extends AdminController
                 $data['visit_suggestion'] = serialize($_POST['visit_suggestion']);
             }
             $data['case_status'] = 'huifang';
-            $data['visit_time'] = empty($_POST['visit_time']) ? date("Y-m-d H:i:s", time()) : $_POST['visit_time'];
+            $data['visit_time'] = date("Y-m-d H:i:s", time());
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";

@@ -488,50 +488,53 @@ function getHealth($id, $v)
 //当前阶段
 function getStage($str, $isExcel = false)
 {
-    $res   = '';
+    $res = '';
     $excel = '';//若是excel表格使用 则返回此
     switch ($str) {
         case 'bohuiC':
             $excel = '采集';
-            $res   = '<font style="color:red">采集</font>';
+            $res = '<font style="color:red">采集</font>';
             break;
 
+        case 'bohuiCs':
         case 'caiji':
             $excel = '初审';
-            $res   = '<font style="color:red">初审</font>';
+            $res = '<font style="color:red">初审</font>';
             break;
 
         case 'chushen':
             $excel = '审批';
-            $res   = '<font style="color:red">审批</font>';
+            $res = '<font style="color:red">审批</font>';
             break;
 
+        case 'bohuiCz':
         case 'shenpi':
             $excel = '调度';
-            $res   = '<font style="color:red">调度</font>';
-            break;
-        case 'diaodu':
-            $excel = '处置';
-            $res   = '<font style="color:red">处置</font>';
+            $res = '<font style="color:red">调度</font>';
             break;
 
-        case 'chuzhi':
+        case 'diaodu':
+            $excel = '处置';
+            $res = '<font style="color:red">处置</font>';
+            break;
+
+        case 'chizhi':
             $excel = '结案';
-            $res   = '<font style="color:red">结案</font>';
+            $res = '<font style="color:red">结案</font>';
             break;
-        case 'jiean':        case 'weihuifang':
+
+        case 'weihuifang':
             $excel = '回访';
-            $res   = '<font style="color:red">回访</font>';
+            $res = '<font style="color:red">回访</font>';
             break;
+
+        case 'jiean':
         case 'huifang':
             $excel = '完成处理';
-            $res   = '<font style="color:red">完成处理</font>';
+            $res = '<font style="color:red">完成处理</font>';
             break;
     }
-    if($isExcel)
-        return $excel;
-    else
-        return $res;
+    return $isExcel ? $excel : $res;
 }
 
 
@@ -555,7 +558,7 @@ function getFengxian($str)
         $res = 2;
     } else if (in_array($str, $arr5)) {
         $res = 1;
-    } else if(in_array($str, $arr6)){
+    } else if (in_array($str, $arr6)) {
         $res = 0;
     }
     return $res;
@@ -612,9 +615,93 @@ function getNeixin($str, $id)
     }
     return $res;
 }
-
 //获取社区名称
 function getShequ($id)
 {
     return $res = M('area_top')->where(array('region_id' => $id))->getField('region_name');
+}
+
+
+/**
+ * 重构一个二维数组, 以一维数组中某个value为键值
+ * @param array $arr 源数组
+ * @param string $key 指定数组中一维数组的某个key
+ * return array    $res 重构后的数组
+ */
+function rebuidArray($arr, $key)
+{
+    $res = [];
+    foreach ($arr as $k => $v) {
+        $res[$v[$key]] = $v;
+    }
+    return $res;
+}
+
+/**
+ * 案件状态对应的当前案件应该处理的流程 英文 和 下一阶段的英文
+ * $param string $chn 中文拼音案件状态
+ * return array
+ */
+function translate($chn)
+{
+    $arr = [
+        'caiji' => ['now' => 'add', 'next' => 'trial'],
+        'bohuiC' => ['now' => 'add', 'next' => 'trial'],
+        'bohuiCs' => ['now' => 'trial', 'next' => 'last_instance'],
+        'chushen' => ['now' => 'trial', 'next' => 'last_instance'],
+        'shenpi' => ['now' => 'last_instance', 'next' => 'dispatch'],
+        'diaodu' => ['now' => 'dispatch', 'next' => 'deal_with'],
+        'chizhi' => ['now' => 'deal_with', 'next' => 'finish'],
+        'bohuiCz' => ['now' => 'deal_with', 'next' => 'finish'],
+        'weihuifang' => ['now' => 'visit', 'next' => ''],
+    ];
+    return $arr[$chn];
+}
+
+/**
+ * 根据权限获取可查询的案件状态
+ * return array $arr
+ */
+function getStatusFromAuth()
+{
+    //初始化返回结果
+    $arr = ['auth' => [], 'status' => [], 'next' => []];
+    $next = ['add' => 1, 'trial' => 2, 'last_instance' => 3, 'dispatch' => 4, 'deal_with' => 5, 'finish' => 6, 'visit' => 7];
+    //根据权限获得英文节点
+    if (empty(IS_NODE)) {
+        $arr['auth'] = ['add', 'trial', 'last_instance', 'dispatch', 'deal_with', 'finish', 'visit'];
+    } else {
+        $arr['auth'] = explode(',', IS_NODE);
+    }
+    foreach ($arr['auth'] as $v) {
+        $arr['next'][] = $arr['auth'][$next[$v]];
+        switch ($v) {
+            case 'add':
+                $arr['status'][] = 'bohuiC';
+                break;
+            case 'trial':
+                $arr['status'][] = 'bohuiCs';
+                $arr['status'][] = 'caiji';
+                break;
+            case 'last_instance':
+                $arr['status'][] = 'chushen';
+                break;
+            case 'dispatch':
+                $arr['status'][] = 'bohuiCz';
+                $arr['status'][] = 'shenpi';
+                break;
+            case 'deal_with':
+                $arr['status'][] = 'diaodu';
+                break;
+            case 'finish':
+                $arr['status'][] = 'chuzhi';
+                break;
+            case 'visit':
+                $arr['status'][] = 'weihuifang';
+                break;
+            default:
+                break;
+        }
+    }
+    return $arr;
 }
