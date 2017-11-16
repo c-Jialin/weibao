@@ -41,6 +41,8 @@ class AdminController extends Controller
         // 检测访问权限
         $access = $this->accessControl();
         $auth = ($access === true) ? $access : false;
+        // 权限节点
+        $node = null;
         if ($access === false) {
             $this->error('403:禁止访问');
         } elseif ($access === null) {
@@ -54,10 +56,12 @@ class AdminController extends Controller
                         $this->error('未授权访问!');
                     }
                 }
+                $node = $this->returnRuleData();
             } elseif ($dynamic === false) {
                 $this->error('未授权访问!');
             }
         }
+        define('IS_NODE', $node);
         define('IS_AUTH', $auth);
         $this->assign('__MENU__', $this->getMenus());
     }
@@ -81,6 +85,21 @@ class AdminController extends Controller
             return false;
         }
         return true;
+    }
+
+    final protected function returnRuleData()
+    {
+        $Auth = new \Think\Auth();
+        $auth = $Auth->getAuthList(UID, 1);
+        $field = array('add', 'trial', 'last_instance', 'dispatch', 'deal_with', 'finish', 'visit');
+        $data = array();
+        foreach ($auth as $v) {
+            $list = explode('/', $v);
+            if ($list[1] == 'case' && in_array($list[2], $field)) {
+                    $data[] = $list[2];
+            }
+        }
+        return $data;
     }
 
     /**
@@ -380,8 +399,6 @@ class AdminController extends Controller
      *
      * @param array $base 基本的查询条件
      * @param boolean $field 单表模型用不到该参数,要用在多表join时为field()方法指定参数
-     * @author 朱亚杰 <xcoolcc@gmail.com>
-     *
      * @return array|false
      * 返回数据集
      */
