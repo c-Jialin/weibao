@@ -162,7 +162,7 @@ class Auth{
      * @param integer $uid  用户id
      * @param integer $type 
      */
-    protected function getAuthList($uid,$type) {
+    public function getAuthList($uid,$type) {
         static $_authList = array(); //保存用户验证通过的权限列表
         $t = implode(',',(array)$type);
         if (isset($_authList[$uid.$t])) {
