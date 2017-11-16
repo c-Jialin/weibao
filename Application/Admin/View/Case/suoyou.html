@@ -46,6 +46,28 @@ body{padding: 0}
 
     <!-- </div> -->
     <!-- 数据列表 -->
+    <form action='{:U("suoyou")}' method='post'>
+        <div style='float: left; margin-bottom: 2px;'>
+            <span>筛选案件</span>
+            <select name='city' id='city'>
+                <option value='0'>请选择县/市/区</option>
+                <foreach name='list_top' item='v'>
+                    <option value='{$v.region_id}' 
+                    <if condition='$v.region_id eq $city'>selected</if> >{$v.region_name}</option>
+                </foreach>
+            </select>
+            <select name='town' id='town'>
+                <option value='0'>请选择街/镇</option>
+            </select>
+            <select name='country' id='country'>
+                <option value='0'>请选择村/社区</option>
+            </select>
+            <input type='text' name='start'  style='width:90px' readonly> 至
+            <input type='text' name='end' style='width:90px' readonly>
+            <input type='submit' name='submit' value='筛选' class='btn'>
+        </div>
+    </form>
+
     <div style='float: right; margin-bottom: 2px;'>
         <span>excel导出</span>
         <select name='type' id='enrollType'>
@@ -203,7 +225,66 @@ body{padding: 0}
 
 <link href='__PUBLIC__/static/layui/css/layui.css'>
 <script src='__PUBLIC__/static/layui/layui.all.js'></script>
+<!-- 时间插件js rel='stylesheet'属性必写-->
+<link rel='stylesheet' href='__PUBLIC__/static/pickmeup/pickmeup.css'>
+<script src='__PUBLIC__/static/pickmeup/pickmeup.js'></script>
 <script type="text/javascript">
+
+        var now = new Date().getTime();
+        pickmeup('input[name=start]', {
+            position: 'bottom',
+            hide_on_select: true,
+            locale: 'ch',
+            format: 'Y-m-d',
+            date: '{:date("Y-m-d", $start)}',
+            max: '' + now + '',
+        });
+
+        pickmeup('input[name=end]', {
+            position: 'bottom',
+            hide_on_select: true,
+            locale: 'ch',
+            format: 'Y-m-d',
+            date: '{:date("Y-m-d", $end)}',
+            max: '' + now + '',
+        });
+
+
+        $('#city').on('change', function(){
+            var value = this.value;
+            $.post("{:U('Case/Linkage_top')}", {id: value, type: 3}, function (res) {
+                if(value > 0)
+                    $('#town').html(res);
+                else
+                    $('#town').html('<option value="0">请选择街/镇</option>');
+
+                //初始化村/社区
+                $('#country').html('<option value="0">请选择村/社区</option>');
+                <?php if($city > 0){ ?>
+                    $('#town').find('option[value=<?php echo $town?>]').prop('selected', true);
+                <?php } ?>
+                <?php if($town > 0){ ?>
+                    $('#town').change();
+                <?php } ?>
+            });
+        });
+
+        $('#town').on('change', function(){
+             var value = this.value;
+             $.post("{:U('Case/Linkage_top')}", {id: value, type: 4}, function (res) {
+                if(value > 0)
+                    $('#country').html(res);
+                else
+                    $('#country').html('<option value="0">请选择街/镇</option>');
+                <?php if($city > 0){ ?>
+                    $('#country').find('option[value=<?php echo $country?>]').prop('selected', true);
+                <?php } ?>
+            });
+        });
+
+        <?php if($city > 0) { ?>
+            $('#city').change();
+        <?php } ?>
 /*    $('#select_,#select_sex').change(function(){
         var option_value = $(this).find("option:selected").val();
         switch (option_value){

@@ -79,23 +79,24 @@
             <li><a href="{:U('Case/guidang')}">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid">
                 <a href="{:U('Case/guidang')}"><?php if(ACTION_NAME == 'guidang'){?><img src="__PUBLIC__/Admin/images/xtwcn/sanjiao.png" class="sanjiao"/><?php }?></a></li>
             <li><a href="{:U('User/index')}">系统管理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/statistics')}">案例统计</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
         </ul>
 
-        <if condition="ACTION_NAME neq 'index'">
-            <form class="form-inline" id="form1" action="{:U('Case/'.ACTION_NAME)}" method="post">
-                <div class="form-group" style="display:inline-block;margin-top:-11px">
-                    <if condition="ACTION_NAME eq suoyou">
-                        <select name="shequ" id="shequ">
-                            <option value="0">请选择社区...</option>
-                            <volist name="shequ" id="vo">
-                                <option value="{$vo.region_id}">{$vo.region_name}</option>
-                            </volist>
-                        </select>
-                    </if>
-                    <input type="text" class="form-control" name="search" id="search" placeholder="">
-                </div>
-                <span id="searchbtn"><img src="__PUBLIC__/Admin/images/xtwcn/search-btn.png"></span>
-            </form>
+        <if condition="(ACTION_NAME neq 'index') AND (ACTION_NAME neq 'statistics')">
+<!--             <form class="form-inline" id="form1" action="{:U('Case/'.ACTION_NAME)}" method="post">
+    <div class="form-group" style="display:inline-block;margin-top:-11px">
+        <if condition="ACTION_NAME eq suoyou">
+            <select name="shequ" id="shequ">
+                <option value="0">请选择社区...</option>
+                <volist name="shequ" id="vo">
+                    <option value="{$vo.region_id}">{$vo.region_name}</option>
+                </volist>
+            </select>
+        </if>
+        <input type="text" class="form-control" name="search" id="search" placeholder="">
+    </div>
+    <span id="searchbtn"><img src="__PUBLIC__/Admin/images/xtwcn/search-btn.png"></span>
+</form> -->
         </if>
 
     </div>

@@ -638,22 +638,21 @@ function rebuidArray($arr, $key)
 }
 
 /**
- * 案件状态对应的当前案件应该处理的流程 英文 和 下一阶段的英文
- * $param string $chn 中文拼音案件状态
- * return array
- */
-function translate($chn)
-{
+  * 案件状态对应的当前案件应该处理的流程 英文 和 下一阶段的英文
+  * $param string $chn 中文拼音案件状态
+  * return array
+*/
+function translate($chn){
     $arr = [
-        'caiji' => ['now' => 'add', 'next' => 'trial'],
-        'bohuiC' => ['now' => 'add', 'next' => 'trial'],
-        'bohuiCs' => ['now' => 'trial', 'next' => 'last_instance'],
-        'chushen' => ['now' => 'trial', 'next' => 'last_instance'],
-        'shenpi' => ['now' => 'last_instance', 'next' => 'dispatch'],
-        'diaodu' => ['now' => 'dispatch', 'next' => 'deal_with'],
-        'chizhi' => ['now' => 'deal_with', 'next' => 'finish'],
-        'bohuiCz' => ['now' => 'deal_with', 'next' => 'finish'],
-        'weihuifang' => ['now' => 'visit', 'next' => ''],
+        'caiji'     => ['now' => 'add',             'next' => 'trial'],
+        'bohuiC'    => ['now' => 'add',             'next' => 'trial'],
+        'bohuiCs'   => ['now' => 'trial',           'next' => 'last_instance'],
+        'chushen'   => ['now' => 'trial',           'next' => 'last_instance'],
+        'shenpi'    => ['now' => 'last_instance',   'next' => 'dispatch'],
+        'diaodu'    => ['now' => 'dispatch',        'next' => 'deal_with'],
+        'chizhi'    => ['now' => 'deal_with',       'next' => 'finish'],
+        'bohuiCz'   => ['now' => 'deal_with',       'next' => 'finish'],
+        'weihuifang'=> ['now' => 'visit',           'next' => ''],
     ];
     return $arr[$chn];
 }

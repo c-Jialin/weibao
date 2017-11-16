@@ -166,10 +166,26 @@ class CaseController extends AdminController
             }
         }
         $uid = M('auth_group_access')->where(array('uid' => UID))->field('group_id')->select();
-        if ($_POST) {
+
+        $where = $assign = [];
+        $start = $end = time();
+        if(I('submit')){
+            //筛选条件
+            $post                    = I('post.');
+            $start                   = strtotime($post['start']);
+            $end                     = strtotime($post['end']);
+            $where['area_code']      = empty($post['city']) ? ['neq', 0] : $post['city'];
+            $where['street_code']    = empty($post['town']) ? ['neq', 0] : $post['town'];
+            $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
+            $where['fill_in_time']   = ['between', [$start, $end]];
+            $assign['city']          = $post['city'];
+            $assign['town']          = $post['town'];
+            $assign['country']       = $post['country'];
+        }
+/*        if ($_POST) {
             $where['community_code'] = $_POST['shequ'];
             $where['name'] = array('like', '%' . $_POST['search'] . '%');
-        }
+        }*/
         $count = M('case')->where($where)->order('fill_in_time desc')->count();
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
@@ -189,7 +205,11 @@ class CaseController extends AdminController
                 $usid[$key] = $value['group_id'];
             }
         }
+        $assign['start'] = $start;
+        $assign['end']   = $end;
+        $this->Lage();
         $this->uid = $usid;
+        $this->assign($assign);
         $this->display();
     }
 
@@ -1047,6 +1067,11 @@ class CaseController extends AdminController
         }
     }
 
+    //
+    public function statistics()
+    {
+        $this->display();
+    }
     //搜索
 //    public function search(){
 //        $this->CaseList = M('case')->where(array('name'=>array('like',"%".$_POST['search']."%")))->select();
