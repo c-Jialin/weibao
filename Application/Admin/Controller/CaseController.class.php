@@ -462,6 +462,7 @@ class CaseController extends AdminController
     public function jijiang()
     {
         $this->meta_title = '即将超时案件';
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         $status = getStatusFromAuth();
         $where = array("case_status" => array("in", implode(',', $status['status'])));
         $list = M('case')->where($where)->order('fill_in_time desc')->select();
@@ -480,6 +481,7 @@ class CaseController extends AdminController
             }
         }
         $this->CaseList = $list;
+        $this->uid = $uid;
         $this->display();
     }
 
@@ -487,6 +489,7 @@ class CaseController extends AdminController
     public function chaoshi()
     {
         $this->meta_title = '超时案件';
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         $status = getStatusFromAuth();
         $where = array("case_status" => array("in", implode(',', $status['status'])));
         $list = M('case')->where($where)->order('fill_in_time desc')->select();
@@ -505,6 +508,7 @@ class CaseController extends AdminController
             }
         }
         $this->CaseList = $list;
+        $this->uid = $uid;
         $this->display();
     }
 
@@ -535,7 +539,7 @@ class CaseController extends AdminController
                 if ($action) {
                     if ($now >= $overtimed) $list[] = $v;//超时
                 } else {
-                    if ($now >= $overtiming) $list[] = $v;//即将超时
+                    if ($now >= $overtiming && $now <= $overtimed) $list[] = $v;//即将超时
                 }
             }
         }

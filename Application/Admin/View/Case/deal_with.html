@@ -9,9 +9,9 @@
     <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
 
     <!-- 打印专用css -->
-        <link media='print' rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
-        <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
-        <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
+    <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
+    <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
+    <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
     <!-- 打印end -->
 </head>
 <body>
@@ -78,66 +78,97 @@
         </div>
         <div class="stage">
             <?php $id = empty($Clist['id']) ? $_GET['id'] : $Clist['id']; ?>
-            <span class="<?php if($act == ''){?>active<?php }?>"><a href="{:U('case/index', array('id' => $id))}">采集</a></span><span class="solid">→</span>
+            <span class="<?php if($act == ''){?>active<?php }?>"><a href="{:U('case/index', array('id' => $id))}">采集</a></span><span
+                class="solid">→</span>
             <span><a href="{:U('case/trial', array('id' => $id, 'act' => 'chushen'))}">初审</a></span><span class="solid">→</span>
-            <span><a href="{:U('case/last_instance', array('id' => $id, 'act' => 'zhongshen'))}">审批</a></span><span class="solid">→</span>
-            <span><a href="{:U('case/dispatch', array('id' => $id, 'act' => 'diaodu'))}">调度</a></span><span class="solid">→</span>
-            <span class="<?php if($act == 'chuzhi'){?>active<?php }?>"><a href="{:U('case/deal_with', array('id' => $id, 'act' => 'chuzhi'))}">协同处置</a></span><span class="solid">→</span>
-            <span><a href="{:U('case/finish', array('id' => $id, 'act' => 'jiean'))}">结案</a></span></span><span class="solid">→</span>
+            <span><a href="{:U('case/last_instance', array('id' => $id, 'act' => 'zhongshen'))}">审批</a></span><span
+                class="solid">→</span>
+            <span><a href="{:U('case/dispatch', array('id' => $id, 'act' => 'diaodu'))}">调度</a></span><span
+                class="solid">→</span>
+            <span class="<?php if($act == 'chuzhi'){?>active<?php }?>"><a
+                    href="{:U('case/deal_with', array('id' => $id, 'act' => 'chuzhi'))}">协同处置</a></span><span
+                class="solid">→</span>
+            <span><a href="{:U('case/finish', array('id' => $id, 'act' => 'jiean'))}">结案</a></span></span><span
+                class="solid">→</span>
             <span><a href="{:U('case/visit', array('id' => $id, 'act' => 'huifang'))}">回访</a></span></span>
         </div>
     </div>
     <div class="information">
-        <div class="title <?php if($act == 'chuzhi'){?>active<?php }?>" href="#chuzhi">当前阶段：处置<a href='javascript:printForm()' class='print'>打印</a></div>
+        <div class="title <?php if($act == 'chuzhi'){?>active<?php }?>" href="#chuzhi">当前阶段：处置<a
+                href='javascript:printForm()' class='print'>打印</a></div>
         <form action="{:U('Case/deal_with')}" method="post">
             <div id="chuzhi" class="submit collapse <?php if($act == 'chuzhi'){?>in<?php }?>">
                 <div class="li">
                     <div class="left">流程操作</div>
                     <div class="right">
                         <label>
-                            <input type="radio" class="radio" name="management_status" value="1" <?php if($Clist['management_status'] == 1){?>checked<?php }?>>
+                            <input type="radio" class="radio" name="management_status"
+                                   value="1" <?php if($Clist['management_status'] == 1){?>checked<?php }?>>
                             <span class="radio-text">处置完成,提交指挥中心</span>
-                        </label><br>
+                        </label>
                         <label>
-                            <input type="radio" class="radio" name="management_status" value="2"> <span class="radio-text">驳回</span>
+                            <input type="radio" class="radio" name="management_status" value="2"> <span
+                                class="radio-text">驳回</span>
                         </label>
                     </div>
-                    <div style="clear: both;"></div>
                 </div>
                 <div class="li zhuchibeizhu">
                     <div class="left">处置备注</div>
                     <div class="right">
-                        <div>
-                            <?php
-								$mange_list = unserialize($Clist['management_record']);
-								if(is_array($mange_list)){
-								for($i=1;$i<=count($mange_list);$i++){
-							?>
+                        <?php
+							$mange_list = unserialize($Clist['management_record']);
+							if(is_array($mange_list)){
+							for($i=1;$i<=count($mange_list);$i++){
+						?>
+                        <li>
+                            <span class="radio-text">处置类型</span>
+                            <input type="radio" class="radio" name="management_tyle" value="1"> <span
+                                class="radio-text">补助</span>
+                            <input type="radio" class="radio" name="management_tyle" value="2"> <span
+                                class="radio-text">辅助</span>
+                            <span class="radio-text" style="margin-left: 50px">上传文件</span>
+                            <input type="file" style="width: 80px; margin-left: -10px" name="management_file">
+                        </li>
+                        <li>
                             <textarea name="management_record[]"><?php echo $mange_list[$i-1]?></textarea>
                             <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
                                    class="chuzhisave"/>
-                            <?php }}else{?>
+                        </li>
+                        <?php }}else{?>
+                        <li>
+                            <span class="radio-text">处置类型</span>
+                            <input type="radio" class="radio" name="management_tyle" value="1"> <span
+                                class="radio-text">补助</span>
+                            <input type="radio" class="radio" name="management_tyle" value="2"> <span
+                                class="radio-text">辅助</span>
+                            <span class="radio-text" style="margin-left: 50px">上传文件</span>
+                            <input type="file" style="margin-left: -10px" name="management_file" class="uploadFile">
+                        </li>
+                        <li>
                             <textarea name="management_record[]"><?php echo $mange_list?></textarea>
                             <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
                                    class="chuzhisave"/>
-                            <?php }?>
-                        </div>
+                        </li>
+                        <?php }?>
                     </div>
                 </div>
                 <div class="li">
                     <div class="left">添加处置</div>
                     <div class="right">
-                        <span id="addchuzhi" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加处置</span>
+                        <span id="addchuzhi"
+                              style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加处置</span>
                     </div>
                 </div>
                 <div class="li">
                     <div class="left">处置日期</div>
                     <div class="right">
                         <?php if (empty($Clist['deal_with_time'])) {?>
-                        <label>手动设置处置日期 <input type="datetime-local" name="deal_with_time" style="font-size:12px;line-height:12px;"></label>
+                        <label>手动设置处置日期 <input type="datetime-local" name="deal_with_time"
+                                               style="font-size:12px;line-height:12px;"></label>
                         * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
                         <?php } else { ?>
-                        <input type="text" class="input" name="deal_with_time" style="width:300px;" value="<?php echo $Clist['deal_with_time'] ?>">
+                        <input type="text" class="input" name="deal_with_time" style="width:300px;"
+                               value="<?php echo $Clist['deal_with_time'] ?>">
                         <?php } ?>
                     </div>
                 </div>
@@ -145,15 +176,21 @@
                     <div class="left">处置人</div>
                     <div class="right">
                         <?php if (empty($Clist['deal_person'])) {?>
-                        <input type="text" class="input" style="width:300px;" name="deal_person" value="<?php echo $member ?>">
+                        <input type="text" class="input" style="width:300px;" name="deal_person"
+                               value="<?php echo $member ?>">
                         <?php } else { ?>
-                        <input type="text" class="input" style="width:300px;" name="deal_person" value="<?php echo $Clist['deal_person'] ?>">
+                        <input type="text" class="input" style="width:300px;" name="deal_person"
+                               value="<?php echo $Clist['deal_person'] ?>">
                         <?php } ?>
                     </div>
                 </div>
-                <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
+                <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>"
+                     is_auth="<?php echo IS_AUTH?>"></div>
                 <input type="hidden" name="id" value="<?php echo $id;?>">
-                <button onclick="return auth()" type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
+                <button onclick="return auth()" type="submit"
+                        style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">
+                    提交
+                </button>
             </div>
         </form>
         <br>
@@ -167,6 +204,8 @@
 <link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
 <script src="__STATIC__/kindeditor/kindeditor-min.js"></script>
 <script src="__STATIC__/kindeditor/zh_CN.js"></script>
+<script type="text/javascript" src="__JS__/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="__JS__/jquery.fileupload.js"></script>
 <!--图片上传-->
 <script>
     window.URL = window.URL || window.webkitURL;
@@ -222,11 +261,11 @@
         });
     });
     $(function () {
-        $('.huifang').on('click', '.huifangsave', function () {
+        $('.chuzhisave').on('click', '.chuzhisave', function () {
             var str = $(this).siblings('textarea').val();
             var id = '<?php echo $id;?>';
-            var va = $('.huifangsave').index(this);
-            $.post('index.php?s=/Case/tihui', {id: id, str: str, va: va}, function (res) {
+            var va = $('.chuzhisave').index(this);
+            $.post('index.php?s=/Case/tichu', {id: id, str: str, va: va}, function (res) {
                 if (res == 1) {
                     alert('提交成功');
                 }
@@ -299,7 +338,7 @@
         })
     }
     $(function () {
-        var text = '<div class="li zhuchibeizhu"><div class="left">处置备注 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
+        var text = '<div class="li zhuchibeizhu"><div class="left">处置备注</div><div class="right"><li><span class="radio-text">处置类型</span> <input type="radio" class="radio" name="management_tyle" value="1"> <span class="radio-text">补助</span> <input type="radio" class="radio" name="management_tyle" value="2"> <span class="radio-text">辅助</span> <span class="radio-text" style="margin-left: 50px">上传文件</span> <input type="file" style="margin-left: -10px" name="management_file"  class="uploadFile"></li><li><textarea name="management_record[]"></textarea><input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em" class="chuzhisave"/></li></div></div>';
         var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
         $('.title').click(function () {
             $(this).children('.caret').toggleClass('caret-active');
@@ -307,12 +346,36 @@
         $('#addchuzhi').click(function () {
             $('.zhuchibeizhu:last').after(text);
             $('.zhuchibeizhu:last').children('.right').children('textarea').attr('name', 'management_record' + ($('.zhuchibeizhu').length - 1));
+            upload();
         })
         $('#addhuifang').click(function () {
             $('.huifangjilu:last').after(strVar);
             $('.huifangjilu:last').children('.right').children('textarea').attr('name', 'visit_suggestion' + ($('.huifangjilu').length - 1));
         })
     })
+
+    var url = 'index.php?s=/Case/tichu';
+    function upload() {
+        $(".uploadFile").last().fileupload({
+            url: url,
+            dataType: 'JSON',
+            sequentialUploads: true,    //按顺序下载好像必须加
+        }).bind('fileuploaddone', function (e, data) {
+            //上传完成
+            console.log(data);
+            return;
+            var res = data.result;
+            if (res.result == 0) {
+                alert(res.msg);
+                $("#progress").css('width', 0).html('');
+            } else {
+                $('#uploadResult').find('span').html('上传完成');
+                $('#result').remove();
+                file = res.msg;
+            }
+        });
+    }
+    upload();
 </script>
 <script type="text/javascript">
     function auth() {
@@ -395,7 +458,7 @@
             }
         })
     }
-    function printForm(){
+    function printForm() {
         $('.information').printArea({popHt: 1000, popWd: 2000, mode: 'popup', popClose: true});
     }
 </script>
