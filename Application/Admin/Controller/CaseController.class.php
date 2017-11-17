@@ -327,7 +327,7 @@ class CaseController extends AdminController
                             ->setCellValueExplicit('K' . ($k + 2), $mdfx)
                             ->setCellValueExplicit('L' . ($k + 2), $jgfx)
                             ->setCellValueExplicit('M' . ($k + 2), $bffx)
-                            ->setCellValueExplicit('N' . ($k + 2), getStage($v['case_status']), TRUE);
+                            ->setCellValueExplicit('N' . ($k + 2), getStage($v['case_status'], TRUE));
                         //                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
                         //                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
                         //                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
@@ -356,34 +356,24 @@ class CaseController extends AdminController
     public function daichu()
     {
         $this->meta_title = '待处理案件';
-        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
-        if (UID == 1) {
-            $where = ('finish_suggestion = "" OR visit_status = 1 AND visit_suggestion = ""');
-        }
-        if ($uid == 1) {
-            $where = ('case_status = "diaodu" and turn_related = 1');
-        }
-        if ($uid == 2) {
-            $where = ('case_status = "chushen"');
-        }
-        if ($uid == 3) {
-            $where = ('case_status = "diaodu" and turn_related = 3 or case_status = "weihuifang"');
-        }
-        if ($uid == 4) {
-            $where = ('case_status = "caiji" or case_status = "shenpi" or case_status = "chuzhi"');
-        }
-        $count = M('case')->where($where)->order('fill_in_time desc')->count();
-        import('Think', 'ThinkPHP/Library/Think/Page');
+        $uid   = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $auth  = getStatusFromAuth();
+        $where = [
+            'case_status' => ['in', implode(',', $auth['status'])],
+        ];
+        $case  = M('case');
+        $count = $case->where($where)->count();
+        // import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
 
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $this->CaseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
 //        dump(M('case')->getLastSql());
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
-        $this->uid = $uid;
+        $this->uid   = $uid;
         $this->display();
     }
 
@@ -391,33 +381,24 @@ class CaseController extends AdminController
     public function zaichu()
     {
         $this->meta_title = '正在处理';
-        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
-        if (UID == 1) {
-            $where = ('finish_suggestion = "" OR visit_status = 1 AND visit_suggestion = ""');
-        }
-        if ($uid == 1) {
-            $where = ('case_status = "diaodu" and turn_related = 1');
-        }
-        if ($uid == 2) {
-            $where = ('case_status = "chushen"');
-        }
-        if ($uid == 3) {
-            $where = ('case_status = "diaodu" and turn_related = 3 or case_status = "weihuifang"');
-        }
-        if ($uid == 4) {
-            $where = ('case_status = "caiji" or case_status = "shenpi" or case_status = "chuzhi"');
-        }
-        $count = M('case')->where($where)->order('fill_in_time desc')->count();
-        import('Think', 'ThinkPHP/Library/Think/Page');
+        $uid   = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $auth  = getStatusFromAuth();
+        $where = [
+            'case_status' => ['in', implode(',', $auth['status'])],
+        ];
+        $case  = M('case');
+        $count = $case->where($where)->count();
+        // import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
 
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $this->CaseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
+//        dump(M('case')->getLastSql());
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
-        $this->uid = $uid;
+        $this->uid   = $uid;
         $this->display();
     }
 

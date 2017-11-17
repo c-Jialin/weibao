@@ -62,9 +62,9 @@ body{padding: 0}
             <select name='country' id='country'>
                 <option value='0'>请选择村/社区</option>
             </select>
-            <input type='text' name='start'  style='width:90px' readonly> 至
-            <input type='text' name='end' style='width:90px' readonly>
-            <input type='submit' name='submit' value='筛选' class='btn'>
+            <input type='text' name='start' id='start' style='width:90px' readonly> 至
+            <input type='text' name='end' id='end' style='width:90px' readonly>
+            <input type='submit' id='filter' name='submit' value='筛选' class='btn'>
         </div>
     </form>
 
@@ -230,7 +230,7 @@ body{padding: 0}
 <script type="text/javascript">
 
         var now = new Date().getTime();
-        pickmeup('input[name=start]', {
+        pickmeup('#start', {
             position: 'bottom',
             hide_on_select: true,
             locale: 'ch',
@@ -239,7 +239,7 @@ body{padding: 0}
             max: '' + now + '',
         });
 
-        pickmeup('input[name=end]', {
+        pickmeup('#end', {
             position: 'bottom',
             hide_on_select: true,
             locale: 'ch',
@@ -284,6 +284,8 @@ body{padding: 0}
         <?php if($city > 0) { ?>
             $('#city').change();
         <?php } ?>
+
+
 /*    $('#select_,#select_sex').change(function(){
         var option_value = $(this).find("option:selected").val();
         switch (option_value){
@@ -334,5 +336,15 @@ body{padding: 0}
                 layer.alert(res.msg);
         }, 'json');
     }
+
+    //判断筛选日期是否
+    $('#filter').on('click', function(){
+        var start = pickmeup('#start').get_date(false).getTime();
+        var end   = pickmeup('#end').get_date(false).getTime();
+        if(start > end){
+            event.preventDefault();
+            layer.alert('筛选日期范围不正确!');
+        }
+    });
 </script>
 </block>
