@@ -55,7 +55,7 @@ class IndexController extends MobileController
                     $where = ('case_status = "diaodu" and turn_related = 3 or case_status = "weihuifang"');
                 }
                 if ($uid == 4) {
-                    $where = ('case_status = "caiji" or case_status = "shenpi" or case_status = "chizhi"');
+                    $where = ('case_status = "caiji" or case_status = "shenpi" or case_status = "chuzhi"');
                 }
                 $this->xiaoxiList = M('case')->where($where)->order('fill_in_time desc')->select();
                 $this->CaseList = M('case')->select();
@@ -126,7 +126,7 @@ class IndexController extends MobileController
                     $this->chaoshi = $DDchaoshi + $JAchaoshi;
                 }
                 if ($uid == 4) {
-                    $theTime = M('case')->where(array('case_status = "caiji" or case_status = "shenpi" or case_status = "chizhi"'))->field('fill_in_time,last_instance_time,deal_with_time')->find();
+                    $theTime = M('case')->where(array('case_status = "caiji" or case_status = "shenpi" or case_status = "chuzhi"'))->field('fill_in_time,last_instance_time,deal_with_time')->find();
                     $CJstarTime = strtotime($theTime['fill_in_time']) + strtotime("8 day");
                     $CJendTime = strtotime($theTime['fill_in_time']) + strtotime("10 day");
                     $SPstarTime = strtotime($theTime['last_instance_time']) + strtotime("8 day");

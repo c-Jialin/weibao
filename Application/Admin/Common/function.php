@@ -518,7 +518,7 @@ function getStage($str, $isExcel = false)
             $res = '<font style="color:red">处置</font>';
             break;
 
-        case 'chizhi':
+        case 'chuzhi':
             $excel = '结案';
             $res = '<font style="color:red">结案</font>';
             break;
@@ -638,22 +638,40 @@ function rebuidArray($arr, $key)
 }
 
 /**
-  * 案件状态对应的当前案件应该处理的流程 英文 和 下一阶段的英文
-  * $param string $chn 中文拼音案件状态
+  * 案件状态对应的本阶段 英文 和 下一阶段的英文
+  * @param string $chn  中文拼音案件状态
+  * @param boolen $next 若为true 则获取下一阶段的中文和英文
   * return array
 */
-function translate($chn){
-    $arr = [
-        'caiji'     => ['now' => 'add',             'next' => 'trial'],
-        'bohuiC'    => ['now' => 'add',             'next' => 'trial'],
-        'bohuiCs'   => ['now' => 'trial',           'next' => 'last_instance'],
-        'chushen'   => ['now' => 'trial',           'next' => 'last_instance'],
-        'shenpi'    => ['now' => 'last_instance',   'next' => 'dispatch'],
-        'diaodu'    => ['now' => 'dispatch',        'next' => 'deal_with'],
-        'chizhi'    => ['now' => 'deal_with',       'next' => 'finish'],
-        'bohuiCz'   => ['now' => 'deal_with',       'next' => 'finish'],
-        'weihuifang'=> ['now' => 'visit',           'next' => ''],
-    ];
+function translate($chn, $next = false){
+    if($next)
+        $arr = [
+            'caiji'     => ['ch' => 'chushen',  'en' => 'trial'],
+            'bohuiC'    => ['ch' => 'chushen',  'en' => 'trial'],
+            'bohuiCs'   => ['ch' => 'shenpi',   'en' => 'last_instance'],
+            'chushen'   => ['ch' => 'shenpi',   'en' => 'last_instance'],
+            'shenpi'    => ['ch' => 'diaodu',   'en' => 'dispatch'],
+            'diaodu'    => ['ch' => 'chuzhi',   'en' => 'deal_with'],
+            'chuzhi'    => ['ch' => 'jiean',    'en' => 'finish'],
+            'bohuiCz'   => ['ch' => 'jiean',    'en' => 'finish'],
+            'weihuifang'=> ['ch' => 'huifang',  'en' => 'visit'],
+            'jiean'     => ['ch' => '',         'en' => ''],
+            'huifang'   => ['ch' => '',         'en' => ''],
+        ];
+    else
+        $arr = [
+            'caiji'     => ['now' => 'add',             'next' => 'trial'],
+            'bohuiC'    => ['now' => 'add',             'next' => 'trial'],
+            'bohuiCs'   => ['now' => 'trial',           'next' => 'last_instance'],
+            'chushen'   => ['now' => 'trial',           'next' => 'last_instance'],
+            'shenpi'    => ['now' => 'last_instance',   'next' => 'dispatch'],
+            'diaodu'    => ['now' => 'dispatch',        'next' => 'deal_with'],
+            'chuzhi'    => ['now' => 'deal_with',       'next' => 'finish'],
+            'bohuiCz'   => ['now' => 'deal_with',       'next' => 'finish'],
+            'weihuifang'=> ['now' => 'visit',           'next' => ''],
+            'jiean'     => ['now' => 'finish',          'next' => ''],
+            'huifang'   => ['now' => 'visit',           'next' => ''],
+        ];
     return $arr[$chn];
 }
 
@@ -664,7 +682,7 @@ function translate($chn){
 function getStatusFromAuth()
 {
     //初始化返回结果
-    $arr = ['auth' => [], 'status' => [], 'next' => []];
+    $arr  = ['auth' => [], 'status' => [], 'next' => []];
     $next = ['add' => 1, 'trial' => 2, 'last_instance' => 3, 'dispatch' => 4, 'deal_with' => 5, 'finish' => 6, 'visit' => 7];
     //根据权限获得英文节点
     if (empty(IS_NODE)) {

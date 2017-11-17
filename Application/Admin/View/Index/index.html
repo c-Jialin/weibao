@@ -35,15 +35,18 @@
 					<div style="height:267px;overflow-y:scroll">
 					<table style="width:100%;text-align:left;text-indent:1em" cellspacing="0" cellpadding="0" >
 						<tbody style="font-size:13px">
-						<?php foreach ($xiaoxiList as $v) {?>
+						<foreach name='messages' item='v'> 
 							<tr>
 								<td style="border-bottom:1px dashed #999">
-								<a href="index.php?s=/Case/daichu.html" style="color:#323232;text-decoration:none"><?php echo $v['name'];
-								?>案件需要处理。
+								<?php 
+									$res  = translate($v['case_status'], true);
+									$url = U('Case/' . $res['en'], ['id' => $v['id'], 'act' => $res['ch']]);
+								?>
+								<a href='{$url}' style="color:#323232;text-decoration:none">{$v['name']}案件需要处理。
 								</a>
 								</td>
 							</tr>
-						<?php }?>
+						</foreach>
 						</tbody>
 					</table>
 					</div>
