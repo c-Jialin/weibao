@@ -680,3 +680,6 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='rgb(0,176,242)
 .copyright a {
     margin: 0 4px;
 }
+.chooseDate{
+    display:none;
+}
