@@ -97,7 +97,7 @@
         <div class="title <?php if($act == 'chuzhi'){?>active<?php }?>" href="#chuzhi">当前阶段：处置<a
                 href='javascript:printForm()' class='print'>打印</a></div>
         <form action="{:U('Case/deal_with')}" method="post">
-            <div id="chuzhi" class="submit collapse <?php if($act == 'chuzhi'){?>in<?php }?>">
+            <div id="chuzhi" class="submit collapse chuzhi <?php if($act == 'chuzhi'){?>in<?php }?>">
                 <div class="li">
                     <div class="left">流程操作</div>
                     <div class="right">
@@ -118,33 +118,35 @@
                         <?php
 							$mange_list = unserialize($Clist['management_record']);
 							if(is_array($mange_list)){
-							for($i=1;$i<=count($mange_list);$i++){
+							foreach($mange_list as $v){
 						?>
                         <li>
+                        <form>
                             <span class="radio-text">处置类型</span>
-                            <input type="radio" class="radio" name="management_tyle" value="1"> <span
+                            <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 1){ echo 'checked'; }?> value="1"> <span
                                 class="radio-text">补助</span>
-                            <input type="radio" class="radio" name="management_tyle" value="2"> <span
+                            <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 2){ echo 'checked'; }?> value="2"> <span
                                 class="radio-text">辅助</span>
                             <span class="radio-text" style="margin-left: 50px">上传文件</span>
-                            <input type="file" style="width: 80px; margin-left: -10px" name="management_file">
-                        </li>
-                        <li>
-                            <textarea name="management_record[]"><?php echo $mange_list[$i-1]?></textarea>
+                            <?php if(!empty($v['file'])){ ?>
+                            <a href="/Uploads/case/user/deal/<?php echo $v['file'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
+                            <?php } ?>
+                            <input type="text" style="display: none;" name="file_name" value="<?php echo $v['file'];?>"/>
+                            <textarea name="management_record[]"><?php echo $v['text']?></textarea>
                             <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
                                    class="chuzhisave"/>
+                        </form>
                         </li>
                         <?php }}else{?>
                         <li>
                             <span class="radio-text">处置类型</span>
-                            <input type="radio" class="radio" name="management_tyle" value="1"> <span
+                            <input type="radio" class="radio" name="management_tyle" checked value="1"/> <span
                                 class="radio-text">补助</span>
-                            <input type="radio" class="radio" name="management_tyle" value="2"> <span
+                            <input type="radio" class="radio" name="management_tyle" value="2"/> <span
                                 class="radio-text">辅助</span>
                             <span class="radio-text" style="margin-left: 50px">上传文件</span>
-                            <input type="file" style="margin-left: -10px" name="management_file" class="uploadFile">
-                        </li>
-                        <li>
+                            <input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/>
+                            <input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"/>
                             <textarea name="management_record[]"><?php echo $mange_list?></textarea>
                             <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
                                    class="chuzhisave"/>
@@ -261,11 +263,20 @@
         });
     });
     $(function () {
-        $('.chuzhisave').on('click', '.chuzhisave', function () {
-            var str = $(this).siblings('textarea').val();
+        $('.chuzhi').on('click', '.chuzhisave', function () {
+            var file = $(this).siblings('input[name=file_name]').val();
+            var texts = $(this).siblings('textarea').val();
+            var type = $(this).siblings('input[name=management_tyle]');
+            var types = 1;
+            type.each(function (){
+                if ($(this).prop('checked')) {
+                    types = $(this).val();
+                }
+            });
             var id = '<?php echo $id;?>';
             var va = $('.chuzhisave').index(this);
-            $.post('index.php?s=/Case/tichu', {id: id, str: str, va: va}, function (res) {
+            $.post('index.php?s=/Case/tichu', {id: id, file: file, text: texts, type: types, va: va}, function (res) {
+                console.log(res);
                 if (res == 1) {
                     alert('提交成功');
                 }
@@ -338,7 +349,7 @@
         })
     }
     $(function () {
-        var text = '<div class="li zhuchibeizhu"><div class="left">处置备注</div><div class="right"><li><span class="radio-text">处置类型</span> <input type="radio" class="radio" name="management_tyle" value="1"> <span class="radio-text">补助</span> <input type="radio" class="radio" name="management_tyle" value="2"> <span class="radio-text">辅助</span> <span class="radio-text" style="margin-left: 50px">上传文件</span> <input type="file" style="margin-left: -10px" name="management_file"  class="uploadFile"></li><li><textarea name="management_record[]"></textarea><input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em" class="chuzhisave"/></li></div></div>';
+        var text = '<div class="li zhuchibeizhu"><div class="left">处置备注</div><div class="right"><li><span class="radio-text">处置类型</span> <input type="radio" class="radio" name="management_tyle" checked value="1"> <span class="radio-text">补助</span> <input type="radio" class="radio" name="management_tyle" value="2"> <span class="radio-text">辅助</span> <span class="radio-text" style="margin-left: 50px">上传文件</span> <input type="file" style="margin-left: -10px" name="management_file"  class="uploadFile"><input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"><textarea name="management_record[]"></textarea><input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em" class="chuzhisave"/></li></div></div>';
         var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
         $('.title').click(function () {
             $(this).children('.caret').toggleClass('caret-active');
@@ -354,7 +365,7 @@
         })
     })
 
-    var url = 'index.php?s=/Case/tichu';
+    var url = 'index.php?s=/Case/ajax_upload';
     function upload() {
         $(".uploadFile").last().fileupload({
             url: url,
@@ -362,16 +373,15 @@
             sequentialUploads: true,    //按顺序下载好像必须加
         }).bind('fileuploaddone', function (e, data) {
             //上传完成
-            console.log(data);
-            return;
             var res = data.result;
-            if (res.result == 0) {
-                alert(res.msg);
-                $("#progress").css('width', 0).html('');
+            if (res.savename === undefined) {
+                alert(res);
+            } else if (res.savename === false) {
+                //....
             } else {
-                $('#uploadResult').find('span').html('上传完成');
-                $('#result').remove();
-                file = res.msg;
+                //上传完成
+                $(this).next().val(res.savename).css('display', 'inline-block');
+                $(this).remove();
             }
         });
     }

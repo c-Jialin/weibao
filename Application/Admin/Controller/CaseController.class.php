@@ -683,7 +683,7 @@ class CaseController extends AdminController
             if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
             //图片上传
             if ($_FILES['photo']['name'] != '') {
-                $uploadPath = 'case/user/';
+                $uploadPath = 'case/user/photo';
                 if (!file_exists($uploadPath)) {
                     mkdir($uploadPath);
                     chmod($uploadPath, 0777);
@@ -900,17 +900,28 @@ class CaseController extends AdminController
     {
         $id = $_POST['id'];
         $va = $_POST['va'];
+        $post = array();
+        foreach ($_POST as $k => $v) {
+            if (!in_array($k, array('id', 'va'))) {
+                $post[$k] = $v;
+            }
+        }
+        $list[$va] = $post;
         $management_record = M('case')->where(array('id' => $id))->getField('management_record');
-        if (is_array(unserialize($management_record))) {
-            $arr = unserialize($management_record);
-            array_push($arr, $_POST['str']);
-            $data['management_record'] = serialize($arr);
-        } else if (!empty($management_record)) {
-            $arr[] = unserialize($management_record);
-            array_push($arr, $_POST['str']);
-            $data['management_record'] = serialize($arr);
+        if (empty($management_record)) {
+            $data['management_record'] = serialize($list);
         } else {
-            $data['management_record'] = serialize($_POST['str']);
+            $arr = unserialize($management_record);
+            if (is_array($arr)) {
+                if (in_array($va, array_keys($arr))) {
+                    foreach ($arr as $k => &$v) {
+                        if ($k == $va) $v = $post;
+                    }
+                } else {
+                    $arr = array_merge($arr, $list);
+                }
+                $data['management_record'] = serialize($arr);
+            }
         }
         $saveData = M('case')->where(array('id' => $id))->save($data);
         if ($saveData) {
@@ -918,6 +929,33 @@ class CaseController extends AdminController
         } else {
             echo '2';
         }
+    }
+
+    //处置文件提交
+    public function ajax_upload()
+    {
+        $photo = false;
+        if ($_FILES['management_file']['name'] != '') {
+            $uploadPath = 'case/user/deal/';
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath);
+                chmod($uploadPath, 0777);
+            }
+            $upload = new \Think\Upload(array(
+                'savePath' => $uploadPath,
+                'subName' => false,
+                'uploadReplace' => true // 覆盖同名文件
+            ));
+            $upload->maxSize   =     5120000 ;// 设置附件上传大小
+            $upload->exts      =     array('jpg', 'png', 'jpeg');// 设置附件上传类型
+            $uploadInfo = $upload->uploadOne($_FILES['management_file']);
+            if (!$uploadInfo) {
+                $photo = $upload->getError();
+            } else {
+                $photo = $uploadInfo;
+            }
+        }
+        echo json_encode($photo);
     }
 
     //结案
