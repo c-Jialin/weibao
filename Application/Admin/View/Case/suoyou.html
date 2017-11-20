@@ -48,7 +48,7 @@ body{padding: 0}
     <!-- 数据列表 -->
     <form action='{:U("suoyou")}' method='post'>
         <div style='float: left; margin-bottom: 2px;'>
-            <span>筛选案件</span>
+            <span>搜索案件</span>
             <select name='city' id='city'>
                 <option value='0'>请选择县/市/区</option>
                 <foreach name='list_top' item='v'>
@@ -62,28 +62,24 @@ body{padding: 0}
             <select name='country' id='country'>
                 <option value='0'>请选择村/社区</option>
             </select>
-            <input type='text' name='start' id='start' style='width:90px' readonly> 至
-            <input type='text' name='end' id='end' style='width:90px' readonly>
-            <input type='submit' id='filter' name='submit' value='筛选' class='btn'>
+            <select name='sex' id='enrollSex'>
+                <option value='0'>请选择性别</option>
+                <option value='2' <if condition='$sex == 2'>selected</if> >男</option>
+                <option value='1' <if condition='$sex == 1'>selected</if>>女</option>
+            </select>
+            <input type='text' name='name' id='name' placeholder='请输入搜索关键字' value='{$name}'>
+            <select name='date' id='date'>
+                <option value='0'>全部日期</option>
+                <option value='1' <if condition='$date == 1'>selected</if> >手动选择日期</option>
+            </select>
+            <div class='chooseDate'>
+                <input  type='text' name='start' id='start' readonly> 至
+                <input  type='text' name='end' id='end' readonly>
+            </div>
+            <input type='submit' id='filter' name='submit' value='搜索' class='btn'>
+            <a href='javascript:enrollCase()' class='btn'>导出</a>
         </div>
     </form>
-
-    <div style='float: right; margin-bottom: 2px;'>
-        <span>excel导出</span>
-        <select name='type' id='enrollType'>
-            <option  value='choose'>请选择导出方式</option>
-            <option  value='all'>全部导出</option>
-            <volist name='shequ' id='vo'>
-                <option value='{$vo.region_id}'>{$vo.region_name}</option>
-            </volist>
-        </select>
-        <select name='sex' id='enrollSex'>
-            <option value='0'>请选择性别</option>
-            <option value='2'>男</option>
-            <option value='1'>女</option>
-        </select>
-        <a href='javascript:enrollCase()' class='btn'>导出</a>
-    </div>
 
     <div class="data-table table-striped" >
     <table class="">
@@ -229,6 +225,7 @@ body{padding: 0}
 <script src='__PUBLIC__/static/pickmeup/pickmeup.js'></script>
 <script type="text/javascript">
 
+        //时间插件
         var now = new Date().getTime();
         pickmeup('#start', {
             position: 'bottom',
@@ -248,7 +245,7 @@ body{padding: 0}
             max: '' + now + '',
         });
 
-
+        //选择县市区
         $('#city').on('change', function(){
             var value = this.value;
             $.post("{:U('Case/Linkage_top')}", {id: value, type: 3}, function (res) {
@@ -268,6 +265,7 @@ body{padding: 0}
             });
         });
 
+        //选择街镇
         $('#town').on('change', function(){
              var value = this.value;
              $.post("{:U('Case/Linkage_top')}", {id: value, type: 4}, function (res) {
@@ -281,6 +279,7 @@ body{padding: 0}
             });
         });
 
+        //选择city初始化
         <?php if($city > 0) { ?>
             $('#city').change();
         <?php } ?>
@@ -316,18 +315,31 @@ body{padding: 0}
         });
     })
     $(function(){
-        // $('#main').attr({'id': 'indexMain','class': 'index-main'});
-        // $('.copyright').html('<div class="copyright"> ©2013 <a href="" target="_blank">topthink.net</a> </div>');
         $('.sidebar').remove();
     });
 
     //导出案件
     var layer = layui.layer;
-    var url = "{:U('Case/enrollListExcel')}";
+    var url = "{:U('Case/suoyou')}";
     function enrollCase(){
-        var type = $('#enrollType').val();
-        var sex  = $('#enrollSex').val();
-        $.post(url, {type: type, sex: sex}, function(res) {
+        var start = pickmeup('#start').get_date(false).getTime(),
+            end   = pickmeup('#end').get_date(false).getTime(),
+            sex   = $('#enrollSex').val(),
+            city  = $('#city').val(),
+            town  = $('#town').val(),
+          country = $('#country').val(),
+          name    = $('#name').val(),
+          data    = {
+                    start   : start,
+                    end     : end,
+                    sex     : sex,
+                    city    : city,
+                    town    : town,
+                    country : country,
+                    name    : name,
+                    type    : 'enroll',
+                  };
+        $.post(url, data, function(res) {
             if(res.result == 1){
                 layer.msg(res.msg, {icon: 1, time: 4000});
                 location.href = res.url;
@@ -337,14 +349,28 @@ body{padding: 0}
         }, 'json');
     }
 
+    //全部日期--手动选择日期 切换
+    $('#date').on('change', function(){
+        parseInt(this.value) ? $('.chooseDate').css('display', 'inline') : $('.chooseDate').hide();
+    });
+
+    //全部日期---手动选择 初始化
+    <?php if($date > 0) { ?>
+        $('#date').change();
+    <?php } ?>
+
     //判断筛选日期是否
     $('#filter').on('click', function(){
-        var start = pickmeup('#start').get_date(false).getTime();
-        var end   = pickmeup('#end').get_date(false).getTime();
-        if(start > end){
-            event.preventDefault();
-            layer.alert('筛选日期范围不正确!');
+        if($('#date').val() > 0){
+            var start = pickmeup('#start').get_date(false).getTime();
+            var end   = pickmeup('#end').get_date(false).getTime();
+            if(start > end){
+                event.preventDefault();
+                layer.alert('筛选日期范围不正确!');
+            }
         }
     });
+
+
 </script>
 </block>
