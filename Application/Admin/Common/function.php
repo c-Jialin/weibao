@@ -628,7 +628,7 @@ function getShequ($id)
  * @param string $key 指定数组中一维数组的某个key
  * return array    $res 重构后的数组
  */
-function rebuidArray($arr, $key)
+function rebuildArray($arr, $key)
 {
     $res = [];
     foreach ($arr as $k => $v) {
@@ -646,17 +646,17 @@ function rebuidArray($arr, $key)
 function translate($chn, $next = false){
     if($next)
         $arr = [
-            'caiji'     => ['ch' => 'chushen',  'en' => 'trial'],
-            'bohuiC'    => ['ch' => 'chushen',  'en' => 'trial'],
-            'bohuiCs'   => ['ch' => 'shenpi',   'en' => 'last_instance'],
-            'chushen'   => ['ch' => 'shenpi',   'en' => 'last_instance'],
-            'shenpi'    => ['ch' => 'diaodu',   'en' => 'dispatch'],
-            'diaodu'    => ['ch' => 'chuzhi',   'en' => 'deal_with'],
-            'chuzhi'    => ['ch' => 'jiean',    'en' => 'finish'],
-            'bohuiCz'   => ['ch' => 'jiean',    'en' => 'finish'],
-            'weihuifang'=> ['ch' => 'huifang',  'en' => 'visit'],
-            'jiean'     => ['ch' => '',         'en' => ''],
-            'huifang'   => ['ch' => '',         'en' => ''],
+            'caiji'     => ['ch' => 'chushen',      'en' => 'trial'],
+            'bohuiC'    => ['ch' => '',             'en' => 'index'],
+            'bohuiCs'   => ['ch' => 'chushen',      'en' => 'trial'],
+            'chushen'   => ['ch' => 'zhongshen',    'en' => 'last_instance'],
+            'shenpi'    => ['ch' => 'diaodu',       'en' => 'dispatch'],
+            'diaodu'    => ['ch' => 'chuzhi',       'en' => 'deal_with'],
+            'chuzhi'    => ['ch' => 'jiean',        'en' => 'finish'],
+            'bohuiCz'   => ['ch' => 'diaodu',       'en' => 'dispatch'],
+            'weihuifang'=> ['ch' => 'huifang',      'en' => 'visit'],
+            'jiean'     => ['ch' => '',             'en' => ''],
+            'huifang'   => ['ch' => '',             'en' => ''],
         ];
     else
         $arr = [

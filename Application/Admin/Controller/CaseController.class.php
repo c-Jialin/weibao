@@ -478,7 +478,7 @@ class CaseController extends AdminController
 
     /**
      * 计算 超时/即将超时 案件数
-     * return array $overtime 返回数组包含键值overtiming, overtimed
+     * return array $list 返回数组包含键值overtiming, overtimed
      * overtiming为即将超时, overtimed为已经超时
      */
     private function countOverTimeCases($cases, $action = true)
@@ -486,7 +486,7 @@ class CaseController extends AdminController
         //初始化返回结果
         $list = [];
         $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
-        $rules = rebuidArray($rules, 'node');
+        $rules = rebuildArray($rules, 'node');
         $now = time();
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];
