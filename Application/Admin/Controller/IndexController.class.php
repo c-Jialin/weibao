@@ -51,10 +51,19 @@ class IndexController extends AdminController
             ];
             //案件统计过滤的字段
             $field = ['id', 'name', 'case_status', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
+            //权限下所有案件
             $cases = $case->field($field)->where($where)->order('fill_in_time desc')->select();
-  
-            $this->messages  = $cases;
-            $this->handling  = $this->waiting = count($cases);
+
+            //消息和待处理数量
+            $where['stage_status'] = 'complete';
+            $this->messages  = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            $this->waiting = count($this->messages);
+
+            //正在处理的数量
+            $where['stage_status'] = 'ing';
+            $this->handling  = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+
+            //超时和即将超时数量
             $overtime        = $this->countOverTimeCases($cases);
             $this->overtiming= $overtime['overtiming'];
             $this->overtimed = $overtime['overtimed'];
@@ -75,7 +84,7 @@ class IndexController extends AdminController
         $overtime = ['overtiming' => 0, 'overtimed' => 0];
 
         $rules    = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
-        $rules    = rebuidArray($rules, 'node');
+        $rules    = rebuildArray($rules, 'node');
         $now = time();
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];

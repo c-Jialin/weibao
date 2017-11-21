@@ -40,7 +40,7 @@
 								<td style="border-bottom:1px dashed #999">
 								<?php 
 									$res  = translate($v['case_status'], true);
-									$url = U('Case/' . $res['en'], ['id' => $v['id'], 'act' => $res['ch']]);
+									$url = U('case/' . $res['en'], ['id' => $v['id'], 'act' => $res['ch']]);
 								?>
 								<a href='{$url}' style="color:#323232;text-decoration:none">{$v['name']}案件需要处理。
 								</a>
