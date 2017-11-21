@@ -855,7 +855,7 @@ class CaseController extends AdminController
                 }
             } else if ($data['management_status'] == 2) {
                 $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
-                $case->where(array('id' => $data['id']))->save($arr);
+                $case->where(array('id' => $_POST['id']))->save($arr);
                 echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {

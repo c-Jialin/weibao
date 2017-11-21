@@ -118,7 +118,6 @@ abstract class Addon
         if (isset($_config[$name])) {
             return $_config[$name];
         }
-        $config = array();
         $map['name'] = $name;
         $map['status'] = 1;
         $config = M('Addons')->where($map)->getField('config');
