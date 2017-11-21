@@ -12,13 +12,11 @@ use User\Api\UserApi;
 class PublicController extends Controller
 {
     /* 登录页面 */
-    public function login($username = '', $password = '', $verify = '')
+    public function login()
     {
         if (IS_POST) { //登录验证
-            /* 检测验证码 */
-//            if (!check_verify($verify)) {
-//                $this->error('验证码输入错误！');
-//            }
+            $username = $_POST['username'];
+            $password = $_POST['password'];
             /* 调用UC登录接口登录 */
             $user = new UserApi;
             $uid = $user->login($username, $password);
@@ -26,12 +24,10 @@ class PublicController extends Controller
                 /* 登录用户 */
                 $Member = D('Member');
                 if ($Member->login($uid)) { //登录用户
-                    //TODO:跳转到登录前页面
-                    $this->success('登录成功！', U('Home/Index/index'));
+                    exit(json_encode(array('erron' => 1, 'error' => '登录成功')));
                 } else {
-                    $this->error($Member->getError());
+                    exit(json_encode(array('erron' => 0, 'error' => $Member->getError())));
                 }
-
             } else { //登录失败
                 switch ($uid) {
                     case -1:
@@ -44,12 +40,11 @@ class PublicController extends Controller
                         $error = '未知错误！';
                         break; // 0-接口参数错误（调试阶段使用）
                 }
-                $this->error($error);
+                exit(json_encode(array('erron' => 0, 'error' => $error)));
             }
-
-        } else { //显示登录表单
-            $this->display();
         }
+        //显示登录表单
+//        $this->display();
     }
 
     /* 退出登录 */
@@ -58,9 +53,9 @@ class PublicController extends Controller
         if (is_login()) {
             D('Member')->logout();
             session('[destroy]');
-            echo "<script>window.location.href='index.php?s=/Public/login.html';</script>";
+            exit(json_encode(array('erron' => 1, 'error' => '退出成功')));
         } else {
-            $this->redirect('login');
+            exit(json_encode(array('erron' => 1, 'error' => '没有登录')));
         }
     }
 

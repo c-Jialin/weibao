@@ -1,6 +1,8 @@
 <?php
 
 namespace Admin\Controller;
+use Addons\SMS\SMSAddon;
+
 /**
  * 首页控制器
  */
@@ -11,6 +13,9 @@ class IndexController extends AdminController
      */
     public function index()
     {
+//        $SMS = new SMSAddon();
+//        $rse = $SMS->AdminIndex(13667443820, '你傻逼了');
+//        var_dump($rse);
         //UID为用户id uid为用户组id
         if (UID) {
             if (IS_ROOT) { //管理员首页
@@ -44,8 +49,8 @@ class IndexController extends AdminController
                 $this->uid = $uid;
             }
             //案件统计
-            $case  = M('case');
-            $auth  = getStatusFromAuth();
+            $case = M('case');
+            $auth = getStatusFromAuth();
             $where = [
                 'case_status' => ['in', implode(',', $auth['status'])],
             ];
@@ -74,10 +79,10 @@ class IndexController extends AdminController
     }
 
     /**
-      * 计算 超时/即将超时 案件数
-      * return array $overtime 返回数组包含键值overtiming, overtimed
-        overtiming为即将超时, overtimed为已经超时
-    */
+     * 计算 超时/即将超时 案件数
+     * return array $overtime 返回数组包含键值overtiming, overtimed
+     * overtiming为即将超时, overtimed为已经超时
+     */
     private function countOverTimeCases($cases)
     {
         //初始化返回结果
@@ -88,22 +93,22 @@ class IndexController extends AdminController
         $now = time();
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];
-            if($rules[$status]['warn_time'] == 0)
+            if ($rules[$status]['warn_time'] == 0)
                 //表示禁用 则不限制时间
                 continue;
-            else{
-                $key        = translate($status);
+            else {
+                $key = translate($status);
                 //现阶段该执行的状态的时间
-                $caseTime   = strtotime($v[$key['now'] . '_time']);
-                if(!empty($caseTime)){
+                $caseTime = strtotime($v[$key['now'] . '_time']);
+                if (!empty($caseTime)) {
                     //下一阶段该执行的状态的时间
-                    $nextTime   = $v[$key['next'] . '_time'];
-                    $time       = empty($nextTime) ? $caseTime : $nextTime;
+                    $nextTime = $v[$key['next'] . '_time'];
+                    $time = empty($nextTime) ? $caseTime : $nextTime;
                     $overtiming = $time + $rules[$status]['warn_time'] * 3600;
-                    $overtimed  = $time + $rules[$status]['execute_time'] * 3600;
+                    $overtimed = $time + $rules[$status]['execute_time'] * 3600;
 
-                    if($now >= $overtiming){
-                        if($now >= $overtimed)
+                    if ($now >= $overtiming) {
+                        if ($now >= $overtimed)
                             $overtime['overtimed']++;
                         else
                             $overtime['overtiming']++;

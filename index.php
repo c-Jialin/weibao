@@ -26,9 +26,9 @@ function isMobile()
             return true;
         }
     }
+    if (isset ($_SERVER['SERVER_NAME'])) return stristr($_SERVER['SERVER_NAME'], "www.weibao.com") ? false : true;
     return false;
 }
-
 if (!isMobile()) {
     $_GET['m'] = 'Admin';
 } else {

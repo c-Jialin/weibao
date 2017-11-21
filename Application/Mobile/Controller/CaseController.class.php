@@ -529,11 +529,12 @@ class CaseController extends MobileController
         } else {
             $this->Lage();
             $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
-            $this->Clist = $case;
+//            $this->Clist = $case;
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
+            echo json_encode($member);
             $this->assign('member', $member);
-            $this->display();
+//            $this->display();
         }
     }
 
