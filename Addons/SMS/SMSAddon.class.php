@@ -39,7 +39,7 @@ class SMSAddon extends Addon
             $key = $config['Key'];
             if (empty($uid) || empty($key)) return array('erron' => 0, 'error' => '插件被禁用');
             if (empty($mobile) || empty($text)) return array('erron' => 0, 'error' => '接收号码或信息不能为空');
-            $url = 'http://sms.webchinese.cn/web_api/?Uid=' . $uid . '&Key= ' . $key . ' &smsMob=' . $mobile . '&smsText=' . $text;
+            $url = 'http://sms.webchinese.cn/web_api/?Uid=' . $uid . '&Key=' . $key . '&smsMob=' . $mobile . '&smsText=' . $text;
             if (function_exists('file_get_contents')) {
                 $status = file_get_contents($url);
             } else {

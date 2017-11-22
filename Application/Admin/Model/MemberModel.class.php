@@ -11,7 +11,7 @@ class MemberModel extends Model
 {
     protected $_validate = array(
         array('nickname', '1,16', '昵称长度为1-16个字符', self::EXISTS_VALIDATE, 'length'),
-        array('nickname', '', '昵称被占用', self::EXISTS_VALIDATE, 'unique'), //用户名被占用
+//        array('nickname', '', '昵称被占用', self::EXISTS_VALIDATE, 'unique'), //用户名被占用
     );
 
     public function lists($status = 1, $order = 'uid DESC', $field = true)
@@ -71,10 +71,8 @@ class MemberModel extends Model
             'username' => $user['nickname'],
             'last_login_time' => $user['last_login_time'],
         );
-
         session('user_auth', $auth);
         session('user_auth_sign', data_auth_sign($auth));
-
     }
 
     public function getNickName($uid)

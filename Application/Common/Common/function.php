@@ -586,7 +586,6 @@ function action_log($action = null, $model = null, $record_id = null, $user_id =
     if(!empty($action_info['rule'])){
         //解析行为
         $rules = parse_action($action, $user_id);
-
         //执行行为
         $res = execute_action($rules, $action_info['id'], $user_id);
     }

@@ -17,7 +17,8 @@ class MobileController extends Controller
     protected function _initialize()
     {
         // 获取当前用户ID
-        define('UID', is_login());
+//        define('UID', is_login());
+        define('UID', 1);
         if (!UID) {// 还没登录 跳转到登录页面
             exit(json_encode(array('erron' => 0, 'error' => '请登录...')));
         }
@@ -28,9 +29,9 @@ class MobileController extends Controller
             S('DB_CONFIG_DATA', $config);
         }
         C($config); //添加配置
-
         // 是否是超级管理员
-        define('IS_ROOT', is_administrator());
+//        define('IS_ROOT', is_administrator());
+        define('IS_ROOT', is_administrator(1));
         if (!IS_ROOT && C('ADMIN_ALLOW_IP')) {
             // 检查IP地址访问
             if (!in_array(get_client_ip(), explode(',', C('ADMIN_ALLOW_IP')))) {

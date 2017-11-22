@@ -45,7 +45,7 @@ class IndexController extends MobileController
                 'overtiming' => $overtime['overtiming'],//即将超时的案件
                 'overtimed' => $overtime['overtimed'],//已经超时的案件
             );
-            exit(json_encode(array('erron' => 1, 'user_info' => $user_info, 'messages' => $messages, 'count' => $count)));
+            exit(json_encode(array('erron' => 1, 'user_info' => $user_info, 'messages' => array_slice($messages, 0, 20, false), 'count' => $count)));
         } else {
             exit(json_encode(array('erron' => 0, 'error' => '请登录...')));
         }

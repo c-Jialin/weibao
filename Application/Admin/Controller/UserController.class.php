@@ -134,14 +134,15 @@ class UserController extends AdminController
     public function action()
     {
         //获取列表数据
+        $this->meta_title = '用户行为';
         $Action = M('Action')->where(array('status' => array('gt', -1)));
         $list = $this->lists($Action);
         int_to_string($list);
+        var_dump($list);
         // 记录当前列表页的cookie
         Cookie('__forward__', $_SERVER['REQUEST_URI']);
 
         $this->assign('_list', $list);
-        $this->meta_title = '用户行为';
         $this->display();
     }
 

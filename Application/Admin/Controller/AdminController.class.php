@@ -456,5 +456,4 @@ class AdminController extends Controller
         $model->setProperty('options', $options);
         return $model->field($field)->select();
     }
-
 }

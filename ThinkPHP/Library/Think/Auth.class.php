@@ -218,6 +218,27 @@ class Auth{
     }
 
     /**
+     * 获取Case某个节点的所有用户
+     * @param $case 节点英文标识
+     * @return mixed
+     */
+    public function getCaseUserList($case)
+    {
+        $name = M('authRule')->where("name like '%/Case/" . $case . "%'")->field('id')->select();
+        $rule = M('authGroup')->where("status=1")->field('id,rules')->select();
+        $id = array();
+        foreach ($rule as $val) {
+            foreach ($name as $v) {
+                if (in_array($v['id'], explode(',', $val['rules']))) {
+                    $id[] = $val['id'];
+                }
+            }
+        }
+        $user = M('authGroupAccess')->where(array("group_id" => array("in", implode(',', $id))))->field('uid')->select();
+        return $user;
+    }
+
+    /**
      * 获得用户资料,根据自己的情况读取数据库
      */
     protected function getUserInfo($uid) {
@@ -227,5 +248,4 @@ class Auth{
         }
         return $userinfo[$uid];
     }
-
 }

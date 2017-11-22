@@ -1,7 +1,6 @@
 <?php
 
 namespace Admin\Controller;
-use Addons\SMS\SMSAddon;
 
 /**
  * 首页控制器
@@ -13,9 +12,6 @@ class IndexController extends AdminController
      */
     public function index()
     {
-//        $SMS = new SMSAddon();
-//        $rse = $SMS->AdminIndex(13667443820, '你傻逼了');
-//        var_dump($rse);
         //UID为用户id uid为用户组id
         if (UID) {
             if (IS_ROOT) { //管理员首页
