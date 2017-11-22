@@ -722,3 +722,26 @@ function getStatusFromAuth()
     }
     return $arr;
 }
+
+/**
+  * 根据案件状态和阶段状态获取流程节点 
+  * @param string $status 案件状态
+  * @param string $stage  阶段状态
+  * return string 
+*/
+function getProcess($status, $stage){
+    $arr = [
+        'caiji'     => ['complete' => '待初审',        'ing' => '初审中'],
+        'chushen'   => ['complete' => '待审批',        'ing' => '审批中'],
+        'bohuiC'    => ['complete' => '待重新采集',    'ing' => '重新采集中'],
+        'shenpi'    => ['complete' => '待调度',        'ing' => '调度中'],
+        'bohuiCs'   => ['complete' => '待重新初审',    'ing' => '重新初审中'],
+        'diaodu'    => ['complete' => '待处置',        'ing' => '处置中'],
+        'chuzhi'    => ['complete' => '待结案',        'ing' => '结案中'],
+        'bohuiCz'   => ['complete' => '待重新调度',    'ing' => '重新调度中'],
+        'weihuifang'=> ['complete' => '待回访',        'ing' => '回访中'],
+        'jiean'     => ['complete' => '结案完成'],
+        'huifang'   => ['complete' => '回访完成'],
+    ];
+    return $arr[$status][$stage];
+}
