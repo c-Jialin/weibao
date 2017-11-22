@@ -107,29 +107,7 @@ body{padding: 0}
         ?>
 
         <td>
-            <?php if($v['case_status'] == 'huifang'){?>
-            回访完成
-            <?php }else if($v['visit_status'] == null && $v['finish_suggestion'] !== ''){?>
-            结案完成
-            <?php }else if($v['finish_suggestion'] !== ''){?>
-            结案完成
-            <?php }else if($v['management_status'] == 1){?>
-            处置完成
-            <?php }else if($v['case_status'] == 'bohuiCz'){?>
-            处置驳回
-            <?php }else if($v['dispatch_instance'] !== ''){?>
-            调度完成
-            <?php }else if($v['last_instance_status'] == 1){?>
-            审批完成
-            <?php }else if($v['case_status'] == 'bohuiCs'){?>
-            初审驳回
-            <?php }else if($v['trial_status'] == 1){?>
-            初审完成
-            <?php }else if($v['case_status'] == 'caiji'){?>
-            采集完成
-            <?php }else if($v['case_status'] == 'bohuiC'){?>
-            采集驳回
-            <?php }?>
+            {:getProcess($v['case_status'], $v['stage_status'])}
         </td>
 
         <td>

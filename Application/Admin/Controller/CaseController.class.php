@@ -686,6 +686,10 @@ class CaseController extends AdminController
                 $this->error($Case->getError(), '', 1);
             } else {
                 if ($_POST['xId']) $data['id'] = $_POST['xId'];
+
+                // 采集 or 重新采集完成 更改stage_status
+                $data['stage_status'] = 'complete';
+
                 $case = $Case->update($data);
                 if ($case) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -695,8 +699,13 @@ class CaseController extends AdminController
             }
         } else {
             $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $id = $_GET['id'];
+            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
+
+            // 点击采集 更改stage_status
+            $this->updateStatus($id, $case['case_status']);
+            
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -724,6 +733,7 @@ class CaseController extends AdminController
             $data['trial_time'] = date("Y-m-d H:i:s", time());
             if ($data['trial_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
+                $data['stage_status'] = 'complete';
                 if ($saveCase) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
@@ -731,21 +741,27 @@ class CaseController extends AdminController
                 }
             } else {
                 $arr = array('add_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
+                $arr['stage_status'] = 'complete';
                 $case->where(array('id' => $data['id']))->save($arr);
                 echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
             $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $id = $_GET['id'];
+            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
+
+            // 点击初审 更改stage_status
+            $this->updateStatus($id, $case['case_status']);
+
             $this->assign('shi', $shi);
             $this->act = $_GET['act'];
-            $this->id = $_GET['id'];
+            $this->id = $id;
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -764,6 +780,7 @@ class CaseController extends AdminController
             $data['last_instance_time'] = date("Y-m-d H:i:s", time());
             if ($data['last_instance_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
+                $data['stage_status'] = 'complete';
                 if ($saveCase) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
@@ -771,21 +788,27 @@ class CaseController extends AdminController
                 }
             } else if ($data['last_instance_status'] == 2) {
                 $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
+                $arr['stage_status'] = 'complete';
                 $case->where(array('id' => $data['id']))->save($arr);
                 echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
             $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $id = $_GET['id'];
+            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
+
+            // 点击审批 更改stage_status
+            $this->updateStatus($id, $case['case_status']);
+
             $this->assign('shi', $shi);
             $this->act = $_GET['act'];
-            $this->id = $_GET['id'];
+            $this->id = $id;
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -809,6 +832,7 @@ class CaseController extends AdminController
             $data['dispatch_instance'] = $_POST['dispatch_instance'];
             if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
             $data['dispatch_time'] = date("Y-m-d H:i:s", time());
+            $data['stage_status'] = 'complete';
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -817,17 +841,22 @@ class CaseController extends AdminController
             }
         } else {
             $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $id = $_GET['id'];
+            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
+
+            // 点击调度 更改stage_status
+            $this->updateStatus($id, $case['case_status']);
+
             $this->assign('shi', $shi);
 
             $this->act = $_GET['act'];
-            $this->id = $_GET['id'];
+            $this->id = $id;
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -847,6 +876,7 @@ class CaseController extends AdminController
             $data['deal_with_time'] = date("Y-m-d H:i:s", time());
             if ($data['management_status'] == 1) {
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
+                $data['stage_status'] = 'complete';
                 if ($saveCase) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
@@ -854,12 +884,14 @@ class CaseController extends AdminController
                 }
             } else if ($data['management_status'] == 2) {
                 $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
+                $arr['stage_status'] = 'complete';
                 $case->where(array('id' => $_POST['id']))->save($arr);
                 echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
             $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $id = $_GET['id'];
+            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
@@ -868,8 +900,11 @@ class CaseController extends AdminController
             }
             $this->assign('shi', $shi);
 
+            // 点击处置 更改stage_status
+            $this->updateStatus($id, $case['case_status']);
+
             $this->act = $_GET['act'];
-            $this->id = $_GET['id'];
+            $this->id = $id;
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -963,7 +998,8 @@ class CaseController extends AdminController
                     $way[] = $_POST['visit_form2_2'];
                     $data['visit_way'] = serialize($way);
                 }
-                $data['case_status'] = 'weihuifang';
+                $data['case_status']  = 'weihuifang';
+                $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -972,6 +1008,7 @@ class CaseController extends AdminController
                 }
             } else if ($data['visit_status'] == null) {
                 $data['case_status'] = 'jiean';
+                $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -983,7 +1020,8 @@ class CaseController extends AdminController
             }
         } else {
             $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $id = $_GET['id'];
+            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
@@ -992,9 +1030,12 @@ class CaseController extends AdminController
             }
             $this->assign('shi', $shi);
 
-            $this->id = $_GET['id'];
+            // 点击结案 更改stage_status
+            $this->updateStatus($id, $case['case_status']);
+
+            $this->id = $id;
             $this->act = $_GET['act'];
-            $this->finishList = M('case')->where(array('id' => $_GET['id']))->find();
+            $this->finishList = M('case')->where(array('id' => $id))->find();
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -1015,8 +1056,9 @@ class CaseController extends AdminController
             } else if ($way == 2) {
                 $data['visit_suggestion'] = serialize($_POST['visit_suggestion']);
             }
-            $data['case_status'] = 'huifang';
-            $data['visit_time'] = date("Y-m-d H:i:s", time());
+            $data['case_status']  = 'huifang';
+            $data['visit_time']   = date("Y-m-d H:i:s", time());
+            $data['stage_status'] = 'complete';
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1025,7 +1067,8 @@ class CaseController extends AdminController
             }
         } else {
             $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+            $id = $_GET['id'];
+            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
@@ -1034,14 +1077,17 @@ class CaseController extends AdminController
             }
             $this->assign('shi', $shi);
 
+            // 点击回访 更改stage_status
+            $this->updateStatus($id, $case['case_status']);
+
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
-            $this->id = $_GET['id'];
+            $this->id = $id;
             $this->act = $_GET['act'];
-            $this->huifang = M('case')->where(array('id' => $this->id))->getField('visit_form');
+            $this->huifang = M('case')->where(array('id' => $id))->getField('visit_form');
             if ($this->huifang == 2) {
-                $cishu1 = M('case')->where(array('id' => $this->id))->getField('visit_way');
+                $cishu1 = M('case')->where(array('id' => $id))->getField('visit_way');
                 $cishu2 = unserialize($cishu1);
                 $this->cishu = $cishu2[1];
             }
@@ -1117,6 +1163,20 @@ class CaseController extends AdminController
     public function statistics()
     {
         $this->display();
+    }
+
+    /**
+      * 根据权限判断是否在权限内访问该案件, 若在则认为处理中并更改状态..
+    */
+    private function updateStatus($id, $status)
+    {
+        if($id <= 0)
+            return false;
+        $auth = getStatusFromAuth();
+        if(in_array($status, $auth['status'])){
+            $data = ['id' => $id, 'stage_status' => 'ing'];
+            D('case')->update($data);
+        }
     }
     //搜索
 //    public function search(){
