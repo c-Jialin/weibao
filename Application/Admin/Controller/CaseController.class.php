@@ -686,12 +686,13 @@ class CaseController extends AdminController
                 $this->error($Case->getError(), '', 1);
             } else {
                 if ($_POST['xId']) $data['id'] = $_POST['xId'];
-
                 // 采集 or 重新采集完成 更改stage_status
                 $data['stage_status'] = 'complete';
-
                 $case = $Case->update($data);
                 if ($case) {
+                    //发送短信提醒
+                    $res = $this->smsSend('trial', 'caiji', true);
+                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -702,10 +703,8 @@ class CaseController extends AdminController
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
-
             // 点击采集 更改stage_status
             $this->updateStatus($id, $case['case_status']);
-            
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -732,9 +731,12 @@ class CaseController extends AdminController
             if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
             $data['trial_time'] = date("Y-m-d H:i:s", time());
             if ($data['trial_status'] == 1) {
-                $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 $data['stage_status'] = 'complete';
+                $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('last_instance', 'chushen', true);
+                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -742,8 +744,15 @@ class CaseController extends AdminController
             } else {
                 $arr = array('add_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
                 $arr['stage_status'] = 'complete';
-                $case->where(array('id' => $data['id']))->save($arr);
-                echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                $saveCase = $case->where(array('id' => $data['id']))->save($arr);
+                if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('index', 'bohuiC', false);
+                    $this->error(implode(',', $res), '', 10);
+                    echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                } else {
+                    echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                }
             }
         } else {
             $this->Lage();
@@ -782,6 +791,9 @@ class CaseController extends AdminController
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 $data['stage_status'] = 'complete';
                 if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('dispatch', 'shenpi', true);
+                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -789,8 +801,15 @@ class CaseController extends AdminController
             } else if ($data['last_instance_status'] == 2) {
                 $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
                 $arr['stage_status'] = 'complete';
-                $case->where(array('id' => $data['id']))->save($arr);
-                echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                $saveCase = $case->where(array('id' => $data['id']))->save($arr);
+                if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('trial', 'bohuiCs', false);
+                    $this->error(implode(',', $res), '', 10);
+                    echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                } else {
+                    echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                }
             }
         } else {
             $this->Lage();
@@ -835,6 +854,9 @@ class CaseController extends AdminController
             $data['stage_status'] = 'complete';
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
+                //发送短信提醒
+                $res = $this->smsSend('deal_with', 'diaodu', true);
+                $this->error(implode(',', $res), '', 10);
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
             } else {
                 echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -875,9 +897,12 @@ class CaseController extends AdminController
             if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
             $data['deal_with_time'] = date("Y-m-d H:i:s", time());
             if ($data['management_status'] == 1) {
-                $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 $data['stage_status'] = 'complete';
+                $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('finish', 'chuzhi', true);
+                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -885,8 +910,15 @@ class CaseController extends AdminController
             } else if ($data['management_status'] == 2) {
                 $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
                 $arr['stage_status'] = 'complete';
-                $case->where(array('id' => $_POST['id']))->save($arr);
-                echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                $saveCase = $case->where(array('id' => $_POST['id']))->save($arr);
+                if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('dispatch', 'bohuiCz', false);
+                    $this->error(implode(',', $res), '', 10);
+                    echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                } else {
+                    echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                }
             }
         } else {
             $this->Lage();
@@ -1002,6 +1034,9 @@ class CaseController extends AdminController
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('visit', 'weihuifang', true);
+                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1046,8 +1081,6 @@ class CaseController extends AdminController
     //回访
     public function visit()
     {
-        $res = $this->smsSend('visit', 'weihuifang');
-        var_dump($res);
         if (IS_POST) {
             $case = M('case');
             $way = M('case')->where(array('id' => $_POST['id']))->getField('visit_form');
@@ -1121,7 +1154,7 @@ class CaseController extends AdminController
     }
 
     //短信发送$case英文节点名，$node中文节点名
-    public function smsSend($case, $node, $action = true)
+    public function smsSend($case = 'trial', $node ='chushen', $action = true)
     {
         $Auth = new \Think\Auth();
         $user = $Auth->getCaseUserList($case);
@@ -1133,19 +1166,23 @@ class CaseController extends AdminController
             ->table('onethink_ucenter_member a')
             ->where(array("id" => array("in", implode(',', $uid))))
             ->join('onethink_member g on a.id=g.uid')
-            ->field('a.mobile as mobiles,g.mobile,a.username,g.nickname')
+            ->field('a.mobile as mobiles,g.mobile,a.username,g.nickname,g.status')
             ->select();
+        foreach ($mobiles as $kk => &$vv) {
+            if ($vv['status'] == '-1') unset($mobiles[$kk]);
+        }
         $execute = M('caseManage')->where("node='" . $node . "'")->field('node_name,execute_time')->find();
         if (empty($execute)) {
             return array('erron' => 0, 'error' => '案件执行行为的时间没有设置');
         }
         $mobile = array();
         foreach ($mobiles as $k => $v) {
-            $mobile[$k] = empty($v['mobiles']) ? $v['mobile'] : $v['mobiles'];
+            $mobile[$k] = empty($v['mobile']) ? $v['mobiles'] : $v['mobile'];
             if (!preg_match("/^1[34578]\d{9}$/", $mobile[$k])) {
                 return array('erron' => 0, 'error' => '手机号码不正确');
             }
-            $nickname = empty($v['nickname']) ? $v['username'] : $v['nickname'];
+            if (empty($mobile[$k])) unset($mobile[$k]);
+            $nickname[$k] = empty($v['nickname']) ? $v['username'] : $v['nickname'];
         }
         $time = time() + $execute['execute_time'] * 3600;
         if ($action) {
@@ -1153,10 +1190,9 @@ class CaseController extends AdminController
         } else {
             $message = '您好：您有一份案件被驳回需要在（' . date('Y年m月d日H:i:s', $time) . '）之前重新处理，请及时登录平台进行' . $execute['node_name'] . '操作。';
         }
-        return $message;
+        return array(implode(',', array_unique($mobile)), $message, implode(',', $nickname));
         $SMS = new SMSAddon();
-        $res = $SMS->AdminIndex(implode(',', $mobile), $message);
-        return $res;
+        return $SMS->AdminIndex(implode(',', array_unique($mobile)), $message);
     }
 
     //

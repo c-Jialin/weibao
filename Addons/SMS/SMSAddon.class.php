@@ -39,7 +39,7 @@ class SMSAddon extends Addon
             $key = $config['Key'];
             if (empty($uid) || empty($key)) return array('erron' => 0, 'error' => '插件被禁用');
             if (empty($mobile) || empty($text)) return array('erron' => 0, 'error' => '接收号码或信息不能为空');
-            $url = 'http://sms.webchinese.cn/web_api/?Uid=' . $uid . '&Key=' . $key . '&smsMob=' . $mobile . '&smsText=' . $text;
+            $url = 'http://utf8.api.smschinese.cn/?Uid=' . $uid . '&Key=' . $key . '&smsMob=' . $mobile . '&smsText=' . $text;
             if (function_exists('file_get_contents')) {
                 $status = file_get_contents($url);
             } else {
@@ -51,22 +51,30 @@ class SMSAddon extends Addon
                 $status = curl_exec($ch);
                 curl_close($ch);
             }
-            switch ($status) {
-                case '1':
-                    return array('erron' => 1, 'error' => '短信发送成功');
-                    break;
-                case '0':
-                    return array('erron' => 0, 'error' => '短信发送失败');
-                    break;
-                case '-1':
-                    return array('erron' => 0, 'error' => '插件Uid参数错误');
-                    break;
-                case '-2':
-                    return array('erron' => 0, 'error' => '插件Key参数错误');
-                    break;
-                default:
-                    return array('erron' => 0, 'error' => '未知错误');
-                    break;
+            if (strpos($status, '-') != false) {
+                switch ($status) {
+                    case '-1':
+                        return array('erron' => 0, 'error' => '插件Uid参数错误');
+                        break;
+                    case '-2':
+                        return array('erron' => 0, 'error' => '插件Key参数错误');
+                        break;
+                    default:
+                        return array('erron' => 0, 'error' => '未知错误(' . $status . ')');
+                        break;
+                }
+            } else {
+                switch ($status) {
+                    case '1':
+                        return array('erron' => 1, 'error' => '短信发送成功');
+                        break;
+                    case '0':
+                        return array('erron' => 0, 'error' => '短信发送失败');
+                        break;
+                    default:
+                        return array('erron' => 1, 'error' => $status . '条短信发送成功');
+                        break;
+                }
             }
         } else {
             return array('erron' => 0, 'error' => '插件参数配置错误');

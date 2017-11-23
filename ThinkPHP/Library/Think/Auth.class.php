@@ -224,7 +224,7 @@ class Auth{
      */
     public function getCaseUserList($case)
     {
-        $name = M('authRule')->where("name like '%/Case/" . $case . "%'")->field('id')->select();
+        $name = M('authRule')->where("name like '%/Case/" . $case . "'")->field('id')->select();
         $rule = M('authGroup')->where("status=1")->field('id,rules')->select();
         $id = array();
         foreach ($rule as $val) {

@@ -156,8 +156,6 @@ class CaseController extends MobileController
     //所有案件
     public function suoyou()
     {
-        $this->meta_title = '案件列表';
-
         if (UID == 1 && I('id')) {
             $res = M('case')->delete(I('id'));
             if ($res) {
@@ -167,21 +165,39 @@ class CaseController extends MobileController
             }
         }
         $uid = M('auth_group_access')->where(array('uid' => UID))->field('group_id')->select();
-        if ($_POST) {
-            $where['community_code'] = $_POST['shequ'];
-            $where['name'] = array('like', '%' . $_POST['search'] . '%');
+        $where = $assign = [];
+        $start = $end = time();
+        $type = I('type');
+        if (I('submit') || $type == 'enroll') {
+            //筛选条件 / 或导出
+            $post = I('post.');
+            //是否手动日期
+            if ($post['date'] == 1) {
+                $start = strtotime($post['start']);
+                $end = strtotime($post['end']);
+                $where['fill_in_time'] = ['between', [$start, $end]];
+            }
+            $where['area_code'] = empty($post['city']) ? ['neq', 0] : $post['city'];
+            $where['street_code'] = empty($post['town']) ? ['neq', 0] : $post['town'];
+            $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
+            $where['name'] = empty($post['name']) ? ['neq', ''] : ['like', "%{$post['name']}%"];
+            $where['sex'] = empty($post['sex']) ? ['neq', 0] : $post['sex'];
+            $assign['city'] = $post['city'];
+            $assign['town'] = $post['town'];
+            $assign['country'] = $post['country'];
+            $assign['sex'] = $post['sex'];
+            $assign['name'] = $post['name'];
+            $assign['date'] = $post['date'];
         }
-        $count = M('case')->where($where)->order('fill_in_time desc')->count();
+        $count = M('case')->where($where)->count();
         import('Think', 'ThinkPHP/Library/Think/Page');
-        $pagesize = 25;
-        $p = I('p') ? I('p') : 1;
+        $pagesize = 20;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
-        $this->Page = $page->show();
+        $caseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
 
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
-
-        $this->shequ = M('area_top')->where(array('type_id' => 4))->select();
+        $shequ = M('area_top')->where(array('type_id' => 4))->select();
         $usid = array();
         foreach ($uid as $key => $value) {
             if (is_array($value)) {
@@ -190,112 +206,10 @@ class CaseController extends MobileController
                 $usid[$key] = $value['group_id'];
             }
         }
-        $this->uid = $usid;
-        $this->display();
-    }
-
-    //报名列表excel导出操作
-
-    /**
-     * @throws \PHPExcel_Exception
-     * @throws \PHPExcel_Reader_Exception
-     */
-    public function enrollListExcel()
-    {
-        if (I('post.')) {
-            set_time_limit(0);   //防止时间php脚本处理过期
-            $leix = I('leix');
-            $case = M('case');
-//            $meet_id = I('meet_id');
-            switch ($leix) {
-                case 'all' :
-                    $enroll_arr = $case->limit('0,3000')->select();
-                    break;
-            }
-
-            if ($leix != "all") {
-                $enroll_arr = $case->where(array('street_code' => $leix))->limit('0,3000')->select();
-            }
-
-            if (!empty($enroll_arr)) {
-                vendor('phpexcel');
-                // 首先创建一个新的对象  PHPExcel object
-                $objPHPExcel = new \PHPExcel();
-                // 给表格添加数据
-                $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', '编号')
-                    ->setCellValue('B1', '姓名')
-                    ->setCellValue('C1', '性别')
-                    ->setCellValue('D1', '年龄')
-                    ->setCellValue('E1', '民族')
-                    ->setCellValue('F1', '区/县')
-                    ->setCellValue('G1', '街/镇')
-                    ->setCellValue('H1', '家庭住址')
-                    ->setCellValue('I1', '健康状况')
-                    ->setCellValue('J1', '联系方式')
-                    ->setCellValue('K1', '摸底上报风险等级')
-                    ->setCellValue('L1', '机构评估风险等级')
-                    ->setCellValue('M1', '帮扶后最高风险等级')
-                    ->setCellValue('N1', '流程');
-//                    ->setCellValue( 'H1', '支付方式' )
-//                    ->setCellValue( 'I1', '支付状态' )
-//                    ->setCellValue( 'J1', '备注' );
-                //循环插入数据
-                foreach ($enroll_arr as $k => $v) {
-                    $tel = unserialize($v['family_members']);
-                    $tels = $tel['6'];
-                    $fengxian = unserialize($v['growth_dilemma']);
-                    foreach ($fengxian as $v1) {
-                        $str1[] = getFengxian($v1);
-                    }
-                    $mdfx = max($str1);
-                    $fengxians = unserialize($v['growth_dilemmas']);
-                    foreach ($fengxians as $v2) {
-                        $str2[] = getFengxian($v2);
-                    }
-                    $jgfx = max($str2);
-                    $fengxianss = unserialize($v['growth_dilemmass']);
-                    foreach ($fengxianss as $v3) {
-                        $str3[] = getFengxian($v3);
-                    }
-                    $bffx = max($str3);
-                    $qu = M('area_top')->where(array('region_id' => $v['area_code']))->getField('region_name');
-                    $zhen = M('area_top')->where(array('region_id' => $v['street_code']))->getField('region_name');
-                    $objPHPExcel->setActiveSheetIndex(0)
-                        ->setCellValue('A' . ($k + 2), $v['case_number'])
-                        ->setCellValue('B' . ($k + 2), $v['name'])
-                        ->setCellValue('C' . ($k + 2), getSex($v['sex']))
-                        ->setCellValue('D' . ($k + 2), getAge($v['birthday']))
-                        ->setCellValue('E' . ($k + 2), $v['nation'])
-                        ->setCellValue('F' . ($k + 2), $qu)
-                        ->setCellValue('G' . ($k + 2), $zhen)
-                        ->setCellValue('H' . ($k + 2), $v['home_address'])
-                        ->setCellValue('I' . ($k + 2), getHealth($v['health'], $v['id']))
-                        ->setCellValue('J' . ($k + 2), $tels)
-                        ->setCellValue('K' . ($k + 2), $mdfx)
-                        ->setCellValue('L' . ($k + 2), $jgfx)
-                        ->setCellValue('M' . ($k + 2), $bffx)
-                        ->setCellValue('N' . ($k + 2), getStage($v['case_status']));
-//                        ->setCellValue( 'G'.($k+2), $v['enroll_company'])
-//                        ->setCellValue( 'H'.($k+2), $v['enroll_payment'])
-//                        ->setCellValue( 'I'.($k+2), $v['enroll_pay_status'])
-//                        ->setCellValue( 'J'.($k+2), $v['beizhu']);
-                }
-
-                // 生成2003excel格式的xls文件
-                ob_end_clean();//清除缓冲区,避免乱码
-                header('Content-Type: application/vnd.ms-excel;charset=UTF-8');
-                header('Content-Disposition: attachment;filename="enroll_' . time() . '.xls"');
-                header('Cache-Control: max-age=0');
-
-                $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-                $objWriter->save('php://output');
-                exit;
-            } else {
-                exit('无数据!');
-                $this->error('无数据!');
-            }
-        }
+        $assign['start'] = $start;
+        $assign['end'] = $end;
+        $this->Lage();
+        exit(json_encode(array('list' => $caseList, 'uid' => $usid)));
     }
 
     //待处理
