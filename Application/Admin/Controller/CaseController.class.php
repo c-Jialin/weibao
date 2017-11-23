@@ -181,23 +181,23 @@ class CaseController extends AdminController
                 $end = strtotime($post['end']);
                 $where['fill_in_time'] = ['between', [$start, $end]];
             }
-            $where['area_code'] = empty($post['city']) ? ['neq', 0] : $post['city'];
-            $where['street_code'] = empty($post['town']) ? ['neq', 0] : $post['town'];
-            $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
             $where['name'] = empty($post['name']) ? ['neq', ''] : ['like', "%{$post['name']}%"];
-            $where['sex'] = empty($post['sex']) ? ['neq', 0] : $post['sex'];
-            $assign['city'] = $post['city'];
-            $assign['town'] = $post['town'];
-            $assign['country'] = $post['country'];
-            $assign['sex'] = $post['sex'];
-            $assign['name'] = $post['name'];
-            $assign['date'] = $post['date'];
+            $where['area_code']      = empty($post['city']) ? ['neq', 0] : $post['city'];
+            $where['street_code']    = empty($post['town']) ? ['neq', 0] : $post['town'];
+            $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
+            $where['sex']            = empty($post['sex']) ? ['neq', 0] : $post['sex'];
+            $assign['city']          = $post['city'];
+            $assign['town']          = $post['town'];
+            $assign['country']       = $post['country'];
+            $assign['sex']           = $post['sex'];
+            $assign['name']          = $post['name'];
+            $assign['date']          = $post['date'];
 
             if ($type == 'enroll') {
                 //导出..
                 $count = M('case')->where($where)->count();
                 if ($count > 0)
-                    $result = ['result' => 1, 'msg' => '下载中,请稍等片刻', 'url' => U('Case/enrollListExcel', ['data' => serialize($where)])];
+                    $result = ['result' => 1, 'msg' => '准备下载,请稍等片刻', 'url' => U('Case/enrollListExcel', ['data' => serialize($where)])];
                 else
                     $result = ['result' => 0, 'msg' => '无数据可导出'];
 
@@ -476,7 +476,7 @@ class CaseController extends AdminController
     }
 
     /**
-     * 计算 超时/即将超时 案件数
+     * 计算 超时/即将超时 案件
      * return array $list 返回数组包含键值overtiming, overtimed
      * overtiming为即将超时, overtimed为已经超时
      */
@@ -484,9 +484,9 @@ class CaseController extends AdminController
     {
         //初始化返回结果
         $list = [];
+        $now = time();
         $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
         $rules = rebuildArray($rules, 'node');
-        $now = time();
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];
             $key = translate($status);
@@ -675,7 +675,7 @@ class CaseController extends AdminController
                     'subName' => false,
                     'uploadReplace' => true // 覆盖同名文件
                 ));
-                $uploadInfo = $upload->uploadOne($_FILES['photo']);
+                $uploanfo = $upload->uploadOne($_FILES['photo']);
                 $data['photo'] = $uploadInfo['savename'];
             }
             $data['case_status'] = 'caiji';
@@ -688,6 +688,10 @@ class CaseController extends AdminController
                 if ($_POST['xId']) $data['id'] = $_POST['xId'];
                 // 采集 or 重新采集完成 更改stage_status
                 $data['stage_status'] = 'complete';
+              
+                $cases = $Case->where(['id' => $data['id']])->select();
+                $this->updateOvertime($cases, strtotime($data['add_time']));
+              
                 $case = $Case->update($data);
                 if ($case) {
                     //发送短信提醒
@@ -742,7 +746,7 @@ class CaseController extends AdminController
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
             } else {
-                $arr = array('add_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
+                $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
                 $arr['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
                 if ($saveCase) {
@@ -799,7 +803,7 @@ class CaseController extends AdminController
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
             } else if ($data['last_instance_status'] == 2) {
-                $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
+                $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
                 $arr['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
                 if ($saveCase) {
@@ -908,7 +912,7 @@ class CaseController extends AdminController
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
             } else if ($data['management_status'] == 2) {
-                $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
+                $arr = array('deal_with_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
                 $arr['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($arr);
                 if ($saveCase) {
@@ -1212,6 +1216,30 @@ class CaseController extends AdminController
         if(in_array($status, $auth['status'])){
             $data = ['id' => $id, 'stage_status' => 'ing'];
             D('case')->update($data);
+        }
+    }
+
+    private function updateOvertime($cases, $time){
+        $res   = $this->countOverTimeCases($cases, true);
+        $case  = M('CaseManage');
+        $model = D('overtime');
+        if(!empty($res)){
+            //不为空则已超时
+            $arr = ['bohuiC', 'bohuiCs', 'bohuiCz'];
+            foreach ($res as $k => $v) {
+                $status = $v['case_status'];
+                $save   = ['case' => $v['id'], 'status' => $status];
+                $key    = translate($status);
+                //现阶段该执行的状态的时间
+                if(in_array($status, $arr))
+                    $caseTime = strtotime($v[$key['next'] . '_time']);
+                else
+                    $caseTime = strtotime($v[$key['now'] . '_time']);
+                $save['terminal']   = $caseTime + $case->field('execute_time a')->where(['node' => $status])->find()['a'] * 3600;
+                $save['execute']    = $time;
+                $save['node']       = $v['stage_status'];
+                $model->update($save);
+            }
         }
     }
     //搜索
