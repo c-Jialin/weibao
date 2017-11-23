@@ -142,50 +142,46 @@ class ArticleController extends AdminController
      * 分类文档列表页
      * @param $cate_id 分类id
      */
-    public function index($cate_id = null)
+    public function index($cate_id = 48)
     {
         //获取左边菜单
         $this->getMenu();
-
-        if ($cate_id === null) {
-            $cate_id = $this->cate_id;
-        }
-
-        //获取模型信息
-        $model = M('Model')->getByName('document');
-
-        //解析列表规则
-        $fields = array();
-        $grids = preg_split('/[;\r\n]+/s', $model['list_grid']);
-        foreach ($grids as &$value) {
-            // 字段:标题:链接
-            $val = explode(':', $value);
-            // 支持多个字段显示
-            $field = explode(',', $val[0]);
-            $value = array('field' => $field, 'title' => $val[1]);
-            if (isset($val[2])) {
-                // 链接信息
-                $value['href'] = $val[2];
-                // 搜索链接信息中的字段信息
-                preg_replace_callback('/\[([a-z_]+)\]/', function ($match) use (&$fields) {
-                    $fields[] = $match[1];
-                }, $value['href']);
+        $pid = empty($_GET['pid']) ? '' : $_GET['pid'];
+        if (empty($pid)) {
+            if ($cate_id === null) {
+                $cate_id = $this->cate_id;
             }
-            if (strpos($val[1], '|')) {
-                // 显示格式定义
-                list($value['title'], $value['format']) = explode('|', $val[1]);
+            //获取模型信息
+            $model = M('Model')->getByName('document');
+            //解析列表规则
+            $fields = array();
+            $grids = preg_split('/[;\r\n]+/s', $model['list_grid']);
+            foreach ($grids as &$value) {
+                // 字段:标题:链接
+                $val = explode(':', $value);
+                // 支持多个字段显示
+                $field = explode(',', $val[0]);
+                $value = array('field' => $field, 'title' => $val[1]);
+                if (isset($val[2])) {
+                    // 链接信息
+                    $value['href'] = $val[2];
+                    // 搜索链接信息中的字段信息
+                    preg_replace_callback('/\[([a-z_]+)\]/', function ($match) use (&$fields) {
+                        $fields[] = $match[1];
+                    }, $value['href']);
+                }
+                if (strpos($val[1], '|')) {
+                    // 显示格式定义
+                    list($value['title'], $value['format']) = explode('|', $val[1]);
+                }
+                foreach ($field as $val) {
+                    $array = explode('|', $val);
+                    $fields[] = $array[0];
+                }
             }
-            foreach ($field as $val) {
-                $array = explode('|', $val);
-                $fields[] = $array[0];
-            }
-        }
+            // 过滤重复字段信息 TODO: 传入到查询方法
+            $fields = array_unique($fields);
 
-        // 过滤重复字段信息 TODO: 传入到查询方法
-        $fields = array_unique($fields);
-
-        //获取对应分类下的模型
-        if (!empty($cate_id)) {   //没有权限则不查询数据
             //获取分类绑定的模型
             $models = get_category($cate_id, 'model');
             $allow_reply = get_category($cate_id, 'reply');//分类文档允许回复
@@ -216,7 +212,12 @@ class ArticleController extends AdminController
             Cookie('__forward__', $_SERVER['REQUEST_URI']);
             $this->display($template);
         } else {
-            $this->error('非法的文档分类');
+            $document = M()
+                ->table('onethink_document a')
+                ->join('onethink_document_article g on a.id=g.id')
+                ->find();
+            $this->assign('document', $document);
+            $this->display('document');
         }
     }
 
@@ -604,6 +605,39 @@ class ArticleController extends AdminController
 
         $this->assign('list', $list);
         $this->meta_title = '草稿箱';
+        $this->display();
+    }
+
+    public function document($status = null, $title = null)
+    {
+        //获取左边菜单
+        $this->getMenu();
+
+        $Document = D('Document');
+        /* 查询条件初始化 */
+        if (isset($title)) {
+            $map['title'] = array('like', '%' . $title . '%');
+        }
+        if (isset($status)) {
+            $map['status'] = $status;
+        } else {
+            $map['status'] = array('in', '0,1,2');
+        }
+        if (isset($_GET['time-start'])) {
+            $map['update_time'][] = array('egt', strtotime(I('time-start')));
+        }
+        if (isset($_GET['time-end'])) {
+            $map['update_time'][] = array('elt', 24 * 60 * 60 + strtotime(I('time-end')));
+        }
+        //只查询pid为0的文章
+        $map['pid'] = 0;
+        $list = $this->lists($Document, $map, 'update_time desc');
+        int_to_string($list);
+        // 记录当前列表页的cookie
+        Cookie('__forward__', $_SERVER['REQUEST_URI']);
+        $this->assign('status', $status);
+        $this->assign('list', $list);
+        $this->meta_title = '站内公告';
         $this->display();
     }
 

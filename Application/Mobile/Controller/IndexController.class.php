@@ -51,6 +51,28 @@ class IndexController extends MobileController
         }
     }
 
+    public function scrolling()
+    {
+        $case = M('case');
+        $auth = getStatusFromAuth();
+        $where = [
+            'case_status' => ['in', implode(',', $auth['status'])],
+        ];
+        //案件统计过滤的字段
+        $field = ['id', 'name', 'case_status', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
+        $start = $_GET['index'];
+
+        $count = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+        import('Think', 'ThinkPHP/Library/Think/Page');
+        $pagesize = 20;
+        $p = I('index') ? I('index') : 1;
+        $limit = ($p - 1) * $pagesize . ',' . $pagesize;
+        $Page = new Page($count, $pagesize);
+//        $page = $Page->show();
+        $messages = $case->field($field)->where($where)->limit($limit)->order('fill_in_time desc')->select();
+        exit(json_encode(array('messages' => $messages)));
+    }
+
     /**
      * 计算 超时/即将超时 案件数
      * return array $overtime 返回数组包含键值overtiming, overtimed
