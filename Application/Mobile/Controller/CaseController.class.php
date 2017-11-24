@@ -11,6 +11,41 @@ use Think\phpexcel;
  */
 class CaseController extends MobileController
 {
+    public function caseList()
+    {
+        $action = I('action');
+        switch ($action) {
+            case 'suoyou':
+                $list = $this->suoyou();
+                break;
+            case 'zaichu':
+                $list = $this->zaichu();
+                break;
+            case 'daichu':
+                $list = $this->daichu();
+                break;
+            case 'guidang':
+                $list = $this->guidang();
+                break;
+            case 'wancheng':
+                $list = $this->wancheng();
+                break;
+            case 'jijiang':
+                $list = $this->jijiang();
+                break;
+            case 'chaoshi':
+                $list = $this->chaoshi();
+                break;
+            case 'chaoling':
+                $list = $this->chaoling();
+                break;
+            default:
+                $list = $this->suoyou();
+                break;
+        }
+        exit($list);
+    }
+
     /**
      * 检测需要动态判断的案件类目有关的权限
      */
@@ -143,10 +178,10 @@ class CaseController extends MobileController
             );
         }
         if ($uid == 3) {
-            $where = ( 'turn_related = ' . $uid . ' AND management_status ="" or visit_status = 1 AND visit_suggestion = ""');
+            $where = ('turn_related = ' . $uid . ' AND management_status ="" or visit_status = 1 AND visit_suggestion = ""');
         }
         if ($uid == 4) {
-            $where = ( 'trial_status = "" OR last_instance_status = 1 AND dispatch_instance = "" OR management_status = 1 AND finish_suggestion = ""');
+            $where = ('trial_status = "" OR last_instance_status = 1 AND dispatch_instance = "" OR management_status = 1 AND finish_suggestion = ""');
         }
         $this->CaseList = M('case')->where($where)->select();
         $this->uid = $uid;
@@ -154,7 +189,7 @@ class CaseController extends MobileController
     }
 
     //所有案件
-    public function suoyou()
+    private function suoyou()
     {
         if (UID == 1 && I('id')) {
             $res = M('case')->delete(I('id'));
@@ -190,7 +225,6 @@ class CaseController extends MobileController
             $assign['date'] = $post['date'];
         }
         $count = M('case')->where($where)->count();
-        import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 20;
         $p = I('pageIndex') ? I('pageIndex') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
@@ -209,247 +243,172 @@ class CaseController extends MobileController
         $assign['start'] = $start;
         $assign['end'] = $end;
         $this->Lage();
-        exit(json_encode(array('list' => $caseList, 'uid' => $usid)));
+        return json_encode(array('list' => $caseList, 'uid' => $usid));
     }
 
     //待处理
-    public function daichu()
+    private function daichu()
     {
-        $this->meta_title = '待处理案件';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
-        if (UID == 1) {
-            $where = ('finish_suggestion = "" OR visit_status = 1 AND visit_suggestion = ""');
-        }
-        if ($uid == 1) {
-            $where = ('case_status = "diaodu" and turn_related = 1');
-        }
-        if ($uid == 2) {
-            $where = ('case_status = "chushen"');
-        }
-        if ($uid == 3) {
-            $where = ('case_status = "diaodu" and turn_related = 3 or case_status = "weihuifang"');
-        }
-        if ($uid == 4) {
-            $where = ('case_status = "caiji" or case_status = "shenpi" or case_status = "chuzhi"');
-        }
-
-        $count = M('case')->where($where)->order('fill_in_time desc')->count();
-
-        import('Think', 'ThinkPHP/Library/Think/Page');
+        $auth = getStatusFromAuth();
+        $where = [
+            'case_status' => ['in', implode(',', $auth['status'])],
+            'stage_status' => 'complete',
+        ];
+        $case = M('case');
+        $count = $case->where($where)->count();
         $pagesize = 25;
-        $p = I('p') ? I('p') : 1;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
-        $this->Page = $page->show();
-
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
-//        dump(M('case')->getLastSql());
+        $caseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
-        $this->uid = $uid;
-        $this->display();
+        return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
     //正在处理
-    public function zaichu()
+    private function zaichu()
     {
-        $this->meta_title = '正在处理';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
-        if (UID == 1) {
-            $where = (
-            'finish_suggestion = ""
-    		OR
-    		visit_status = 1
-    		AND
-    		visit_suggestion = ""
-    		'
-            );
-        }
-        if ($uid == 1) {
-            $where = (
-            'case_status = "diaodu"
-    			and
-    			turn_related = 1
-    			'
-            );
-        }
-        if ($uid == 2) {
-            $where = (
-            'case_status = "chushen"'
-            );
-        }
-        if ($uid == 3) {
-            $where = (
-            'case_status = "diaodu"
-    			and
-    			turn_related = 3
-    			or
-    			case_status = "weihuifang"
-    			'
-            );
-        }
-        if ($uid == 4) {
-            $where = (
-            'case_status = "caiji"
-    			or
-    			case_status = "shenpi"
-    			or
-    			case_status = "chuzhi"
-    			'
-            );
-        }
-
-        $count = M('case')->where($where)->order('fill_in_time desc')->count();
-
-        import('Think', 'ThinkPHP/Library/Think/Page');
+        $auth = getStatusFromAuth();
+        $where = [
+            'case_status' => ['in', implode(',', $auth['status'])],
+            'stage_status' => 'ing',
+        ];
+        $case = M('case');
+        $count = $case->where($where)->count();
         $pagesize = 25;
-        $p = I('p') ? I('p') : 1;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
-        $this->Page = $page->show();
-
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
-        $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
-        $this->uid = $uid;
-        $this->display();
+        $caseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $shequ = M('area_top')->where(array('type_id' => 5))->select();
+        return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
     //归档   
-    public function guidang()
+    private function guidang()
     {
-        $this->meta_title = '归档案件';
-
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         $count = M('case')->where('case_status = "jiean" or case_status = "huifang"')->order('fill_in_time desc')->count();
-
-        import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
-        $p = I('p') ? I('p') : 1;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
-        $this->Page = $page->show();
-
-        $this->CaseList = M('case')->where('case_status = "jiean" or case_status = "huifang"')->limit($limit)->order('fill_in_time desc')->select();
-        // echo M()->getLastSql();
-        $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
-        $this->display();
+        $caseList = M('case')->where('case_status = "jiean" or case_status = "huifang"')->limit($limit)->order('fill_in_time desc')->select();
+        $shequ = M('area_top')->where(array('type_id' => 5))->select();
+        return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
     //完成处理
-    public function wancheng()
+    private function wancheng()
     {
-        $this->meta_title = '完成处理';
-        $where = (
-        'case_status = "jiean"
-    			 or 
-    			 case_status = "huifang"
-    			 '
-        );
-
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $where = ('case_status = "jiean" or case_status = "huifang"');
         $count = M('case')->where($where)->order('fill_in_time desc')->count();
-
-        import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
-        $p = I('p') ? I('p') : 1;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
-        $this->Page = $page->show();
-
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
-        // echo M()->getLastSql();
-        $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
-        $this->display();
+        $caseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $shequ = M('area_top')->where(array('type_id' => 5))->select();
+        return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
-    //信息采集
-    public function index()
+    //即将超时
+    private function jijiang()
     {
-        if (IS_POST) {
-            $db = M('case');
-            if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
-            if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
-            if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
-            if ($_POST['community_code']) $data['community_code'] = $_POST['community_code'];
-            if ($_POST['name']) $data['name'] = $_POST['name'];
-            if ($_POST['sex']) $data['sex'] = $_POST['sex'];
-            if ($_POST['nation']) $data['nation'] = $_POST['nation'];
-            if ($_POST['year']) $data['year'] = $_POST['year'];
-            if ($_POST['month']) $data['month'] = $_POST['month'];
-            $data['birthday'] = serialize(array($data['year'], $data['month']));
-            if ($_POST['household_pro_code']) $data['household_pro_code'] = $_POST['household_pro_code'];
-            if ($_POST['household_city_code']) $data['household_city_code'] = $_POST['household_city_code'];
-            if ($_POST['household_area_code']) $data['household_area_code'] = $_POST['household_area_code'];
-            if ($_POST['home_pro_code']) $data['home_pro_code'] = $_POST['home_pro_code'];
-            if ($_POST['home_city_code']) $data['home_city_code'] = $_POST['home_city_code'];
-            if ($_POST['home_area_code']) $data['home_area_code'] = $_POST['home_area_code'];
-            if ($_POST['home_address']) $data['home_address'] = $_POST['home_address'];
-            if ($_POST['health'] == 1) {
-                $data['health'] = $_POST['health'];
-            } else {
-                $data['health'] = serialize($_POST['health']);
-            }
-            if ($_POST['health_other']) $data['health_other'] = $_POST['health_other'];
-            if ($_POST['character']) $data['character'] = $_POST['character'];
-            if ($_POST['admission_status']) $data['admission_status'] = $_POST['admission_status'];
-            if ($_POST['admission_status'] == 2) $data['entrance'] = $_POST['entrance'];
-            //家庭成员分类
-            $data['family_jianhuren'] = serialize($_POST['family_jianhuren']);
-            $data1 = array_merge($_POST['family_members'], $_POST['family_members1']);
-            $data['family_members'] = serialize($data1);
-            if ($_POST['family_structure']) $data['family_structure'] = $_POST['family_structure'];
-            if ($_POST['family_other']) $data['family_other'] = $_POST['family_other'];
-            if ($_POST['guardianship']) $data['guardianship'] = $_POST['guardianship'];
-            if ($_POST['life_status']) $data['life_status'] = $_POST['life_status'];
-            if ($_POST['enjoy_relief_type']) $data['enjoy_relief_type'] = serialize($_POST['enjoy_relief_type']);
-            if ($_POST['housing_type']) $data['housing_type'] = $_POST['housing_type'];
-            if ($_POST['inner_predicament']) $data['inner_predicament'] = serialize($_POST['inner_predicament']);
-            if (in_array(7, $_POST['inner_predicament'])) $data['Heart_other'] = $_POST['Heart_other'];
-            //成长困境及成长等级
-            if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
-            if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
-            if ($_POST['growth_dilemma3']) $grow['growth_dilemma3'] = $_POST['growth_dilemma3'];
-            if ($_POST['growth_dilemma4']) $grow['growth_dilemma4'] = $_POST['growth_dilemma4'];
-            if ($_POST['growth_dilemma5']) $grow['growth_dilemma5'] = $_POST['growth_dilemma5'];
-            if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
-            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
-            $data['growth_dilemma'] = serialize($grow);
-            if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
-            $data['fill_in_time'] = time();
-            if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
-            //图片上传
-            if ($_FILES['photo']['name'] != '') {
-                $uploadPath = 'case/user/';
-                if (!file_exists($uploadPath)) {
-                    mkdir($uploadPath);
-                    chmod($uploadPath, 0777);
-                }
-                $upload = new \Think\Upload(array(
-                    'savePath' => $uploadPath,
-                    'subName' => false,
-                    'uploadReplace' => true // 覆盖同名文件
-                ));
-                $uploadInfo = $upload->uploadOne($_FILES['photo']);
-                $data['photo'] = $uploadInfo['savename'];
-            }
-            $data['case_status'] = 'caiji';
-            if ($_POST['xId']) {
-                $case = $db->where(array('id' => $_POST['xId']))->save($data);
-            } else {
-                $case = $db->add($data);
-            }
-            if ($case) {
-                echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
-            } else {
-                echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
-            }
-        } else {
-            $this->Lage();
-            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
-//            $this->Clist = $case;
-            $urse = M('ucenter_member');
-            $member = $urse->where(array('id' => UID))->getField('username');
-            echo json_encode($member);
-            $this->assign('member', $member);
-//            $this->display();
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $status = getStatusFromAuth();
+        $where = array("case_status" => array("in", implode(',', $status['status'])));
+        $list = M('case')->where($where)->order('fill_in_time desc')->select();
+        $count = $this->countOverTimeCases($list, false);
+        $pagesize = 25;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
+        $start = ($p - 1) * $pagesize;
+        $page = new Page(count($count), $pagesize);
+        $caseList = array();
+        $s = 0;
+        for ($i = $start; $i < count($count); $i++, $s++) {
+            if ($s < $pagesize) $caseList[] = $count[$i];
         }
+        return json_encode(array('list' => $caseList, 'uid' => $uid));
+    }
+
+    //超时案件
+    private function chaoshi()
+    {
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $status = getStatusFromAuth();
+        $where = array("case_status" => array("in", implode(',', $status['status'])));
+        $list = M('case')->where($where)->order('fill_in_time desc')->select();
+        $count = $this->countOverTimeCases($list, true);
+        $pagesize = 25;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
+        $start = ($p - 1) * $pagesize;
+        $page = new Page(count($count), $pagesize);
+        $caseList = array();
+        $s = 0;
+        for ($i = $start; $i < count($count); $i++, $s++) {
+            if ($s < $pagesize) $caseList[] = $count[$i];
+        }
+        return json_encode(array('list' => $caseList, 'uid' => $uid));
+    }
+
+    /**
+     * 计算 超时/即将超时 案件
+     * return array $list 返回数组包含键值overtiming, overtimed
+     * overtiming为即将超时, overtimed为已经超时
+     */
+    private function countOverTimeCases($cases, $action = true)
+    {
+        //初始化返回结果
+        $list = [];
+        $now = time();
+        $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
+        $rules = rebuildArray($rules, 'node');
+        foreach ($cases as $k => $v) {
+            $status = $v['case_status'];
+            $key = translate($status);
+            //现阶段该执行的状态的时间
+            $caseTime = strtotime($v[$key['now'] . '_time']);
+            if (!empty($caseTime)) {
+                //下一阶段该执行的状态的时间
+                $nextTime = strtotime($v[$key['next'] . '_time']);
+                //下一阶段为false为驳回
+                $time = empty($nextTime) ? $caseTime : $nextTime;
+                $overtiming = $time + $rules[$status]['warn_time'] * 3600;
+                $overtimed = $time + $rules[$status]['execute_time'] * 3600;
+                if ($action) {
+                    if ($now >= $overtimed) $list[] = $v;//超时
+                } else {
+                    if ($now >= $overtiming && $now <= $overtimed) $list[] = $v;//即将超时
+                }
+            }
+        }
+        return $list;
+    }
+
+    //超龄案件
+    private function chaoling()
+    {
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $list = M('case')->order('fill_in_time desc')->select();
+        $count = array();
+        $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
+        foreach ($list as $val) {
+            if  (getAge($val['birthday']) > $overage) $count[] = $val;
+        }
+        $pagesize = 25;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
+        $start = ($p - 1) * $pagesize;
+        $page = new Page(count($count), $pagesize);
+        $caseList = array();
+        $s = 0;
+        for ($i = $start; $i < count($count); $i++, $s++) {
+            if ($s < $pagesize) $caseList[] = $count[$i];
+        }
+        return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
     //处理数据
@@ -549,6 +508,99 @@ class CaseController extends MobileController
     {
         // $name = $_GET['ACTION_NAME'];
         // echo $name;
+    }
+
+    //信息采集
+    public function index()
+    {
+        if (IS_POST) {
+            $db = M('case');
+            if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
+            if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
+            if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
+            if ($_POST['community_code']) $data['community_code'] = $_POST['community_code'];
+            if ($_POST['name']) $data['name'] = $_POST['name'];
+            if ($_POST['sex']) $data['sex'] = $_POST['sex'];
+            if ($_POST['nation']) $data['nation'] = $_POST['nation'];
+            if ($_POST['year']) $data['year'] = $_POST['year'];
+            if ($_POST['month']) $data['month'] = $_POST['month'];
+            $data['birthday'] = serialize(array($data['year'], $data['month']));
+            if ($_POST['household_pro_code']) $data['household_pro_code'] = $_POST['household_pro_code'];
+            if ($_POST['household_city_code']) $data['household_city_code'] = $_POST['household_city_code'];
+            if ($_POST['household_area_code']) $data['household_area_code'] = $_POST['household_area_code'];
+            if ($_POST['home_pro_code']) $data['home_pro_code'] = $_POST['home_pro_code'];
+            if ($_POST['home_city_code']) $data['home_city_code'] = $_POST['home_city_code'];
+            if ($_POST['home_area_code']) $data['home_area_code'] = $_POST['home_area_code'];
+            if ($_POST['home_address']) $data['home_address'] = $_POST['home_address'];
+            if ($_POST['health'] == 1) {
+                $data['health'] = $_POST['health'];
+            } else {
+                $data['health'] = serialize($_POST['health']);
+            }
+            if ($_POST['health_other']) $data['health_other'] = $_POST['health_other'];
+            if ($_POST['character']) $data['character'] = $_POST['character'];
+            if ($_POST['admission_status']) $data['admission_status'] = $_POST['admission_status'];
+            if ($_POST['admission_status'] == 2) $data['entrance'] = $_POST['entrance'];
+            //家庭成员分类
+            $data['family_jianhuren'] = serialize($_POST['family_jianhuren']);
+            $data1 = array_merge($_POST['family_members'], $_POST['family_members1']);
+            $data['family_members'] = serialize($data1);
+            if ($_POST['family_structure']) $data['family_structure'] = $_POST['family_structure'];
+            if ($_POST['family_other']) $data['family_other'] = $_POST['family_other'];
+            if ($_POST['guardianship']) $data['guardianship'] = $_POST['guardianship'];
+            if ($_POST['life_status']) $data['life_status'] = $_POST['life_status'];
+            if ($_POST['enjoy_relief_type']) $data['enjoy_relief_type'] = serialize($_POST['enjoy_relief_type']);
+            if ($_POST['housing_type']) $data['housing_type'] = $_POST['housing_type'];
+            if ($_POST['inner_predicament']) $data['inner_predicament'] = serialize($_POST['inner_predicament']);
+            if (in_array(7, $_POST['inner_predicament'])) $data['Heart_other'] = $_POST['Heart_other'];
+            //成长困境及成长等级
+            if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
+            if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
+            if ($_POST['growth_dilemma3']) $grow['growth_dilemma3'] = $_POST['growth_dilemma3'];
+            if ($_POST['growth_dilemma4']) $grow['growth_dilemma4'] = $_POST['growth_dilemma4'];
+            if ($_POST['growth_dilemma5']) $grow['growth_dilemma5'] = $_POST['growth_dilemma5'];
+            if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
+            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
+            $data['growth_dilemma'] = serialize($grow);
+            if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
+            $data['fill_in_time'] = time();
+            if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
+            //图片上传
+            if ($_FILES['photo']['name'] != '') {
+                $uploadPath = 'case/user/';
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath);
+                    chmod($uploadPath, 0777);
+                }
+                $upload = new \Think\Upload(array(
+                    'savePath' => $uploadPath,
+                    'subName' => false,
+                    'uploadReplace' => true // 覆盖同名文件
+                ));
+                $uploadInfo = $upload->uploadOne($_FILES['photo']);
+                $data['photo'] = $uploadInfo['savename'];
+            }
+            $data['case_status'] = 'caiji';
+            if ($_POST['xId']) {
+                $case = $db->where(array('id' => $_POST['xId']))->save($data);
+            } else {
+                $case = $db->add($data);
+            }
+            if ($case) {
+                echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+            } else {
+                echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
+            }
+        } else {
+            $this->Lage();
+            $case = $this->Handle(M('case')->where(array('id' => $_GET['id']))->find());
+//            $this->Clist = $case;
+            $urse = M('ucenter_member');
+            $member = $urse->where(array('id' => UID))->getField('username');
+            echo json_encode($member);
+            $this->assign('member', $member);
+//            $this->display();
+        }
     }
 
     //案件初审

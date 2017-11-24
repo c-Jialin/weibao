@@ -82,9 +82,8 @@ class IndexController extends MobileController
     {
         //初始化返回结果
         $overtime = ['overtiming' => 0, 'overtimed' => 0];
-
-        $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
-        $rules = rebuidArray($rules, 'node');
+        $rules    = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
+        $rules    = rebuildArray($rules, 'node');
         $now = time();
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];

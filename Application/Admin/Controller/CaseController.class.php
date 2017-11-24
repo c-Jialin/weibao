@@ -157,7 +157,6 @@ class CaseController extends AdminController
     public function suoyou()
     {
         $this->meta_title = '案件列表';
-
         if (UID == 1 && I('id')) {
             $res = M('case')->delete(I('id'));
             if ($res) {
@@ -372,7 +371,7 @@ class CaseController extends AdminController
         ];
         $case = M('case');
         $count = $case->where($where)->count();
-        // import('Think', 'ThinkPHP/Library/Think/Page');
+        import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
@@ -380,7 +379,6 @@ class CaseController extends AdminController
         $this->Page = $page->show();
 
         $this->CaseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
-//        dump(M('case')->getLastSql());
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
         $this->uid = $uid;
         $this->display();
@@ -507,6 +505,35 @@ class CaseController extends AdminController
             }
         }
         return $list;
+    }
+
+    //超龄案件
+    public function chaoling()
+    {
+        $this->meta_title = '超龄案件';
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $list = M('case')->order('fill_in_time desc')->select();
+        $count = array();
+        $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
+        foreach ($list as $val) {
+            if  (getAge($val['birthday']) > $overage) $count[] = $val;
+        }
+        import('Think', 'ThinkPHP/Library/Think/Page');
+        $pagesize = 25;
+        $p = I('p') ? I('p') : 1;
+        $start = ($p - 1) * $pagesize;
+        $page = new Page(count($count), $pagesize);
+        $this->Page = $page->show();
+        $list = array();
+        $s = 0;
+        for ($i = $start; $i < count($count); $i++, $s++) {
+            if ($s < $pagesize) {
+                $list[] = $count[$i];
+            }
+        }
+        $this->CaseList = $list;
+        $this->uid = $uid;
+        $this->display();
     }
 
     //处理数据

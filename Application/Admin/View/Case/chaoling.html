@@ -1,0 +1,165 @@
+<extend name="Public/base1"/>
+
+<!-- <block name="sidebar"></block> -->
+<block name="style">
+<style>
+body{padding: 0}
+</style>
+</block>
+
+<block name="body">
+    <!-- 主体 -->
+    <div class="cf">
+        <!-- 高级搜索 -->
+    </div>
+    <!-- 数据列表 -->
+    <div class="data-table table-striped" >
+    <table class="">
+    <thead>
+       <tr><th colspan="13" style="text-align:center">社会保护人员基本信息</th></tr>
+        <tr>
+        <th class="">序号</th>
+        <th class="">登记时间</th>
+        <th >姓名</th>
+        <th >性别</th>
+        <th >年龄</th>
+        <th >民族</th>
+        <th >家庭住址</th>
+        <th >健康状况</th> 
+        <th class="" >摸底上报风险等级</th>
+        <th class="" >机构评估风险等级</th>
+        <th class="" >帮扶后最高风险等级</th>
+        <th class="" >流程</th>
+        <th class="" >操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php
+        if (isset($CaseList) && !empty($CaseList)) { 
+         foreach ((array)$CaseList as $k => $v) { ?>
+    <tr>
+        <td><?php echo $k+1?></td>
+        <td><?php echo date("Y-m-d",$v['fill_in_time'])?></td>
+        <td><?php echo $v['name']?></td>
+        <td><?php echo getSex($v['sex'])?></td>
+        <td><?php echo getAge($v['birthday'])?></td>
+        <td><?php echo $v['nation']?></td>
+        <td><?php echo $v['home_address']?></td>
+        <td><?php 
+            $health = unserialize($v['health']);
+            foreach ($health as $val) {?>
+            <?php echo getHealth($val,$v['id']);?><br>
+            <?php }?>
+        </td>
+        <td><?php $fengxian = unserialize($v['growth_dilemma']);
+                foreach ($fengxian as $v1) {
+                    $str[] = getFengxian($v1);
+                }
+                echo max($str);
+                ?></td>
+        <td><?php $fengxians = unserialize($v['growth_dilemmas']);
+                foreach ($fengxians as $v2) {
+                    $strs[] = getFengxian($v2);
+                }
+                echo max($strs);
+                ?></td>
+        <td><?php $fengxianss = unserialize($v['growth_dilemmass']);
+                foreach ($fengxianss as $v2) {
+                    $strss[] = getFengxian($v2);
+                }
+                echo max($strss);
+                ?></td>
+
+        <?php
+            $turn_related = M('case')->where(array('id'=>$v['id']))->getField('turn_related');
+        ?>
+
+        <td>
+            <?php if($v['case_status'] == 'huifang'){?>
+            回访完成
+            <?php }else if($v['visit_status'] == null && $v['finish_suggestion'] !== ''){?>
+            结案完成
+            <?php }else if($v['finish_suggestion'] !== ''){?>
+            结案完成
+            <?php }else if($v['management_status'] == 1){?>
+            处置完成
+            <?php }else if($v['case_status'] == 'bohuiCz'){?>
+            处置驳回
+            <?php }else if($v['dispatch_instance'] !== ''){?>
+            调度完成
+            <?php }else if($v['last_instance_status'] == 1){?>
+            审批完成
+            <?php }else if($v['case_status'] == 'bohuiCs'){?>
+            初审驳回
+            <?php }else if($v['trial_status'] == 1){?>
+            初审完成
+            <?php }else if($v['case_status'] == 'caiji'){?>
+            采集完成
+            <?php }else if($v['case_status'] == 'bohuiC'){?>
+            采集驳回
+            <?php }?>
+        </td>
+        <td>
+            <?php if(($v['case_status'] == 'jiean' && IS_AUTH) || ($v['case_status'] == 'huifang' && IS_AUTH) || UID == 1){?>
+            <span style="color:#A0A0A0">完成</span>
+            <a href="index.php?s=/Case/visit/id/<?php echo $v['id'];?>/act/huifang.html">查看</a>
+            <?php }else if(($v['case_status'] == 'weihuifang' && IS_AUTH) || UID == 1){?>
+            <a href="index.php?s=/Case/visit/id/<?php echo $v['id'];?>/act/huifang.html">回访</a>
+            <?php }else if($v['case_status'] == 'weihuifang' && !IS_AUTH){?>
+            <span style="color:#A0A0A0">回访</span>
+            <a href="{:U('Case/finish',array('id'=>$v['id']))}">查看</a>
+            <?php }else if(($v['case_status'] == 'chuzhi' && IS_AUTH) || UID == 1){?>
+            <a href="index.php?s=/Case/finish/id/<?php echo $v['id'];?>/act/jiean.html">结案</a>
+            <?php }else if($v['case_status'] == 'chuzhi' && !IS_AUTH){?>
+            <span style="color:#A0A0A0">结案</span>
+            <?php }else if(($v['case_status'] == 'diaodu' && IS_AUTH) || ($v['case_status'] == 'diaodu' && IS_AUTH) || UID == 1){?>
+            <a href="index.php?s=/Case/deal_with/id/<?php echo $v['id'];?>/act/chuzhi.html">处置</a>
+            <?php }else if(($v['case_status'] == 'diaodu' && !IS_AUTH) || ($v['case_status'] == 'diaodu' && !IS_AUTH)){?>
+            <span style="color:#A0A0A0">处置</span>
+            <?php }else if(($v['case_status'] == 'shenpi' && IS_AUTH) || ($v['case_status'] == 'bohuiCz' && IS_AUTH) || UID == 1){?>
+            <a href="index.php?s=/Case/dispatch/id/<?php echo $v['id'];?>/act/diaodu.html">调度</a>
+            <?php }else if(($v['case_status'] == 'shenpi' && !IS_AUTH) || ($v['case_status'] == 'bohuiCz' && !IS_AUTH)){?>
+            <span style="color:#A0A0A0">调度</span>
+            <?php }else if(($v['case_status'] == 'chushen' && IS_AUTH) || UID == 1){?>
+            <a href="index.php?s=/Case/last_instance/id/<?php echo $v['id'];?>/act/zhongshen.html">审批</a>
+            <?php }else if($v['case_status'] == 'chushen' && !IS_AUTH){?>
+            <span style="color:#A0A0A0">审批</span>
+            <?php }else if(($v['case_status'] == 'caiji' && IS_AUTH) || ($v['case_status'] == 'bohuiCs' && IS_AUTH) || UID == 1){?>
+            <a href="index.php?s=/Case/trial/id/<?php echo $v['id'];?>/act/chushen.html">初审</a>
+            <?php }else if(($v['case_status'] == 'caiji' && !IS_AUTH) || ($v['case_status'] == 'bohuiCs' && !IS_AUTH)){?>
+            <span style="color:#A0A0A0">初审</span>
+            <?php }else if(($v['case_status'] == 'bohuiC' && IS_AUTH) || UID == 1){?>
+            <a href="index.php?s=/Case/index/id/<?php echo $v['id'];?>.html">采集</a>
+            <?php }else if($uid !== 3){?>
+            <span style="color:#A0A0A0">采集</span>
+            <?php }?>
+        </td>
+    </tr>
+          <?php } } else { ?>
+            <tr><td colspan="9" class="text-center">暂无数据</td></tr>
+           <?php } ?>
+    </tbody>
+    </table>
+    </div>
+    <div class="page">
+        {$Page}
+    </div>
+</block>
+<block name="script">
+
+
+<script type="text/javascript">
+    /* 插件块关闭操作 */
+    $(".title-opt .wm-slide").each(function(){
+        $(this).click(function(){
+            $(this).closest(".columns-mod").find(".bd").toggle();
+            $(this).find("i").toggleClass("mod-up");
+        });
+    })
+    $(function(){
+        // $('#main').attr({'id': 'indexMain','class': 'index-main'});
+        $('.copyright').html('<div class="copyright"> ©2013 <a href="http://www.topthink.net" target="_blank">topthink.net</a> 上海顶想信息科技有限公司版权所有</div>');
+        $('.sidebar').remove();
+    })
+</script>
+</block>
