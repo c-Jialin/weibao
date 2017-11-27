@@ -702,7 +702,7 @@ class CaseController extends AdminController
                     'subName' => false,
                     'uploadReplace' => true // 覆盖同名文件
                 ));
-                $uploanfo = $upload->uploadOne($_FILES['photo']);
+                $uploadInfo = $upload->uploadOne($_FILES['photo']);
                 $data['photo'] = $uploadInfo['savename'];
             }
             $data['case_status'] = 'caiji';

@@ -29,7 +29,7 @@ function isMobile()
     if (isset ($_SERVER['SERVER_NAME'])) return stristr($_SERVER['SERVER_NAME'], "www.weibao.com") ? false : true;
     return false;
 }
-if (!isMobile()) {
+if (isMobile()) {
     $_GET['m'] = 'Admin';
 } else {
     $_GET['m'] = 'Mobile';
