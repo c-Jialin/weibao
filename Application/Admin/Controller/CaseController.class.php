@@ -723,7 +723,7 @@ class CaseController extends AdminController
                 if ($case) {
                     //发送短信提醒
                     $res = $this->smsSend('trial', 'caiji', true);
-                    $this->error(implode(',', $res), '', 10);
+//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
