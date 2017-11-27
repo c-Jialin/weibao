@@ -731,15 +731,15 @@ function getStatusFromAuth()
 */
 function getProcess($status, $stage){
     $arr = [
-        'caiji'     => ['complete' => '待初审',        'ing' => '初审中'],
-        'chushen'   => ['complete' => '待审批',        'ing' => '审批中'],
-        'bohuiC'    => ['complete' => '待重新采集',    'ing' => '重新采集中'],
-        'shenpi'    => ['complete' => '待调度',        'ing' => '调度中'],
-        'bohuiCs'   => ['complete' => '待重新初审',    'ing' => '重新初审中'],
-        'diaodu'    => ['complete' => '待处置',        'ing' => '处置中'],
-        'chuzhi'    => ['complete' => '待结案',        'ing' => '结案中'],
-        'bohuiCz'   => ['complete' => '待重新调度',    'ing' => '重新调度中'],
-        'weihuifang'=> ['complete' => '待回访',        'ing' => '回访中'],
+        'caiji'     => ['complete' => '待初审', 'ing' => '初审中', 'overtime'=>'初审超时'],
+        'chushen'   => ['complete' => '待审批', 'ing' => '审批中', 'overtime'=>'审批超时'],
+        'bohuiC'    => ['complete' => '待重新采集', 'ing' => '重新采集中', 'overtime'=>'重新采集超时'],
+        'shenpi'    => ['complete' => '待调度', 'ing' => '调度中', 'overtime'=>'调度超时'],
+        'bohuiCs'   => ['complete' => '待重新初审', 'ing' => '重新初审中', 'overtime'=>'重新初审超时'],
+        'diaodu'    => ['complete' => '待处置', 'ing' => '处置中', 'overtime'=>'处置超时'],
+        'chuzhi'    => ['complete' => '待结案', 'ing' => '结案中', 'overtime'=>'结案超时'],
+        'bohuiCz'   => ['complete' => '待重新调度', 'ing' => '重新调度中', 'overtime'=>'重新调度超时'],
+        'weihuifang'=> ['complete' => '待回访', 'ing' => '回访中', 'overtime'=>'回访超时'],
         'jiean'     => ['complete' => '结案完成'],
         'huifang'   => ['complete' => '回访完成'],
     ];

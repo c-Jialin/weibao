@@ -477,16 +477,22 @@ class CaseController extends AdminController
 
     /**
      * 计算 超时/即将超时 案件
+     * @param array  $cases  案件数组
+     * @param boolen $action 默认true查询超时案件
+     * @param boolen $ifpost 默认true 非流程节点的提交
      * return array $list 返回数组包含键值overtiming, overtimed
      * overtiming为即将超时, overtimed为已经超时
      */
-    private function countOverTimeCases($cases, $action = true)
+    private function countOverTimeCases($cases, $action = true, $ifpost = true)
     {
         //初始化返回结果
-        $list = [];
-        $now = time();
-        $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
-        $rules = rebuildArray($rules, 'node');
+        $list    = [];
+        $now     = time();
+        $execute = $ifpost ? '' : $now;
+        $rules   = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
+        $rules  = rebuildArray($rules, 'node');
+        $model  = D('overtime');
+        $case   = M('case');
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];
             $key = translate($status);
@@ -496,11 +502,25 @@ class CaseController extends AdminController
                 //下一阶段该执行的状态的时间
                 $nextTime = strtotime($v[$key['next'] . '_time']);
                 //下一阶段为false为驳回
-                $time = empty($nextTime) ? $caseTime : $nextTime;
+                $time       = empty($nextTime) ? $caseTime : $nextTime;
                 $overtiming = $time + $rules[$status]['warn_time'] * 3600;
-                $overtimed = $time + $rules[$status]['execute_time'] * 3600;
+                $overtimed  = $time + $rules[$status]['execute_time'] * 3600;
                 if ($action) {
-                    if ($now >= $overtimed) $list[] = $v;//超时
+                    if ($now >= $overtimed) {
+                        $list[] = $v;//超时
+                        $save  = [
+                            'case'      => $v['id'], 
+                            'status'    => $status,
+                            'terminal'  => $overtimed,
+                            'execute'   => $execute,
+                            'node'      => $v['stage_status'],
+                        ];
+                        $model->update($save);
+
+                        //如果为流程节点的提交则不更改为超时
+                        if($ifpost)
+                            $case->save(['id' => $v['id'], 'stage_status' => 'overtime']);
+                    }
                 } else {
                     if ($now >= $overtiming && $now <= $overtimed) $list[] = $v;//即将超时
                 }
@@ -689,8 +709,9 @@ class CaseController extends AdminController
                 // 采集 or 重新采集完成 更改stage_status
                 $data['stage_status'] = 'complete';
               
+                //提交后检测该案件是否超时
                 $cases = $Case->where(['id' => $data['id']])->select();
-                $this->updateOvertime($cases, strtotime($data['add_time']));
+                $this->countOverTimeCases($cases, true, false);
               
                 $case = $Case->update($data);
                 if ($case) {
@@ -734,12 +755,18 @@ class CaseController extends AdminController
             $data['growth_dilemmas'] = serialize($grow);
             if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
             $data['trial_time'] = date("Y-m-d H:i:s", time());
+
+            //提交后检测该案件是否超时
+            $cases = $case->where(['id' => $data['id']])->select();
+            $this->countOverTimeCases($cases, true, false);
+
             if ($data['trial_status'] == 1) {
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('last_instance', 'chushen', true);
+
                     $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
@@ -791,6 +818,11 @@ class CaseController extends AdminController
             $data['case_status'] = 'shenpi';
             if ($_POST['last_instance_person']) $data['last_instance_person'] = $_POST['last_instance_person'];
             $data['last_instance_time'] = date("Y-m-d H:i:s", time());
+
+            //提交后检测该案件是否超时
+            $cases = $case->where(['id' => $data['id']])->select();
+            $this->countOverTimeCases($cases, true, false);
+
             if ($data['last_instance_status'] == 1) {
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 $data['stage_status'] = 'complete';
@@ -856,7 +888,13 @@ class CaseController extends AdminController
             if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
             $data['dispatch_time'] = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
-            $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
+
+            $id = I('id');
+            //提交后检测该案件是否超时
+            $cases = $case->where(['id' => $id])->select();
+            $this->countOverTimeCases($cases, true, false);
+
+            $saveCase = $case->where(array('id' => $id))->save($data);
             if ($saveCase) {
                 //发送短信提醒
                 $res = $this->smsSend('deal_with', 'diaodu', true);
@@ -900,9 +938,15 @@ class CaseController extends AdminController
             $data['management_record'] = serialize($_POST['management_record']);
             if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
             $data['deal_with_time'] = date("Y-m-d H:i:s", time());
+
+            $id = I('id');
+            //提交后检测该案件是否超时
+            $cases = $case->where(['id' => $id])->select();
+            $this->countOverTimeCases($cases, true, false);
+
             if ($data['management_status'] == 1) {
                 $data['stage_status'] = 'complete';
-                $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
+                $saveCase = $case->where(array('id' => $id))->save($data);
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('finish', 'chuzhi', true);
@@ -914,7 +958,7 @@ class CaseController extends AdminController
             } else if ($data['management_status'] == 2) {
                 $arr = array('deal_with_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
                 $arr['stage_status'] = 'complete';
-                $saveCase = $case->where(array('id' => $_POST['id']))->save($arr);
+                $saveCase = $case->where(array('id' => $id))->save($arr);
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('dispatch', 'bohuiCz', false);
@@ -1025,6 +1069,12 @@ class CaseController extends AdminController
             if (!empty($_POST['recommendations'])) $data['recommendations'] = $_POST['recommendations'];
             if (!empty($_POST['growth_dilemmass'])) $data['growth_dilemmass'] = $_POST['growth_dilemmass'];
             if ($_POST['finish_person']) $data['finish_person'] = $_POST['finish_person'];
+
+            $id = I('id');
+            //提交后检测该案件是否超时
+            $cases = $case->where(['id' => $id])->select();
+            $this->countOverTimeCases($cases, true, false);
+
             $data['finish_time'] = date("Y-m-d H:i:s", time());
             if ($data['visit_status'] == 1) {
                 if ($data['visit_form'] == 1) {
@@ -1036,7 +1086,7 @@ class CaseController extends AdminController
                 }
                 $data['case_status']  = 'weihuifang';
                 $data['stage_status'] = 'complete';
-                $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
+                $saveCase = $case->where(array('id' => $id))->save($data);
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('visit', 'weihuifang', true);
@@ -1048,7 +1098,7 @@ class CaseController extends AdminController
             } else if ($data['visit_status'] == null) {
                 $data['case_status'] = 'jiean';
                 $data['stage_status'] = 'complete';
-                $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
+                $saveCase = $case->where(array('id' => $id))->save($data);
                 if ($saveCase) {
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
@@ -1087,7 +1137,8 @@ class CaseController extends AdminController
     {
         if (IS_POST) {
             $case = M('case');
-            $way = M('case')->where(array('id' => $_POST['id']))->getField('visit_form');
+            $id = I('id');
+            $way = M('case')->where(array('id' => $id))->getField('visit_form');
             if ($way == 1) {
                 $data['visit_suggestion'] = $_POST['visit_suggestion'];
             } else if ($way == 2) {
@@ -1096,7 +1147,12 @@ class CaseController extends AdminController
             $data['case_status']  = 'huifang';
             $data['visit_time']   = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
-            $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
+
+            //提交后检测该案件是否超时
+            $cases = $case->where(['id' => $id])->select();
+            $this->countOverTimeCases($cases, true, false);
+
+            $saveCase = $case->where(array('id' => $id))->save($data);
             if ($saveCase) {
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
             } else {
@@ -1219,7 +1275,7 @@ class CaseController extends AdminController
         }
     }
 
-    private function updateOvertime($cases, $time){
+/*    private function updateOvertime($cases, $time){
         $res   = $this->countOverTimeCases($cases, true);
         $case  = M('CaseManage');
         $model = D('overtime');
@@ -1241,7 +1297,7 @@ class CaseController extends AdminController
                 $model->update($save);
             }
         }
-    }
+    }*/
     //搜索
 //    public function search(){
 //        $this->CaseList = M('case')->where(array('name'=>array('like',"%".$_POST['search']."%")))->select();
