@@ -46,9 +46,8 @@ body{padding: 0}
 
     <!-- </div> -->
     <!-- 数据列表 -->
-    <form action='{:U("suoyou")}' method='post'>
+    <form action='{:U("suoyou")}' method='get'>
         <div style='float: left; margin-bottom: 2px;'>
-            <span>搜索案件</span>
             <select name='city' id='city'>
                 <option value='0'>请选择县/市/区</option>
                 <foreach name='list_top' item='v'>
@@ -67,14 +66,21 @@ body{padding: 0}
                 <option value='2' <if condition='$sex == 2'>selected</if> >男</option>
                 <option value='1' <if condition='$sex == 1'>selected</if>>女</option>
             </select>
+            <select name='status' id='status'>
+                <option value='0'>请选择案件状态</option>
+                <foreach name='statuses' item='v' >
+                     <option value='{$v.en}'
+                    <if condition='$v.en eq $status'>selected</if> >{$v.ch}</option>
+                </foreach>
+            </select>
             <input type='text' name='name' id='name' placeholder='请输入搜索关键字' value='{$name}'>
             <select name='date' id='date'>
                 <option value='0'>全部日期</option>
                 <option value='1' <if condition='$date == 1'>selected</if> >手动选择日期</option>
             </select>
             <div class='chooseDate'>
-                <input  type='text' name='start' id='start' readonly> 至
-                <input  type='text' name='end' id='end' readonly>
+                <input  type='text' name='start' id='start' style='width:100px' readonly> 至
+                <input  type='text' name='end' id='end' style='width:100px' readonly>
             </div>
             <input type='submit' id='filter' name='submit' value='搜索' class='btn'>
             <a href='javascript:enrollCase()' class='btn enroll'>导出</a>
@@ -308,6 +314,7 @@ body{padding: 0}
           country = $('#country').val(),
           name    = $('#name').val(),
           ifall   = $('#date').val(),
+          status  = $('#status').val(),
           data    = {
                     start   : start,
                     end     : end,
@@ -318,6 +325,7 @@ body{padding: 0}
                     country : country,
                     name    : name,
                     type    : 'enroll',
+                    status  : status,
                   };
         $.post(url, data, function(res) {
             if(res.result == 1){

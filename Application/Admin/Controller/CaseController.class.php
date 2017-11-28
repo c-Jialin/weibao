@@ -172,15 +172,19 @@ class CaseController extends AdminController
         $type = I('type');
         if (I('submit') || $type == 'enroll') {
             //筛选条件 / 或导出
-            $post = I('post.');
-
+            $post = I('get.');
+            dump($post);exit;
             //是否手动日期
             if ($post['date'] == 1) {
                 $start = strtotime($post['start']);
                 $end = strtotime($post['end']);
                 $where['fill_in_time'] = ['between', [$start, $end]];
             }
+            //根据案件状态选择
+            $result = empty($post['status']) ? false : getStatusFromAuth($post['status']);
+
             $where['name'] = empty($post['name']) ? ['neq', ''] : ['like', "%{$post['name']}%"];
+            $where['case_status']    = empty($result) ? ['neq', ''] : ['in', implode(',', $result['status'])];
             $where['area_code']      = empty($post['city']) ? ['neq', 0] : $post['city'];
             $where['street_code']    = empty($post['town']) ? ['neq', 0] : $post['town'];
             $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
@@ -191,6 +195,7 @@ class CaseController extends AdminController
             $assign['sex']           = $post['sex'];
             $assign['name']          = $post['name'];
             $assign['date']          = $post['date'];
+            $assign['status']        = $post['status'];
 
             if ($type == 'enroll') {
                 //导出..
@@ -222,6 +227,16 @@ class CaseController extends AdminController
                 $usid[$key] = $value['group_id'];
             }
         }
+        $statuses = [
+            ['en' => 'add',             'ch' =>'采集'],
+            ['en' => 'trial',           'ch' =>'初审'],
+            ['en' => 'last_instance',   'ch' =>'审批'],
+            ['en' => 'dispatch',        'ch' =>'调度'],
+            ['en' => 'deal_with',       'ch' =>'处置'],
+            ['en' => 'finish',          'ch' =>'结案'],
+            ['en' => 'visit',           'ch' =>'回访'],
+        ];
+        $assign['statuses'] = $statuses;
         $assign['start'] = $start;
         $assign['end'] = $end;
         $this->Lage();
