@@ -97,97 +97,109 @@
         <div class="title <?php if($act == 'chuzhi'){?>active<?php }?>" href="#chuzhi">当前阶段：处置<a
                 href='javascript:printForm()' class='print'>打印</a></div>
         <form action="{:U('Case/deal_with')}" method="post">
-            <div id="chuzhi" class="submit collapse chuzhi <?php if($act == 'chuzhi'){?>in<?php }?>">
-                <div class="li">
-                    <div class="left">流程操作</div>
-                    <div class="right">
-                        <label>
-                            <input type="radio" class="radio" name="management_status"
-                                   value="1" <?php if($Clist['management_status'] == 1){?>checked<?php }?>>
-                            <span class="radio-text">处置完成,提交指挥中心</span>
-                        </label>
-                        <label>
-                            <input type="radio" class="radio" name="management_status" value="2"> <span
-                                class="radio-text">驳回</span>
-                        </label>
-                    </div>
+            <div id="chuzhi" class="collapse chuzhi <?php if($act == 'chuzhi'){?>in<?php }?>">
+                <div class="relative li zhuchibeizhu" style=" width:855px;">
+                    <div id="upload1" class="absolute upload1" style="display:none;"></div>
+                    <table cellpadding="0" cellspacing="0" border="0" class="table_2" style=" width:855px;">
+                        <tbody>
+                        <tr>
+                            <td class="td_item">流程操作</td>
+                            <td class="td_input" colspan="6">
+                                <label><input type="radio" class="radio" name="management_status" value="1" <?php if($Clist['management_status'] == 1){?>checked<?php }?>>处置完成,提交结案</label>　
+                                <label><input type="radio" class="radio" name="management_status" value="2" <?php if($Clist['management_status'] == 2){?>checked<?php }?>>驳回,重新调度</label>
+                        </tr>
+                        <tr>
+                            <td class="td_item">处置记录</td>
+                            <td colspan="6" valign="top" style="padding:0 0;">
+                                <?php
+							        $mange_list = unserialize($Clist['management_record']);
+							        if(!is_array($mange_list)) $mange_list = array(0 => array());
+							        foreach($mange_list as $v){
+						        ?>
+                                <table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%"
+                                       style="border:none;">
+                                    <tbody>
+                                    <form>
+                                        <tr>
+                                            <td class="td_item" style="width:100px;">处置类型</td>
+                                            <td class="td_input" style="width:110px;">
+                                                <label><input type="radio" class="radio" name="management_type" <?php if($v['type'] == 1){ echo 'checked'; }?> value="1"/> 补助</label>
+                                                <label><input type="radio" class="radio" name="management_type" <?php if($v['type'] == 2){ echo 'checked'; }?> value="2"/> 辅助</label>
+                                            </td>
+                                            <td class="td_item" style="width:80px;">上传文件</td>
+                                            <td class="td_input" style="width:120px;">
+                                                <?php if (!empty($v['file'])) {?>
+                                                <a href="/Uploads/case/user/deal/<?php echo $v['file'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
+                                                <?php } else {?>
+                                                <input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/>
+                                                <input type="text" style="width: 200px;height: 25px;display: none;" name="file_name"/>
+                                                <?php }?>
+                                            </td>
+                                            <td class="td_item" style="width:80px;">处置联系人</td>
+                                            <td class="td_input" style="width:120px;">
+                                                <?php if (empty($v['person'])) {?>
+                                                <input type="text" class="input" name="management_person" value="<?php echo $member ?>">
+                                                <?php } else { ?>
+                                                <input type="text" class="input" disabled name="management_person" value="<?php echo $v['person'] ?>">
+                                                <?php } ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="td_input">
+                                                <textarea cols="60" name="management_record"><?php echo $v['record']?></textarea>
+                                            </td>
+                                            <td colspan="2" class="td_input" style="border-right:none;">
+                                                <label>处置日期(不设置则为当天日期)</label>
+                                                <?php if (empty($v['date'])) {?>
+                                                <label><input type="datetime-local" name="management_riqi" style="font-size:12px;line-height:12px;"></label>
+                                                <?php } else { ?>
+                                                <input type="text" class="input" name="management_riqi" value="<?php echo $v['date'] ?>">
+                                                <?php } ?>
+                                            </td>
+                                        </tr>
+                                    </form>
+                                    </tbody>
+                                </table>
+                                <?php }?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_item">添加处置</td>
+                            <td class="td_input" colspan="6">
+                                <?php
+							        $mange_list = unserialize($Clist['management_record']);
+							        if(!is_array($mange_list)) {
+                                ?>
+                                <input type="hidden" name="types" value="1"/>
+                                <button style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">提交处置</button>
+                                <?php } else {?>
+                                <span id="addchuzhi" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加处置</span>
+                                <?php }?>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="li zhuchibeizhu">
-                    <div class="left">处置备注</div>
-                    <div class="right">
-                        <?php
-							$mange_list = unserialize($Clist['management_record']);
-							if(is_array($mange_list)){
-							foreach($mange_list as $v){
-						?>
-                        <li>
-                            <form>
-                                <span class="radio-text">处置类型</span>
-                                <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 1){ echo 'checked'; }?> value="1"> <span
-                                    class="radio-text">补助</span>
-                                <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 2){ echo 'checked'; }?> value="2"> <span
-                                    class="radio-text">辅助</span>
-                                <span class="radio-text" style="margin-left: 50px">上传文件</span>
-                                <?php if(!empty($v['file'])){ ?>
-                                <a href="/Uploads/case/user/deal/<?php echo $v['file'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
-                                <?php } ?>
-                                <input type="text" style="display: none;" name="file_name" value="<?php echo $v['file'];?>"/>
-                                <textarea name="management_record[]"><?php echo $v['text']?></textarea>
-                                <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
-                                       class="chuzhisave"/>
-                            </form>
-                        </li>
-                        <?php }}else{?>
-                        <li>
-                            <span class="radio-text">处置类型</span>
-                            <input type="radio" class="radio" name="management_tyle" checked value="1"/> <span
-                                class="radio-text">补助</span>
-                            <input type="radio" class="radio" name="management_tyle" value="2"/> <span
-                                class="radio-text">辅助</span>
-                            <span class="radio-text" style="margin-left: 50px">上传文件</span>
-                            <input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/>
-                            <input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"/>
-                            <textarea name="management_record[]"><?php echo $mange_list?></textarea>
-                            <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
-                                   class="chuzhisave"/>
-                        </li>
-                        <?php }?>
-                    </div>
-                </div>
-                <div class="li">
-                    <div class="left">添加处置</div>
-                    <div class="right">
-                        <span id="addchuzhi"
-                              style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加处置</span>
-                    </div>
-                </div>
-                <div class="li">
-                    <div class="left">处置日期</div>
-                    <div class="right">
+                <div style="width: 855px;margin: auto;margin-top: 10px;">
+                    <label>处置日期：
                         <?php if (empty($Clist['deal_with_time'])) {?>
-                        <label>手动设置处置日期 <input type="datetime-local" name="deal_with_time"
-                                               style="font-size:12px;line-height:12px;"></label>
+                        <label>手动设置处置日期 <input type="datetime-local" name="deal_with_time" style="font-size:12px;line-height:12px;"></label>
                         * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
                         <?php } else { ?>
-                        <input type="text" class="input" name="deal_with_time" style="width:300px;"
-                               value="<?php echo $Clist['deal_with_time'] ?>">
+                        <input type="text" class="input" name="deal_with_time" style="width:300px;" value="<?php echo $Clist['deal_with_time'] ?>">
                         <?php } ?>
-                    </div>
+                    </label>
                 </div>
-                <div class="li">
-                    <div class="left">处置人</div>
-                    <div class="right">
+                <div style="width: 855px;margin: auto;margin-top: 10px;border-bottom:1px solid rgb(65,199,214);padding-bottom: 10px;">
+                    <label>处 置 人：
                         <?php if (empty($Clist['deal_person'])) {?>
-                        <input type="text" class="input" style="width:300px;" name="deal_person"
-                               value="<?php echo $member ?>">
+                        <input type="text" class="input" style="width:300px;" name="deal_person" value="<?php echo $member ?>">
                         <?php } else { ?>
-                        <input type="text" class="input" style="width:300px;" name="deal_person"
-                               value="<?php echo $Clist['deal_person'] ?>">
+                        <input type="text" class="input" style="width:300px;" disabled name="deal_person" value="<?php echo $Clist['deal_person'] ?>">
                         <?php } ?>
-                    </div>
+                    </label>
                 </div>
-                <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>"
-                     is_auth="<?php echo IS_AUTH?>"></div>
+                <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
                 <input type="hidden" name="id" value="<?php echo $id;?>">
                 <button onclick="return auth()" type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
             </div>
@@ -199,6 +211,7 @@
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
 <script src='__PUBLIC__/Admin/js/jquery.PrintArea.js'></script>
 <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/bootstrap.min.js"></script>
+<script type="text/javascript" src="__JS__/layer.js"></script>
 <!-- 新增编辑器引入文件 -->
 <link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
 <script src="__STATIC__/kindeditor/kindeditor-min.js"></script>
@@ -265,7 +278,7 @@
             var texts = $(this).siblings('textarea').val();
             var type = $(this).siblings('input[name=management_tyle]');
             var types = 1;
-            type.each(function (){
+            type.each(function () {
                 if ($(this).prop('checked')) {
                     types = $(this).val();
                 }
@@ -346,21 +359,18 @@
         })
     }
     $(function () {
-        var text = '<div class="li zhuchibeizhu"><div class="left">处置备注</div><div class="right"><li><span class="radio-text">处置类型</span> <input type="radio" class="radio" name="management_tyle" checked value="1"> <span class="radio-text">补助</span> <input type="radio" class="radio" name="management_tyle" value="2"> <span class="radio-text">辅助</span> <span class="radio-text" style="margin-left: 50px">上传文件</span> <input type="file" style="margin-left: -10px" name="management_file"  class="uploadFile"><input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"><textarea name="management_record[]"></textarea><input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em" class="chuzhisave"/></li></div></div>';
-        var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
-        $('.title').click(function () {
-            $(this).children('.caret').toggleClass('caret-active');
-        })
+        var text = '<form action="index.php?s=/Case/tichu" method="post"><div class="submit" style="width:800px;margin:auto;"><div style="line-height:30px;"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置类型</div><div style="float:left;width:85%;display:inline-block;"><label style="width:40px"><input type="radio" class="radio" name="management_type" checked value="1"><span class="radio-text" style="position:relative;top:-2px;">补助</span></label><label style="width:40px"><input type="radio" class="radio" name="management_type" value="2"><span class="radio-text" style="position:relative;top:-2px;">辅助</span></label></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">上传文件</div><div style="float:left;width:85%;display:inline-block;"><label><input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/><input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"/></label></div></div><div style="line-height:80px;height:80px"><div style="float:left;width:15%;align-content:right;display:inline-block;height:80px">处置备注</div><div style="float:left;width:85%;display:inline-block;height:80px"><textarea style="width:600px;height:80px;" name="management_record"></textarea></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置日期</div><div style="float:left;width:85%;display:inline-block;"><label>手动设置处置日期 <input type="datetime-local" name="management_riqi" style="font-size:12px;line-height:12px;"></label>* 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置人</div><div style="float:left;width:85%;display:inline-block;"><input type="text" class="input" style="width:300px;" name="management_person" value="<?php echo $member ?>"></div></div><input type="hidden" name="id" value="<?php echo $id;?>"><button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button></div></form>';
         $('#addchuzhi').click(function () {
-            $('.zhuchibeizhu:last').after(text);
-            $('.zhuchibeizhu:last').children('.right').children('textarea').attr('name', 'management_record' + ($('.zhuchibeizhu').length - 1));
+            layer.open({
+                title:'处置备注',
+                type: 1,
+                skin: 'layui-layer-rim', //加上边框
+                area: ['850px', '340px'], //宽高
+                content: text,
+            });
             upload();
         })
-        $('#addhuifang').click(function () {
-            $('.huifangjilu:last').after(strVar);
-            $('.huifangjilu:last').children('.right').children('textarea').attr('name', 'visit_suggestion' + ($('.huifangjilu').length - 1));
-        })
-    })
+    });
     var url = 'index.php?s=/Case/ajax_upload';
     function upload() {
         $(".uploadFile").last().fileupload({

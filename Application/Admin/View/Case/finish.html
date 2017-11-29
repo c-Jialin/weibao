@@ -206,7 +206,7 @@
                             <input type="checkbox" <?php if($Clist['visit_status'] == 1) echo 'checked'?> class="checkbox visit_form" name="visit_status" value="1">
                             <span class="radio-text">回访</span>
                         </label>
-                        <input type="radio" class="radio formRadio" name="visit_form" value="1" <?php if($Clist['visit_form'] == 1) echo 'checked'?>><b
+                        <!--<input type="radio" class="radio formRadio" name="visit_form" value="1" <?php if($Clist['visit_form'] == 1) echo 'checked'?>><b
                             class="radio-text">指定</b>
                         <input type="text" class="formText" name="visit_form1" value="<?php if($Clist['visit_form'] == 1) echo $Clist['visit_way']; ?>" style="height:28px;width:40px"><b
                             class="radio-text"> 天</b>
@@ -216,7 +216,7 @@
                         <input type="text" class="formText" name="visit_form2_1" value="<?php if($Clist['visit_form'] == 2){ $str = unserialize($Clist['visit_way']); echo $str[0];}?>" style="height:28px;width:40px"><b
                             class="radio-text"> 天</b>
                         <input type="text" class="formText" name="visit_form2_2" value="<?php if($Clist['visit_form'] == 2){ $str = unserialize($Clist['visit_way']); echo $str[1];}?>" style="height:28px;width:40px"><b
-                            class="radio-text"> 次</b>
+                            class="radio-text"> 次</b>-->
                         <br>
                     </div>
                     <div style="clear: both;"></div>

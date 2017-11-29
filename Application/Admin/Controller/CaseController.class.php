@@ -176,7 +176,8 @@ class CaseController extends AdminController
         if (I('submit') || $type == 'enroll') {
             //筛选条件 / 或导出
             $post = I('get.');
-            dump($post);exit;
+            dump($post);
+            exit;
             //是否手动日期
             if ($post['date'] == 1) {
                 $start = strtotime($post['start']);
@@ -187,18 +188,18 @@ class CaseController extends AdminController
             $result = empty($post['status']) ? false : getStatusFromAuth($post['status']);
 
             $where['name'] = empty($post['name']) ? ['neq', ''] : ['like', "%{$post['name']}%"];
-            $where['case_status']    = empty($result) ? ['neq', ''] : ['in', implode(',', $result['status'])];
-            $where['area_code']      = empty($post['city']) ? ['neq', 0] : $post['city'];
-            $where['street_code']    = empty($post['town']) ? ['neq', 0] : $post['town'];
+            $where['case_status'] = empty($result) ? ['neq', ''] : ['in', implode(',', $result['status'])];
+            $where['area_code'] = empty($post['city']) ? ['neq', 0] : $post['city'];
+            $where['street_code'] = empty($post['town']) ? ['neq', 0] : $post['town'];
             $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
-            $where['sex']            = empty($post['sex']) ? ['neq', 0] : $post['sex'];
-            $assign['city']          = $post['city'];
-            $assign['town']          = $post['town'];
-            $assign['country']       = $post['country'];
-            $assign['sex']           = $post['sex'];
-            $assign['name']          = $post['name'];
-            $assign['date']          = $post['date'];
-            $assign['status']        = $post['status'];
+            $where['sex'] = empty($post['sex']) ? ['neq', 0] : $post['sex'];
+            $assign['city'] = $post['city'];
+            $assign['town'] = $post['town'];
+            $assign['country'] = $post['country'];
+            $assign['sex'] = $post['sex'];
+            $assign['name'] = $post['name'];
+            $assign['date'] = $post['date'];
+            $assign['status'] = $post['status'];
 
             if ($type == 'enroll') {
                 //导出..
@@ -231,13 +232,13 @@ class CaseController extends AdminController
             }
         }
         $statuses = [
-            ['en' => 'add',             'ch' =>'采集'],
-            ['en' => 'trial',           'ch' =>'初审'],
-            ['en' => 'last_instance',   'ch' =>'审批'],
-            ['en' => 'dispatch',        'ch' =>'调度'],
-            ['en' => 'deal_with',       'ch' =>'处置'],
-            ['en' => 'finish',          'ch' =>'结案'],
-            ['en' => 'visit',           'ch' =>'回访'],
+            ['en' => 'add', 'ch' => '采集'],
+            ['en' => 'trial', 'ch' => '初审'],
+            ['en' => 'last_instance', 'ch' => '审批'],
+            ['en' => 'dispatch', 'ch' => '调度'],
+            ['en' => 'deal_with', 'ch' => '处置'],
+            ['en' => 'finish', 'ch' => '结案'],
+            ['en' => 'visit', 'ch' => '回访'],
         ];
         $assign['statuses'] = $statuses;
         $assign['start'] = $start;
@@ -514,7 +515,7 @@ class CaseController extends AdminController
 
     /**
      * 计算 超时/即将超时 案件
-     * @param array  $cases  案件数组
+     * @param array $cases 案件数组
      * @param boolen $action 默认true查询超时案件
      * @param boolen $ifpost 默认true 非流程节点的提交
      * return array $list 返回数组包含键值overtiming, overtimed
@@ -523,13 +524,13 @@ class CaseController extends AdminController
     private function countOverTimeCases($cases, $action = true, $ifpost = true)
     {
         //初始化返回结果
-        $list    = [];
-        $now     = time();
+        $list = [];
+        $now = time();
         $execute = $ifpost ? '' : $now;
-        $rules   = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
-        $rules  = rebuildArray($rules, 'node');
-        $model  = D('overtime');
-        $case   = M('case');
+        $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
+        $rules = rebuildArray($rules, 'node');
+        $model = D('overtime');
+        $case = M('case');
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];
             $key = translate($status);
@@ -539,23 +540,23 @@ class CaseController extends AdminController
                 //下一阶段该执行的状态的时间
                 $nextTime = strtotime($v[$key['next'] . '_time']);
                 //下一阶段为false为驳回
-                $time       = empty($nextTime) ? $caseTime : $nextTime;
+                $time = empty($nextTime) ? $caseTime : $nextTime;
                 $overtiming = $time + $rules[$status]['warn_time'] * 3600;
-                $overtimed  = $time + $rules[$status]['execute_time'] * 3600;
+                $overtimed = $time + $rules[$status]['execute_time'] * 3600;
                 if ($action) {
                     if ($now >= $overtimed) {
                         $list[] = $v;//超时
-                        $save  = [
-                            'case'      => $v['id'], 
-                            'status'    => $status,
-                            'terminal'  => $overtimed,
-                            'execute'   => $execute,
-                            'node'      => $v['stage_status'],
+                        $save = [
+                            'case' => $v['id'],
+                            'status' => $status,
+                            'terminal' => $overtimed,
+                            'execute' => $execute,
+                            'node' => $v['stage_status'],
                         ];
                         $model->update($save);
 
                         //如果为流程节点的提交则不更改为超时
-                        if($ifpost) $case->save(['id' => $v['id'], 'stage_status' => 'overtime']);
+                        if ($ifpost) $case->save(['id' => $v['id'], 'stage_status' => 'overtime']);
                     }
                 } else {
                     if ($now >= $overtiming && $now <= $overtimed) $list[] = $v;//即将超时
@@ -574,7 +575,7 @@ class CaseController extends AdminController
         $count = array();
         $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
         foreach ($list as $val) {
-            if  (getAge($val['birthday']) > $overage) $count[] = $val;
+            if (getAge($val['birthday']) > $overage) $count[] = $val;
         }
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
@@ -773,11 +774,11 @@ class CaseController extends AdminController
                 if ($_POST['xId']) $data['id'] = $_POST['xId'];
                 // 采集 or 重新采集完成 更改stage_status
                 $data['stage_status'] = 'complete';
-              
+
                 //提交后检测该案件是否超时
                 $cases = $Case->where(['id' => $data['id']])->select();
                 $this->countOverTimeCases($cases, true, false);
-              
+
                 $case = $Case->update($data);
                 if ($case) {
                     //发送短信提醒
@@ -997,6 +998,15 @@ class CaseController extends AdminController
     public function deal_with()
     {
         if (IS_POST) {
+            if ($_POST['types'] == 1) {
+                return $this->tichu();
+            } else {
+                $management_record = M('case')->where(array('id' => $_POST['id']))->getField('management_record');
+                if (empty($management_record)) {
+                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/deal_with/id/" . $_POST['id'] . "/act/chuzhi.html';</script>";
+                    exit;
+                }
+            }
             $case = M('case');
             $data['case_status'] = 'chuzhi';
             $data['management_status'] = $_POST['management_status'];
@@ -1060,36 +1070,38 @@ class CaseController extends AdminController
     //处置提交
     public function tichu()
     {
-        $id = $_POST['id'];
-        $va = $_POST['va'];
         $post = array();
-        foreach ($_POST as $k => $v) {
-            if (!in_array($k, array('id', 'va'))) {
-                $post[$k] = $v;
-            }
-        }
-        $list[$va] = $post;
-        $management_record = M('case')->where(array('id' => $id))->getField('management_record');
-        if (empty($management_record)) {
-            $data['management_record'] = serialize($list);
-        } else {
-            $arr = unserialize($management_record);
-            if (is_array($arr)) {
-                if (in_array($va, array_keys($arr))) {
-                    foreach ($arr as $k => &$v) {
-                        if ($k == $va) $v = $post;
-                    }
-                } else {
-                    $arr = array_merge($arr, $list);
-                }
+        $urse = M('ucenter_member');
+        $member = $urse->where(array('id' => UID))->getField('username');
+        $post['type'] = empty($_POST['management_type']) ? '' : $_POST['management_type'];
+        $post['file'] = empty($_POST['file_name']) ? '' : $_POST['file_name'];
+        $post['record'] = empty($_POST['management_record']) ? '' : $_POST['management_record'];
+        $post['date'] = empty($_POST['management_riqi']) ? date('Y-m-d H:i:s', time()) : $_POST['management_riqi'];
+        $post['person'] = empty($_POST['management_person']) ? $member : $_POST['management_person'];
+        $id = $_POST['id'];
+        if (!empty($id) && !empty($post['record'])) {
+            $management_record = M('case')->where(array('id' => $id))->getField('management_record');
+            if (empty($management_record)) {
+                $list[] = $post;
+                $data['management_record'] = serialize($list);
+            } else {
+                $arr = unserialize($management_record);
+                $list[count($arr)] = $post;
+                $arr = array_merge($arr, $list);
                 $data['management_record'] = serialize($arr);
             }
-        }
-        $saveData = M('case')->where(array('id' => $id))->save($data);
-        if ($saveData) {
-            echo '1';
+            $saveData = M('case')->where(array('id' => $id))->save($data);
+            if ($saveData) {
+                echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/deal_with/id/" . $id . "/act/chuzhi.html';</script>";
+            } else {
+                echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/deal_with/id/" . $id . "/act/chuzhi.html';</script>";
+            }
         } else {
-            echo '2';
+            if (!empty($id)) {
+                echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/deal_with/id/" . $id . "/act/chuzhi.html';</script>";
+            } else {
+                echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/suoyou.html';</script>";
+            }
         }
     }
 
@@ -1149,7 +1161,7 @@ class CaseController extends AdminController
                     $way[] = $_POST['visit_form2_2'];
                     $data['visit_way'] = serialize($way);
                 }
-                $data['case_status']  = 'weihuifang';
+                $data['case_status'] = 'weihuifang';
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $id))->save($data);
                 if ($saveCase) {
@@ -1201,6 +1213,15 @@ class CaseController extends AdminController
     public function visit()
     {
         if (IS_POST) {
+            if ($_POST['types'] == 1) {
+                return $this->tihui();
+            } else {
+                $management_record = M('case')->where(array('id' => $_POST['id']))->getField('visit_suggestion');
+                if (empty($management_record)) {
+                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/visit/id/" . $_POST['id'] . "/act/huifang.html';</script>";
+                    exit;
+                }
+            }
             $case = M('case');
             $id = I('id');
             $way = M('case')->where(array('id' => $id))->getField('visit_form');
@@ -1209,8 +1230,8 @@ class CaseController extends AdminController
             } else if ($way == 2) {
                 $data['visit_suggestion'] = serialize($_POST['visit_suggestion']);
             }
-            $data['case_status']  = 'huifang';
-            $data['visit_time']   = date("Y-m-d H:i:s", time());
+            $data['case_status'] = 'huifang';
+            $data['visit_time'] = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
 
             //提交后检测该案件是否超时
@@ -1256,30 +1277,42 @@ class CaseController extends AdminController
     //回访提交
     public function tihui()
     {
+        $post = array();
+        $urse = M('ucenter_member');
+        $member = $urse->where(array('id' => UID))->getField('username');
+        $post['file'] = empty($_POST['file_name']) ? '' : $_POST['file_name'];
+        $post['record'] = empty($_POST['visit_record']) ? '' : $_POST['visit_record'];
+        $post['date'] = empty($_POST['visit_riqi']) ? date('Y-m-d H:i:s', time()) : $_POST['visit_riqi'];
+        $post['person'] = empty($_POST['visit_person']) ? $member : $_POST['visit_person'];
         $id = $_POST['id'];
-        $va = $_POST['va'];
-        $visit_suggestion = M('case')->where(array('id' => $id))->getField('visit_suggestion');
-        if (is_array(unserialize($visit_suggestion))) {
-            $arr = unserialize($visit_suggestion);
-            array_push($arr, $_POST['str']);
-            $data['visit_suggestion'] = serialize($arr);
-        } else if (!empty($visit_suggestion)) {
-            $arr[] = unserialize($visit_suggestion);
-            array_push($arr, $_POST['str']);
-            $data['visit_suggestion'] = serialize($arr);
+        if (!empty($id) && !empty($post['record'])) {
+            $management_record = M('case')->where(array('id' => $id))->getField('visit_suggestion');
+            if (empty($management_record)) {
+                $list[] = $post;
+                $data['visit_suggestion'] = serialize($list);
+            } else {
+                $arr = unserialize($management_record);
+                $list[count($arr)] = $post;
+                $arr = array_merge($arr, $list);
+                $data['visit_suggestion'] = serialize($arr);
+            }
+            $saveData = M('case')->where(array('id' => $id))->save($data);
+            if ($saveData) {
+                echo "<script>alert('操作成功');window.location.href='index.php?s=/Case/visit/id/" . $id . "/act/huifang.html';</script>";
+            } else {
+                echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/visit/id/" . $id . "/act/huifang.html';</script>";
+            }
         } else {
-            $data['visit_suggestion'] = serialize($_POST['str']);
-        }
-        $saveData = M('case')->where(array('id' => $id))->save($data);
-        if ($saveData) {
-            echo '1';
-        } else {
-            echo '2';
+            if (!empty($id)) {
+                echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/visit/id/" . $id . "/act/huifang.html';</script>";
+            } else {
+                echo "<script>alert('操作失败');window.location.href='index.php?s=/Case/suoyou.html';</script>";
+            }
         }
     }
 
     //短信发送$case英文节点名，$node中文节点名
-    public function smsSend($case = '', $node ='', $action = true)
+    public function smsSend($case = '', $node = '', $action = true)
     {
         $Auth = new \Think\Auth();
         $user = $Auth->getCaseUserList($case);
@@ -1343,42 +1376,42 @@ class CaseController extends AdminController
     }
 
     /**
-      * 根据权限判断是否在权限内访问该案件, 若在则认为处理中并更改状态..
-    */
+     * 根据权限判断是否在权限内访问该案件, 若在则认为处理中并更改状态..
+     */
     private function updateStatus($id, $status)
     {
-        if($id <= 0)
+        if ($id <= 0)
             return false;
         $auth = getStatusFromAuth();
-        if(in_array($status, $auth['status'])){
+        if (in_array($status, $auth['status'])) {
             $data = ['id' => $id, 'stage_status' => 'ing'];
             D('case')->update($data);
         }
     }
 
-/*    private function updateOvertime($cases, $time){
-        $res   = $this->countOverTimeCases($cases, true);
-        $case  = M('CaseManage');
-        $model = D('overtime');
-        if(!empty($res)){
-            //不为空则已超时
-            $arr = ['bohuiC', 'bohuiCs', 'bohuiCz'];
-            foreach ($res as $k => $v) {
-                $status = $v['case_status'];
-                $save   = ['case' => $v['id'], 'status' => $status];
-                $key    = translate($status);
-                //现阶段该执行的状态的时间
-                if(in_array($status, $arr))
-                    $caseTime = strtotime($v[$key['next'] . '_time']);
-                else
-                    $caseTime = strtotime($v[$key['now'] . '_time']);
-                $save['terminal']   = $caseTime + $case->field('execute_time a')->where(['node' => $status])->find()['a'] * 3600;
-                $save['execute']    = $time;
-                $save['node']       = $v['stage_status'];
-                $model->update($save);
+    /*    private function updateOvertime($cases, $time){
+            $res   = $this->countOverTimeCases($cases, true);
+            $case  = M('CaseManage');
+            $model = D('overtime');
+            if(!empty($res)){
+                //不为空则已超时
+                $arr = ['bohuiC', 'bohuiCs', 'bohuiCz'];
+                foreach ($res as $k => $v) {
+                    $status = $v['case_status'];
+                    $save   = ['case' => $v['id'], 'status' => $status];
+                    $key    = translate($status);
+                    //现阶段该执行的状态的时间
+                    if(in_array($status, $arr))
+                        $caseTime = strtotime($v[$key['next'] . '_time']);
+                    else
+                        $caseTime = strtotime($v[$key['now'] . '_time']);
+                    $save['terminal']   = $caseTime + $case->field('execute_time a')->where(['node' => $status])->find()['a'] * 3600;
+                    $save['execute']    = $time;
+                    $save['node']       = $v['stage_status'];
+                    $model->update($save);
+                }
             }
-        }
-    }*/
+        }*/
 
     //搜索
 //    public function search(){
