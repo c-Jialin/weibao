@@ -176,8 +176,8 @@ class CaseController extends AdminController
         if (I('submit') || $type == 'enroll') {
             //筛选条件 / 或导出
             $post = I('get.');
-            dump($post);
-            exit;
+            //dump($post);exit;
+
             //是否手动日期
             if ($post['date'] == 1) {
                 $start = strtotime($post['start']);
