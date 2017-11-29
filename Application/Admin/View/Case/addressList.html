@@ -1,0 +1,70 @@
+<extend name="Public/base1"/>
+
+<!-- <block name="sidebar"></block> -->
+
+<block name="style">
+    <style>
+        body {
+            padding: 0
+        }
+    </style>
+</block>
+
+<block name="body">
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+        <table class="">
+            <thead>
+            <tr>
+                <th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+                <th class="">UID</th>
+                <th class="">昵称</th>
+                <th class="">联系电话</th>
+                <th class="">所属部门</th>
+                <th class="">登录次数</th>
+                <th class="">最后登录时间</th>
+                <th class="">最后登录IP</th>
+                <th class="">状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <notempty name="_list">
+                <volist name="_list" id="vo">
+                    <tr>
+                        <td><input class="ids" type="checkbox" name="id[]" value="{$vo.uid}"/></td>
+                        <td>{$vo.uid}</td>
+                        <td>{$vo.nickname}</td>
+                        <td>{$vo.mobile}</td>
+                        <td>{$vo.department}</td>
+                        <td>{$vo.login}</td>
+                        <td><span>{$vo.last_login_time|time_format}</span></td>
+                        <td><span>{:long2ip($vo['last_login_ip'])}</span></td>
+                        <td>{$vo.status_text}</td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="9" class="text-center"> aOh! 暂时还没有内容!</td>
+            </notempty>
+            </tbody>
+        </table>
+    </div>
+    <div class="page">
+        {$Page}
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        /* 插件块关闭操作 */
+        $(".title-opt .wm-slide").each(function () {
+            $(this).click(function () {
+                $(this).closest(".columns-mod").find(".bd").toggle();
+                $(this).find("i").toggleClass("mod-up");
+            });
+        })
+        $(function () {
+            // $('#main').attr({'id': 'indexMain','class': 'index-main'});
+            $('.copyright').html('<div class="copyright"> ©2013 <a href="http://www.topthink.net" target="_blank">topthink.net</a> 上海顶想信息科技有限公司版权所有</div>');
+            $('.sidebar').remove();
+        })
+    </script>
+</block>

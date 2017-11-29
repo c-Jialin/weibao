@@ -158,8 +158,11 @@ class CaseController extends AdminController
     {
         $this->meta_title = '案件列表';
         if (UID == 1 && I('id')) {
+            $photo = M('case')->where(array('id' => I('id')))->getField('photo');
+            $file = __ROOT__ . '/Uploads/case/user/photo/' . $photo;
             $res = M('case')->delete(I('id'));
             if ($res) {
+                unlink($file);
                 $this->success('删除成功');
             } else {
                 $this->error('删除失败');
@@ -230,9 +233,8 @@ class CaseController extends AdminController
         $this->display();
     }
 
-    //报名列表excel导出操作
-
     /**
+     * 报名列表excel导出操作
      * @throws \PHPExcel_Exception
      * @throws \PHPExcel_Reader_Exception
      */
@@ -468,6 +470,28 @@ class CaseController extends AdminController
                 $list[] = $count[$i];
             }
         }
+        $Auth = new \Think\Auth();
+        foreach ($list as &$v) {
+            $execute_time = M('CaseManage')->field('execute_time')->where(['node' => $v['case_status']])->find();
+            $status = translate($v['case_status'], true);
+            $user = $Auth->getCaseUserList($status['en']);
+            $uid = array();
+            foreach ($user as $val) {
+                $uid[] = $val['uid'];
+            }
+            $username = M()
+                ->table('onethink_ucenter_member a')
+                ->where(array("id" => array("in", implode(',', $uid))))
+                ->join('onethink_member g on a.id=g.uid')
+                ->field('a.username,g.nickname')
+                ->select();
+            $name = array();
+            foreach ($username as $value) {
+                $name[] = empty($value['nickname']) ? $value['username'] : $value['nickname'];
+            }
+            $v['execute_name'] = implode(',', $name);
+            $v['execute_time'] = $execute_time['execute_time'];
+        }
         $this->CaseList = $list;
         $this->uid = $uid;
         $this->display();
@@ -516,8 +540,7 @@ class CaseController extends AdminController
                         $model->update($save);
 
                         //如果为流程节点的提交则不更改为超时
-                        if($ifpost)
-                            $case->save(['id' => $v['id'], 'stage_status' => 'overtime']);
+                        if($ifpost) $case->save(['id' => $v['id'], 'stage_status' => 'overtime']);
                     }
                 } else {
                     if ($now >= $overtiming && $now <= $overtimed) $list[] = $v;//即将超时
@@ -712,7 +735,7 @@ class CaseController extends AdminController
             if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
             //图片上传
             if ($_FILES['photo']['name'] != '') {
-                $uploadPath = 'case/user/photo';
+                $uploadPath = 'case/user/photo/';
                 if (!file_exists($uploadPath)) {
                     mkdir($uploadPath);
                     chmod($uploadPath, 0777);
@@ -806,7 +829,7 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('index', 'bohuiC', false);
-                    $this->error(implode(',', $res), '', 10);
+//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -868,7 +891,7 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('trial', 'bohuiCs', false);
-                    $this->error(implode(',', $res), '', 10);
+//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -925,7 +948,7 @@ class CaseController extends AdminController
             if ($saveCase) {
                 //发送短信提醒
                 $res = $this->smsSend('deal_with', 'diaodu', true);
-                $this->error(implode(',', $res), '', 10);
+//                $this->error(implode(',', $res), '', 10);
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
             } else {
                 echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -989,7 +1012,7 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('dispatch', 'bohuiCz', false);
-                    $this->error(implode(',', $res), '', 10);
+//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1117,7 +1140,7 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('visit', 'weihuifang', true);
-                    $this->error(implode(',', $res), '', 10);
+//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1241,7 +1264,7 @@ class CaseController extends AdminController
     }
 
     //短信发送$case英文节点名，$node中文节点名
-    public function smsSend($case = 'trial', $node ='chushen', $action = true)
+    public function smsSend($case = '', $node ='', $action = true)
     {
         $Auth = new \Think\Auth();
         $user = $Auth->getCaseUserList($case);
@@ -1283,8 +1306,24 @@ class CaseController extends AdminController
     }
 
     //
-    public function statistics()
+    public function addressList()
     {
+        $nickname = I('nickname');
+        $map['status'] = array('egt', 0);
+        if (is_numeric($nickname)) {
+            $map['uid|nickname'] = array(intval($nickname), array('like', '%' . $nickname . '%'), '_multi' => true);
+        } else {
+            $map['nickname'] = array('like', '%' . (string)$nickname . '%');
+        }
+
+        $list = $this->lists('Member', $map);
+        $department = C('DEPARTMENT');
+        foreach ($list as &$v) {
+            $v['department'] = $department[$v['department']];
+        }
+        int_to_string($list);
+        $this->assign('_list', $list);
+        $this->meta_title = '用户信息';
         $this->display();
     }
 
@@ -1325,6 +1364,7 @@ class CaseController extends AdminController
             }
         }
     }*/
+
     //搜索
 //    public function search(){
 //        $this->CaseList = M('case')->where(array('name'=>array('like',"%".$_POST['search']."%")))->select();

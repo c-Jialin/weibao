@@ -63,7 +63,7 @@ class IndexController extends AdminController
             $this->handling  = $case->field($field)->where($where)->order('fill_in_time desc')->count();
             //超时和即将超时数量
             $overtime        = $this->countOverTimeCases($cases);
-            $this->overtiming= $overtime['overtiming'];
+            $this->overtiming = $overtime['overtiming'];
             $this->overtimed = $overtime['overtimed'];
             //超龄
             $age = array();
@@ -73,6 +73,9 @@ class IndexController extends AdminController
                 if  (getAge($val['birthday']) > $overage) $age[] = getAge($val['birthday']);
             }
             $this->overaged = count($age);
+            //站内公告
+            $document = M('document')->field('id,title,category_id')->select();
+            $this->document = $document;
             $this->display();
         } else {
             $this->redirect('Public/login');

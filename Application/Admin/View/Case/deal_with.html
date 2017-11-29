@@ -121,21 +121,21 @@
 							foreach($mange_list as $v){
 						?>
                         <li>
-                        <form>
-                            <span class="radio-text">处置类型</span>
-                            <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 1){ echo 'checked'; }?> value="1"> <span
-                                class="radio-text">补助</span>
-                            <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 2){ echo 'checked'; }?> value="2"> <span
-                                class="radio-text">辅助</span>
-                            <span class="radio-text" style="margin-left: 50px">上传文件</span>
-                            <?php if(!empty($v['file'])){ ?>
-                            <a href="/Uploads/case/user/deal/<?php echo $v['file'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
-                            <?php } ?>
-                            <input type="text" style="display: none;" name="file_name" value="<?php echo $v['file'];?>"/>
-                            <textarea name="management_record[]"><?php echo $v['text']?></textarea>
-                            <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
-                                   class="chuzhisave"/>
-                        </form>
+                            <form>
+                                <span class="radio-text">处置类型</span>
+                                <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 1){ echo 'checked'; }?> value="1"> <span
+                                    class="radio-text">补助</span>
+                                <input type="radio" class="radio" name="management_tyle" <?php if($v['type'] == 2){ echo 'checked'; }?> value="2"> <span
+                                    class="radio-text">辅助</span>
+                                <span class="radio-text" style="margin-left: 50px">上传文件</span>
+                                <?php if(!empty($v['file'])){ ?>
+                                <a href="/Uploads/case/user/deal/<?php echo $v['file'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
+                                <?php } ?>
+                                <input type="text" style="display: none;" name="file_name" value="<?php echo $v['file'];?>"/>
+                                <textarea name="management_record[]"><?php echo $v['text']?></textarea>
+                                <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em"
+                                       class="chuzhisave"/>
+                            </form>
                         </li>
                         <?php }}else{?>
                         <li>
@@ -361,7 +361,6 @@
             $('.huifangjilu:last').children('.right').children('textarea').attr('name', 'visit_suggestion' + ($('.huifangjilu').length - 1));
         })
     })
-
     var url = 'index.php?s=/Case/ajax_upload';
     function upload() {
         $(".uploadFile").last().fileupload({

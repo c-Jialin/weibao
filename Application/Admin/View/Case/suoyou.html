@@ -131,12 +131,7 @@ body{padding: 0}
                 }
                 echo max($strs);
                 ?></td>
-        <td><?php $fengxianss = unserialize($v['growth_dilemmass']);
-                foreach ($fengxianss as $v2) {
-                    $strss[] = getFengxian($v2);
-                }
-                echo max($strss);
-                ?></td>
+        <td><?php echo $v['growth_dilemmass'];?></td>
         <?php
             $turn_related = M('case')->where(array('id'=>$v['id']))->getField('turn_related');
         ?>

@@ -192,8 +192,11 @@ class CaseController extends MobileController
     private function suoyou()
     {
         if (UID == 1 && I('id')) {
+            $photo = M('case')->where(array('id' => I('id')))->getField('photo');
+            $file = __ROOT__ . '/Uploads/case/user/photo/' . $photo;
             $res = M('case')->delete(I('id'));
             if ($res) {
+                unlink($file);
                 $this->success('删除成功');
             } else {
                 $this->error('删除失败');
@@ -514,7 +517,6 @@ class CaseController extends MobileController
     public function index()
     {
         if (IS_POST) {
-            $db = M('case');
             if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
             if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
             if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
@@ -567,7 +569,7 @@ class CaseController extends MobileController
             if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
             //图片上传
             if ($_FILES['photo']['name'] != '') {
-                $uploadPath = 'case/user/photo';
+                $uploadPath = 'case/user/photo/';
                 if (!file_exists($uploadPath)) {
                     mkdir($uploadPath);
                     chmod($uploadPath, 0777);
@@ -622,16 +624,17 @@ class CaseController extends MobileController
             $case = M('case');
             $data['case_status'] = 'chushen';
             //成长困境及成长等级
-            if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
-            if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
-            if ($_POST['growth_dilemma3']) $grow['growth_dilemma3'] = $_POST['growth_dilemma3'];
-            if ($_POST['growth_dilemma4']) $grow['growth_dilemma4'] = $_POST['growth_dilemma4'];
-            if ($_POST['growth_dilemma5']) $grow['growth_dilemma5'] = $_POST['growth_dilemma5'];
-            if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
-            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
+            if ($_POST['growth1']) $grow['growth_dilemma1'] = $_POST['growth1'];
+            if ($_POST['growth2']) $grow['growth_dilemma2'] = $_POST['growth2'];
+            if ($_POST['growth3']) $grow['growth_dilemma3'] = $_POST['growth3'];
+            if ($_POST['growth4']) $grow['growth_dilemma4'] = $_POST['growth4'];
+            if ($_POST['growth5']) $grow['growth_dilemma5'] = $_POST['growth5'];
+            if ($_POST['growth6']) $grow['growth_dilemma6'] = $_POST['growth6'];
+            if ($_POST['growth7']) $grow['growth_dilemma7'] = $_POST['growth7'];
             $data['growth_dilemmas'] = serialize($grow);
             if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
             $data['trial_time'] = date("Y-m-d H:i:s", time());
+            exit(json_encode($data));
             if ($data['trial_status'] == 1) {
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $data['id']))->save($data);

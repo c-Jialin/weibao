@@ -2,67 +2,105 @@
 <!-- <block name="sidebar"></block> -->
 <block name="style">
     <style>
-        body{padding: 0}
+        body {
+            padding: 0
+        }
     </style>
 </block>
 
 <block name="body">
-	<div style="margin:-20px">
-		<img src="__IMG__/xtwcn/welcome.png" style="display:block;float:left;height:100%"/>
-		<div class="index-right" style="margin-left:200px">
-			<div class="index-title" style="text-align:right;height:30px;line-height:30px;color:#999;padding-right:1em;border-bottom:1px solid #ccc;font-size:12px">
-			<span>用户名：{$user_info['username']}</span>
-			&emsp;&emsp;
-			<span>上次登录时间：{$user_info['last_login_time']|date='Y-m-d h:i',###}</span>
-			<div>
-			<div class="index-content" style="width:781px;height:296px;margin:auto;margin-top:50px">
-				<div class="left" style="float:left;width:231px">
-					<?php if(in_array('add',explode(',', IS_NODE)) || UID == 1){?>
-                    <a href="index.php?s=/Case/index.html" style="display:block;margin-bottom:10px;text-decoration:none;"><img src="__IMG__/xtwcn/informationcaiji.png"  alt=""></a>
-                    <?php }?>
-					<a href="index.php?s=/Case/daichu.html" style="display:block;text-decoration:none;"><img src="__IMG__/xtwcn/casedeal.png"  alt=""></a>
-					<ul style="padding:0;margin:0;list-style:none;text-align:left;text-indent:1em;font-weight:500;font-size:16px">
-						<li><a style="text-decoration:none;color:#323232" href="{:U('Case/zaichu')}">正在处理的案件 (<?php echo $handling;?>)</a></li>
-						<li><a style="text-decoration:none;color:#323232" href="{:U('Case/zaichu')}">待处理的案件&emsp; (<?php echo $waiting;?>)</a></li>
-						<li><a style="text-decoration:none;color:#323232" href="{:U('Case/jijiang')}">即将超时的案件 (<?php echo $overtiming;?>)</a></li>
-						<li><a style="text-decoration:none;color:#323232" href="{:U('Case/chaoshi')}">已经超时的案件 (<?php echo $overtimed;?>)</a></li>
-						<li><a style="text-decoration:none;color:#323232" href="{:U('Case/chaoling')}">已经超龄的案件 (<?php echo $overaged;?>)</a></li>
-					</ul>
-				</div>
-				<div style="width:450px;height:296px;float:right;border:1px solid #149be7;position:relative;">
-					<div style="background-color:#149be7;color:#fff;text-align:left;text-indent:1em;">
-							消息中心
-					</div>
-					<div style="height:267px;overflow-y:scroll">
-					<table style="width:100%;text-align:left;text-indent:1em" cellspacing="0" cellpadding="0" >
-						<tbody style="font-size:13px">
-						<foreach name='messages' item='v'> 
-							<tr>
-								<td style="border-bottom:1px dashed #999">
-								<?php 
+    <div style="margin:-20px">
+        <img src="__IMG__/xtwcn/welcome.png" style="display:block;float:left;height:100%"/>
+        <div class="index-right" style="margin-left:200px">
+            <div class="index-title" style="text-align:right;height:30px;line-height:30px;color:#999;padding-right:1em;border-bottom:1px solid #ccc;font-size:12px">
+                <span style="float: left;height: 30px;line-height: 30px;padding-left: 1em;">站内公告：</span>
+                <ul class="index-article" style="float: left;height: 30px;line-height: 30px;color: #999;">
+                    <foreach name='document' item='v'>
+                        <li style="display: none"><a href="{:U('Article/index', array('cate_id' => $v['category_id'], 'pid' => $v['id']))}">{$v['title']}</a></li>
+                    </foreach>
+                </ul>
+                <div>
+                    <span>用户名：{$user_info['username']}</span>
+                    &emsp;&emsp;
+                    <span>上次登录时间：{$user_info['last_login_time']|date='Y-m-d h:i',###}</span>
+                </div>
+                <div>
+                    <div class="index-content" style="width:781px;height:296px;margin:auto;margin-top:50px">
+                        <div class="left" style="float:left;width:231px">
+                            <?php if(in_array('add',explode(',', IS_NODE)) || UID == 1){?>
+                            <a href="index.php?s=/Case/index.html"
+                               style="display:block;margin-bottom:10px;text-decoration:none;"><img
+                                    src="__IMG__/xtwcn/informationcaiji.png" alt=""></a>
+                            <?php }?>
+                            <a href="index.php?s=/Case/daichu.html" style="display:block;text-decoration:none;"><img
+                                    src="__IMG__/xtwcn/casedeal.png" alt=""></a>
+                            <ul style="padding:0;margin:0;list-style:none;text-align:left;text-indent:1em;font-weight:500;font-size:16px">
+                                <li><a style="text-decoration:none;color:#323232" href="{:U('Case/zaichu')}">正在处理的案件
+                                    (<?php echo $handling;?>)</a></li>
+                                <li><a style="text-decoration:none;color:#323232" href="{:U('Case/zaichu')}">待处理的案件&emsp;
+                                    (<?php echo $waiting;?>)</a></li>
+                                <li><a style="text-decoration:none;color:#323232" href="{:U('Case/jijiang')}">即将超时的案件
+                                    (<?php echo $overtiming;?>)</a></li>
+                                <li><a style="text-decoration:none;color:#323232" href="{:U('Case/chaoshi')}">已经超时的案件
+                                    (<?php echo $overtimed;?>)</a></li>
+                                <li><a style="text-decoration:none;color:#323232" href="{:U('Case/chaoling')}">已经超龄的案件
+                                    (<?php echo $overaged;?>)</a></li>
+                            </ul>
+                        </div>
+                        <div style="width:450px;height:296px;float:right;border:1px solid #149be7;position:relative;">
+                            <div style="background-color:#149be7;color:#fff;text-align:left;text-indent:1em;">
+                                消息中心
+                            </div>
+                            <div style="height:267px;overflow-y:scroll">
+                                <table style="width:100%;text-align:left;text-indent:1em" cellspacing="0"
+                                       cellpadding="0">
+                                    <tbody style="font-size:13px">
+                                    <foreach name='messages' item='v'>
+                                        <tr>
+                                            <td style="border-bottom:1px dashed #999">
+                                                <?php
 									$res  = translate($v['case_status'], true);
 									$url = U('case/' . $res['en'], ['id' => $v['id'], 'act' => $res['ch']]);
-								?>
-								<a href='{$url}' style="color:#323232;text-decoration:none">{$v['name']}案件需要处理。
-								</a>
-								</td>
-							</tr>
-						</foreach>
-						</tbody>
-					</table>
-					</div>
-        		  </div>
-            	</div>
+                                                ?>
+                                                <a href='{$url}' style="color:#323232;text-decoration:none">{$v['name']}案件需要处理。
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </foreach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>  
+        </div>
+        <div style="clear:both"></div>
     </div>
-    <div style="clear:both"></div>
-</div>
+    <script>
+        var article = $('.index-article').children();
+        var len = article.length -1
+        $(article[len]).css('display','block');
+        var s = 0;
+        setInterval(function(){
+            if (s >= article.length) {
+                s = 0;
+            }
+            $.each( article, function(i, n){
+                if (i == s) {
+                    $(n).css('display','block');
+                } else {
+                    $(n).css('display','none');
+                }
+            });
+            s++;
+        },3000);
+    </script>
 </block>
 <block name="script">
-<script type="text/javascript">
-    $(function(){
-        $('.sidebar').remove();
-    })
-</script>
+    <script type="text/javascript">
+        $(function () {
+            $('.sidebar').remove();
+        })
+    </script>
 </block>
