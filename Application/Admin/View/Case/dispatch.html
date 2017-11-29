@@ -94,14 +94,14 @@
                 <div class="li">
                     <div class="left">流程操作</div>
                     <div class="right">
-                        <label>
+                        <!--<label>
                             <input type="checkbox" name="checkbox1" value="1" <?php if(in_array(1, unserialize($Clist['checkbox_status']))) echo 'checked'; ?>/>
                             <span class="radio-text"> 报警110</span>
                             <select class="select" name="police_station">
                                 <option value="1">委派部门</option>
                             </select>
-                        </label>&emsp;
-                        <label>
+                        </label>&emsp;-->
+                        <!--<label>
                             <input type="checkbox" name="checkbox2" value="2" <?php if(in_array(2, unserialize($Clist['checkbox_status']))) echo 'checked'; ?>/>
                             <span class="radio-text"> 转专业机构</span>
                             <select class="select" name="turn_professional">
@@ -110,6 +110,17 @@
                         </label>&emsp;
                         <label>
                             <input type="checkbox" name="checkbox3" value="3" <?php if(in_array(3, unserialize($Clist['checkbox_status']))) echo 'checked'; ?>/>
+                            <span class="radio-text"> 转相关部门</span>
+                            <select class="select" name="turn_related">
+                                <option value="">选择部门</option>
+                                <option value="1"
+                                <?php if($Clist['turn_related'] == 1){?>selected<?php }?>>市级部门</option>
+                                <option value="3"
+                                <?php if($Clist['turn_related'] == 3){?>selected<?php }?>>社区部门</option>
+                            </select>
+                        </label>-->
+                        <label>
+                            <input type="checkbox" name="checkbox3" value="3" checked/>
                             <span class="radio-text"> 转相关部门</span>
                             <select class="select" name="turn_related">
                                 <option value="">选择部门</option>

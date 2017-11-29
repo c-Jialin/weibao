@@ -615,6 +615,7 @@ function getNeixin($str, $id)
     }
     return $res;
 }
+
 //获取社区名称
 function getShequ($id)
 {
@@ -638,39 +639,40 @@ function rebuildArray($arr, $key)
 }
 
 /**
-  * 案件状态对应的本阶段 英文 和 下一阶段的英文
-  * @param string $chn  中文拼音案件状态
-  * @param boolen $next 若为true 则获取下一阶段的中文和英文
-  * return array
-*/
-function translate($chn, $next = false){
-    if($next)
+ * 案件状态对应的本阶段 英文 和 下一阶段的英文
+ * @param string $chn 中文拼音案件状态
+ * @param boolen $next 若为true 则获取下一阶段的中文和英文
+ * return array
+ */
+function translate($chn, $next = false)
+{
+    if ($next)
         $arr = [
-            'caiji'     => ['ch' => 'chushen',      'en' => 'trial'],
-            'bohuiC'    => ['ch' => '',             'en' => 'index'],
-            'bohuiCs'   => ['ch' => 'chushen',      'en' => 'trial'],
-            'chushen'   => ['ch' => 'zhongshen',    'en' => 'last_instance'],
-            'shenpi'    => ['ch' => 'diaodu',       'en' => 'dispatch'],
-            'diaodu'    => ['ch' => 'chuzhi',       'en' => 'deal_with'],
-            'chuzhi'    => ['ch' => 'jiean',        'en' => 'finish'],
-            'bohuiCz'   => ['ch' => 'diaodu',       'en' => 'dispatch'],
-            'weihuifang'=> ['ch' => 'huifang',      'en' => 'visit'],
-            'jiean'     => ['ch' => '',             'en' => ''],
-            'huifang'   => ['ch' => '',             'en' => ''],
+            'caiji' => ['ch' => 'chushen', 'en' => 'trial'],
+            'bohuiC' => ['ch' => '', 'en' => 'index'],
+            'bohuiCs' => ['ch' => 'chushen', 'en' => 'trial'],
+            'chushen' => ['ch' => 'zhongshen', 'en' => 'last_instance'],
+            'shenpi' => ['ch' => 'diaodu', 'en' => 'dispatch'],
+            'diaodu' => ['ch' => 'chuzhi', 'en' => 'deal_with'],
+            'chuzhi' => ['ch' => 'jiean', 'en' => 'finish'],
+            'bohuiCz' => ['ch' => 'diaodu', 'en' => 'dispatch'],
+            'weihuifang' => ['ch' => 'huifang', 'en' => 'visit'],
+            'jiean' => ['ch' => '', 'en' => ''],
+            'huifang' => ['ch' => '', 'en' => ''],
         ];
     else
         $arr = [
-            'caiji'     => ['now' => 'add',             'next' => 'trial'],
-            'bohuiC'    => ['now' => 'add',             'next' => 'trial'],
-            'bohuiCs'   => ['now' => 'trial',           'next' => 'last_instance'],
-            'chushen'   => ['now' => 'trial',           'next' => 'last_instance'],
-            'shenpi'    => ['now' => 'last_instance',   'next' => 'dispatch'],
-            'diaodu'    => ['now' => 'dispatch',        'next' => 'deal_with'],
-            'chuzhi'    => ['now' => 'deal_with',       'next' => 'finish'],
-            'bohuiCz'   => ['now' => 'deal_with',       'next' => 'finish'],
-            'weihuifang'=> ['now' => 'visit',           'next' => ''],
-            'jiean'     => ['now' => 'finish',          'next' => ''],
-            'huifang'   => ['now' => 'visit',           'next' => ''],
+            'caiji' => ['now' => 'add', 'next' => 'trial'],
+            'bohuiC' => ['now' => 'add', 'next' => 'trial'],
+            'bohuiCs' => ['now' => 'trial', 'next' => 'last_instance'],
+            'chushen' => ['now' => 'trial', 'next' => 'last_instance'],
+            'shenpi' => ['now' => 'last_instance', 'next' => 'dispatch'],
+            'diaodu' => ['now' => 'dispatch', 'next' => 'deal_with'],
+            'chuzhi' => ['now' => 'deal_with', 'next' => 'finish'],
+            'bohuiCz' => ['now' => 'deal_with', 'next' => 'finish'],
+            'weihuifang' => ['now' => 'visit', 'next' => ''],
+            'jiean' => ['now' => 'finish', 'next' => ''],
+            'huifang' => ['now' => 'visit', 'next' => ''],
         ];
     return $arr[$chn];
 }
@@ -682,7 +684,7 @@ function translate($chn, $next = false){
 function getStatusFromAuth($getStatus = false)
 {
     //初始化返回结果
-    $arr  = ['auth' => [], 'status' => [], 'next' => []];
+    $arr = ['auth' => [], 'status' => [], 'next' => []];
     $next = ['add' => 1, 'trial' => 2, 'last_instance' => 3, 'dispatch' => 4, 'deal_with' => 5, 'finish' => 6, 'visit' => 7];
     //根据权限获得英文节点 或者如果是用于得到案件状态
     if($getStatus)
@@ -726,24 +728,48 @@ function getStatusFromAuth($getStatus = false)
 }
 
 /**
-  * 根据案件状态和阶段状态获取流程节点 
-  * @param string $status 案件状态
-  * @param string $stage  阶段状态
-  * return string 
-*/
-function getProcess($status, $stage){
+ * 根据案件状态和阶段状态获取流程节点
+ * @param string $status 案件状态
+ * @param string $stage 阶段状态
+ * return string
+ */
+function getProcess($status, $stage)
+{
     $arr = [
-        'caiji'     => ['complete' => '待初审', 'ing' => '初审中', 'overtime'=>'初审超时'],
-        'chushen'   => ['complete' => '待审批', 'ing' => '审批中', 'overtime'=>'审批超时'],
-        'bohuiC'    => ['complete' => '待重新采集', 'ing' => '重新采集中', 'overtime'=>'重新采集超时'],
-        'shenpi'    => ['complete' => '待调度', 'ing' => '调度中', 'overtime'=>'调度超时'],
-        'bohuiCs'   => ['complete' => '待重新初审', 'ing' => '重新初审中', 'overtime'=>'重新初审超时'],
-        'diaodu'    => ['complete' => '待处置', 'ing' => '处置中', 'overtime'=>'处置超时'],
-        'chuzhi'    => ['complete' => '待结案', 'ing' => '结案中', 'overtime'=>'结案超时'],
-        'bohuiCz'   => ['complete' => '待重新调度', 'ing' => '重新调度中', 'overtime'=>'重新调度超时'],
-        'weihuifang'=> ['complete' => '待回访', 'ing' => '回访中', 'overtime'=>'回访超时'],
-        'jiean'     => ['complete' => '结案完成'],
-        'huifang'   => ['complete' => '回访完成'],
+        'caiji' => ['complete' => '待初审', 'ing' => '初审中', 'overtime' => '初审超时'],
+        'chushen' => ['complete' => '待审批', 'ing' => '审批中', 'overtime' => '审批超时'],
+        'bohuiC' => ['complete' => '待重新采集', 'ing' => '重新采集中', 'overtime' => '重新采集超时'],
+        'shenpi' => ['complete' => '待调度', 'ing' => '调度中', 'overtime' => '调度超时'],
+        'bohuiCs' => ['complete' => '待重新初审', 'ing' => '重新初审中', 'overtime' => '重新初审超时'],
+        'diaodu' => ['complete' => '待处置', 'ing' => '处置中', 'overtime' => '处置超时'],
+        'chuzhi' => ['complete' => '待结案', 'ing' => '结案中', 'overtime' => '结案超时'],
+        'bohuiCz' => ['complete' => '待重新调度', 'ing' => '重新调度中', 'overtime' => '重新调度超时'],
+        'weihuifang' => ['complete' => '待回访', 'ing' => '回访中', 'overtime' => '回访超时'],
+        'jiean' => ['complete' => '结案完成'],
+        'huifang' => ['complete' => '回访完成'],
     ];
     return $arr[$status][$stage];
+}
+
+/**
+ * 案件状态对应的时间
+ * @param string $chn 中文拼音案件状态
+ * return array
+ */
+function statusTime($chn)
+{
+    $arr = [
+        'caiji' => 'add_time',
+        'bohuiC' => 'trial_time',
+        'chushen' => 'trial_time',
+        'bohuiCs' => 'last_instance_time',
+        'shenpi' => 'last_instance_time',
+        'diaodu' => 'dispatch_time',
+        'bohuiCz' => 'deal_with_time',
+        'chuzhi' => 'deal_with_time',
+        'weihuifang' => 'finish_time',
+        'jiean' => 'finish_time',
+        'huifang' => 'visit_time',
+    ];
+    return $arr[$chn];
 }

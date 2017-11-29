@@ -90,82 +90,92 @@
     <div class="information">
         <div class="title <?php if($act == 'huifang'){?>active<?php }?>" href=".huifang">当前阶段：回访<a href='javascript:printForm()' class='print'>打印</a></div>
         <form class="{:U('Case/visit')}" method="post">
-            <?php if($huifang == 1 || $huifang == ''){ ?>
-            <div class="submit collapse huifang <?php if($act == 'huifang'){?>in<?php }?>">
-                <div class="li">
-                    <div style="clear: both;"></div>
+            <div class="collapse huifang <?php if($act == 'huifang'){?>in<?php }?>">
+                <div class="relative li huifangjilu" style=" width:855px;">
+                    <div id="upload1" class="absolute upload1" style="display:none;"></div>
+                    <table cellpadding="0" cellspacing="0" border="0" class="table_2" style=" width:855px;">
+                        <tbody>
+                        <tr>
+                            <td class="td_item">回访记录</td>
+                            <td colspan="6" valign="top" style="padding:0 0;">
+                                <?php
+							        $mange_list = unserialize($Clist['visit_suggestion']);
+							        if(!is_array($mange_list)) $mange_list = array(0 => array());
+                                foreach($mange_list as $v){
+                                ?>
+                                <table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+                                    <tbody>
+                                    <form>
+                                        <tr>
+                                            <td class="td_item" style="width:80px;">上传文件</td>
+                                            <td class="td_input" style="width:120px;">
+                                                <?php if (!empty($v['file'])) {?>
+                                                <a href="/Uploads/case/user/deal/<?php echo $v['file'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
+                                                <?php } else {?>
+                                                <input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/>
+                                                <input type="text" style="width: 200px;height: 25px;display: none;" name="file_name"/>
+                                                <?php }?>
+                                            </td>
+                                            <td class="td_item" style="width:80px;">回访联系人</td>
+                                            <td class="td_input" style="width:120px;">
+                                                <?php if (empty($v['person'])) {?>
+                                                <input type="text" class="input" name="visit_person" value="<?php echo $member ?>">
+                                                <?php } else { ?>
+                                                <input type="text" class="input" disabled name="visit_person" value="<?php echo $v['person'] ?>">
+                                                <?php } ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="td_input">
+                                                <textarea cols="60" name="visit_record"><?php echo $v['record']?></textarea>
+                                            </td>
+                                            <td colspan="2" class="td_input" style="border-right:none;">
+                                                <label>回访日期(不设置则为当天日期)</label>
+                                                <?php if (empty($v['date'])) {?>
+                                                <label><input type="datetime-local" name="visit_riqi" style="font-size:12px;line-height:12px;"></label>
+                                                <?php } else { ?>
+                                                <input type="text" class="input" name="visit_riqi" value="<?php echo $v['date'] ?>">
+                                                <?php } ?>
+                                            </td>
+                                        </tr>
+                                    </form>
+                                    </tbody>
+                                </table>
+                                <?php }?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td_item">添加回访</td>
+                            <td class="td_input" colspan="6">
+                                <?php
+							        $mange_list = unserialize($Clist['visit_suggestion']);
+							        if(!is_array($mange_list)) {
+                                ?>
+                                <input type="hidden" name="types" value="1"/>
+                                <button style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">提交回访</button>
+                                <?php } else {?>
+                                <span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
+                                <?php }?>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="li huifangjilu">
-                    <div class="left">回访记录</div>
-                    <div class="right">
-                        <textarea name="visit_suggestion"><?php echo $Clist['visit_suggestion']; ?></textarea>
-                    </div>
-                    <div style="clear: both;"></div>
-                </div>
-                <div class="li">
-                    <div class="left">添加回访</div>
-                    <div class="right">
-                        <span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
-                    </div>
-                </div>
-                <div class="li">
-                    <div class="left">回访日期</div>
-                    <div class="right">
-                        <?php if (empty($Clist['visit_time'])) {?>
-                        <label>手动设置回访日期 <input type="datetime-local" name="visit_time" style="font-size:12px;line-height:12px;"></label>
+                <div style="width: 855px;margin: auto;margin-top: 10px;">
+                    <label>回访提交日期：
+                        <?php if (empty($Clist['deal_with_time'])) {?>
+                        <label>手动设置回访日期 <input type="datetime-local" name="deal_with_time" style="font-size:12px;line-height:12px;"></label>
                         * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
                         <?php } else { ?>
-                        <input type="text" class="input" name="visit_time" style="width:300px;" value="<?php echo $Clist['visit_time'] ?>">
+                        <input type="text" class="input" name="deal_with_time" style="width:300px;" value="<?php echo $Clist['deal_with_time'] ?>">
                         <?php } ?>
-                    </div>
-                    <input type="hidden" name="id" value="<?php echo $id;?>">
-                    <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
-                </div>
-                <br>
-                <button onclick="return auth()" type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
-            </div>
-            <?php }else if($huifang == 2){?>
-            <div class="submit collapse huifang <?php if($act == 'huifang'){?>in<?php }?>">
-                <div class="li">
-                    <div style="clear: both;"></div>
-                </div>
-                <div class="li huifangjilu">
-                    <div class="left">回访记录</div>
-                    <div class="right">
-                        <?php
-						$visit_suggestion = unserialize($Clist['visit_suggestion']);
-						for($i=1;$i<=$cishu.length;$i++){?>
-                        <div>
-                            <textarea name="visit_suggestion[]"><?php echo $visit_suggestion[$i-1]?></textarea>
-                            <input type="button" value="提交" style="float:right;text-align:center;padding:0 0.5em" class="huifangsave"/>
-                        </div>
-                        <?php }?>
-                    </div>
-                    <div style="clear: both;"></div>
-                </div>
-                <div class="li">
-                    <div class="left">添加回访</div>
-                    <div class="right">
-                        <span id="addhuifang" style="padding: 4px 8px;border: 1px solid #cdcdcd;cursor: pointer;">+添加回访</span>
-                    </div>
-                </div>
-                <div class="li">
-                    <div class="left">回访日期</div>
-                    <div class="right">
-                        <?php if (empty($Clist['visit_time'])) {?>
-                        <label>手动设置回访日期 <input type="datetime-local" name="visit_time" style="font-size:12px;line-height:12px;"></label>
-                        * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
-                        <?php } else { ?>
-                        <input type="text" class="input" name="visit_time" style="width:300px;" value="<?php echo $Clist['visit_time'] ?>">
-                        <?php } ?>
-                    </div>
-                    <input type="hidden" name="id" value="<?php echo $id;?>">
-                    <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
+                    </label>
                 </div>
                 <br>
                 <input type="hidden" name="id" value="<?php echo $id;?>">
                 <button onclick="return auth()" type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button>
             </div>
+            <?php if($huifang == 1 || $huifang == ''){?>
             <?php }?>
         </form>
         <br>
@@ -175,10 +185,13 @@
 <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.js"></script>
 <script src='__PUBLIC__/Admin/js/jquery.PrintArea.js'></script>
 <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/bootstrap.min.js"></script>
+<script type="text/javascript" src="__JS__/layer.js"></script>
 <!-- 新增编辑器引入文件 -->
 <link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
 <script src="__STATIC__/kindeditor/kindeditor-min.js"></script>
 <script src="__STATIC__/kindeditor/zh_CN.js"></script>
+<script type="text/javascript" src="__JS__/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="__JS__/jquery.fileupload.js"></script>
 <!--图片上传-->
 <script>
     window.URL = window.URL || window.webkitURL;
@@ -314,20 +327,39 @@
         })
     }
     $(function () {
-        var text = '<div class="li zhuchibeizhu"><div class="left">处置备注 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
-        var strVar = '<div class="li huifangjilu"><div class="left">回访记录 </div><div class="right"> <textarea></textarea></div><div style="clear: both;"></div></div>';
-        $('.title').click(function () {
-            $(this).children('.caret').toggleClass('caret-active');
-        })
-        $('#addchuzhi').click(function () {
-            $('.zhuchibeizhu:last').after(text);
-            $('.zhuchibeizhu:last').children('.right').children('textarea').attr('name', 'management_record' + ($('.zhuchibeizhu').length - 1));
-        })
+        var text = '<form action="index.php?s=/Case/tihui" method="post"><div class="submit" style="width:800px;margin:auto;"><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">上传文件</div><div style="float:left;width:85%;display:inline-block;"><label><input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/><input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"/></label></div></div><div style="line-height:80px;height:80px"><div style="float:left;width:15%;align-content:right;display:inline-block;height:80px">回访记录</div><div style="float:left;width:85%;display:inline-block;height:80px"><textarea style="width:600px;height:80px;" name="visit_record"></textarea></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">回访日期</div><div style="float:left;width:85%;display:inline-block;"><label>手动设置处置日期 <input type="datetime-local" name="visit_riqi" style="font-size:12px;line-height:12px;"></label>* 不设置则为当天日期 - <?php echo date("Y-m-d H:i:s", time())?></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">回访人</div><div style="float:left;width:85%;display:inline-block;"><input type="text" class="input" style="width:300px;" name="visit_person" value="<?php echo $member ?>"></div></div><input type="hidden" name="id" value="<?php echo $id;?>"><button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button></div></form>';
         $('#addhuifang').click(function () {
-            $('.huifangjilu:last').after(strVar);
-            $('.huifangjilu:last').children('.right').children('textarea').attr('name', 'visit_suggestion' + ($('.huifangjilu').length - 1));
+            layer.open({
+                title:'回访记录',
+                type: 1,
+                skin: 'layui-layer-rim', //加上边框
+                area: ['850px', '340px'], //宽高
+                content: text,
+            });
+            upload();
         })
     })
+    var url = 'index.php?s=/Case/ajax_upload';
+    function upload() {
+        $(".uploadFile").last().fileupload({
+            url: url,
+            dataType: 'JSON',
+            sequentialUploads: true,    //按顺序下载好像必须加
+        }).bind('fileuploaddone', function (e, data) {
+            //上传完成
+            var res = data.result;
+            if (res.savename === undefined) {
+                alert(res);
+            } else if (res.savename === false) {
+                //....
+            } else {
+                //上传完成
+                $(this).next().val(res.savename).css('display', 'inline-block');
+                $(this).remove();
+            }
+        });
+    }
+    upload();
 </script>
 <script type="text/javascript">
     function auth() {

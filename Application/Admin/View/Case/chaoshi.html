@@ -25,11 +25,9 @@ body{padding: 0}
         <th >年龄</th>
         <th >民族</th>
         <th >家庭住址</th>
-        <th >健康状况</th> 
-        <th class="" >摸底上报风险等级</th>
-        <th class="" >机构评估风险等级</th>
-        <th class="" >帮扶后最高风险等级</th>
-        <th class="" >流程</th>
+        <th class="" >超时流程</th>
+        <th class="" >已超时间</th>
+        <th class="" >责人员</th>
         <th class="" >操作</th>
         </tr>
     </thead>
@@ -45,60 +43,24 @@ body{padding: 0}
         <td><?php echo getAge($v['birthday'])?></td>
         <td><?php echo $v['nation']?></td>
         <td><?php echo $v['home_address']?></td>
-        <td><?php 
-            $health = unserialize($v['health']);
-            foreach ($health as $val) {?>
-            <?php echo getHealth($val,$v['id']);?><br>
-            <?php }?>
-        </td>
-        <td><?php $fengxian = unserialize($v['growth_dilemma']);
-                foreach ($fengxian as $v1) {
-                    $str[] = getFengxian($v1);
-                }
-                echo max($str);
-                ?></td>
-        <td><?php $fengxians = unserialize($v['growth_dilemmas']);
-                foreach ($fengxians as $v2) {
-                    $strs[] = getFengxian($v2);
-                }
-                echo max($strs);
-                ?></td>
-        <td><?php $fengxianss = unserialize($v['growth_dilemmass']);
-                foreach ($fengxianss as $v2) {
-                    $strss[] = getFengxian($v2);
-                }
-                echo max($strss);
-                ?></td>
-
         <?php
             $turn_related = M('case')->where(array('id'=>$v['id']))->getField('turn_related');
         ?>
-
         <td>
-            <?php if($v['case_status'] == 'huifang'){?>
-            回访完成
-            <?php }else if($v['visit_status'] == null && $v['finish_suggestion'] !== ''){?>
-            结案完成
-            <?php }else if($v['finish_suggestion'] !== ''){?>
-            结案完成
-            <?php }else if($v['management_status'] == 1){?>
-            处置完成
-            <?php }else if($v['case_status'] == 'bohuiCz'){?>
-            处置驳回
-            <?php }else if($v['dispatch_instance'] !== ''){?>
-            调度完成
-            <?php }else if($v['last_instance_status'] == 1){?>
-            审批完成
-            <?php }else if($v['case_status'] == 'bohuiCs'){?>
-            初审驳回
-            <?php }else if($v['trial_status'] == 1){?>
-            初审完成
-            <?php }else if($v['case_status'] == 'caiji'){?>
-            采集完成
-            <?php }else if($v['case_status'] == 'bohuiC'){?>
-            采集驳回
-            <?php }?>
+            {:getProcess($v['case_status'], $v['stage_status'])}
         </td>
+        <td>
+            <?php
+                $times = translate($v['case_status'], true);
+                $time = $times['en'] . '_time';
+                $nextTime = empty($v[$time]) ? time() : strtotime($v[$time]);
+                $indexTime = strtotime($v[statusTime($v['case_status'])]) + ($v['execute_time'] * 3600);
+                $Time = $nextTime - ($indexTime + ($v['execute_time'] * 3600));
+                $rrv = ($nextTime - $indexTime) / 3600;
+                echo (int)$rrv . '/小时';
+            ?>
+        </td>
+        <td><?php echo $v['execute_name']?></td>
         <td>
             <?php if(($v['case_status'] == 'jiean' && IS_AUTH) || ($v['case_status'] == 'huifang' && IS_AUTH) || UID == 1){?>
             <span style="color:#A0A0A0">完成</span>

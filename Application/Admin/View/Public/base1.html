@@ -78,8 +78,9 @@
                 <!--<a href="{:U('Case/wancheng')}"><?php if(ACTION_NAME == 'wancheng'){?><img src="__PUBLIC__/Admin/images/xtwcn/sanjiao.png" class="sanjiao"/><?php }?></a></li>-->
             <li><a href="{:U('Case/guidang')}">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid">
                 <a href="{:U('Case/guidang')}"><?php if(ACTION_NAME == 'guidang'){?><img src="__PUBLIC__/Admin/images/xtwcn/sanjiao.png" class="sanjiao"/><?php }?></a></li>
+            <li><a href="{:U('Case/addressList')}">通讯列表</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid">
+                <a href="{:U('Case/addressList')}"><?php if(ACTION_NAME == 'addresslist'){?><img src="__PUBLIC__/Admin/images/xtwcn/sanjiao.png" class="sanjiao"/><?php }?></a></li>
             <li><a href="{:U('User/index')}">系统管理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
-            <li><a href="{:U('Case/statistics')}">案件统计</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
         </ul>
 
         <if condition="(ACTION_NAME neq 'index') AND (ACTION_NAME neq 'statistics')">
