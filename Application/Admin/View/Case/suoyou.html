@@ -84,6 +84,10 @@ body{padding: 0}
             </div>
             <input type='submit' id='filter' name='submit' value='搜索' class='btn'>
             <a href='javascript:enrollCase()' class='btn enroll'>导出</a>
+
+            <!-- TP 3的bug 表单提交为get时 只有传入以下值才能到达指定地址 -->
+            <input type="hidden" name='c' value='case'>
+            <input type="hidden" name="a" value="suoyou">
         </div>
     </form>
 
@@ -327,7 +331,7 @@ body{padding: 0}
                     type    : 'enroll',
                     status  : status,
                   };
-        $.post(url, data, function(res) {
+        $.get(url, data, function(res) {
             if(res.result == 1){
                 layer.msg(res.msg, {icon: 1, time: 4000});
                 location.href = res.url;
