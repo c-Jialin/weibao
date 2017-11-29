@@ -681,13 +681,15 @@ function translate($chn, $next = false)
  * 根据权限获取可查询的案件状态
  * return array $arr
  */
-function getStatusFromAuth()
+function getStatusFromAuth($getStatus = false)
 {
     //初始化返回结果
     $arr = ['auth' => [], 'status' => [], 'next' => []];
     $next = ['add' => 1, 'trial' => 2, 'last_instance' => 3, 'dispatch' => 4, 'deal_with' => 5, 'finish' => 6, 'visit' => 7];
-    //根据权限获得英文节点
-    if (empty(IS_NODE)) {
+    //根据权限获得英文节点 或者如果是用于得到案件状态
+    if($getStatus)
+        $arr['auth'] = [$getStatus];
+    else if (empty(IS_NODE)) {
         $arr['auth'] = ['add', 'trial', 'last_instance', 'dispatch', 'deal_with', 'finish', 'visit'];
     } else {
         $arr['auth'] = explode(',', IS_NODE);
