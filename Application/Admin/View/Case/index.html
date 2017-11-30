@@ -6,14 +6,15 @@
     <title>湘潭市未成年人社会保护信息系统</title>
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
     <link rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
-
     <!-- 打印专用css -->
         <link media='print' rel="stylesheet"  type="text/css" href="./Public/Admin/css/xtwcn/bootstrap.css"/>
         <link media='print' rel="stylesheet" type="text/css" href="./Public/Admin/css/xtwcn/index.css"/>
         <link media='print' rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
     <!-- 打印end -->
-
     <script type="text/javascript" src="__PUBLIC__/Admin/js/xtwcn/PIE.js"></script>
+    <style>
+        .bar {height: 18px;background: green;}
+    </style>
 </head>
 <body>
 <header class="header">
@@ -318,10 +319,7 @@
                                         <td style="border-right:none; width:60px;">月收入</td>
                                     </tr>
                                     <tr><?php $family_members = unserialize($Clist['family_members']);?>
-                                        <td><input type="checkbox" class="input" name="family_jianhuren[]"
-                                                   value="1" <?php if(in_array(1,unserialize($Clist['family_jianhuren']))){?>
-                                            checked<?php }?>>
-                                        </td>
+                                        <td><input type="checkbox" class="input" name="family_jianhuren[]" value="1" <?php if(in_array(1,unserialize($Clist['family_jianhuren']))){?>checked<?php }?>></td>
                                         <td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[0]?>"></td>
                                         <td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[1]?>"></td>
                                         <td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[2]?>"></td>
@@ -329,18 +327,18 @@
                                         <td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[4]?>"></td>
                                         <td><input type="text" class="input" name="family_members[]" value="<?php echo $family_members[5]?>"></td>
                                         <td><input type="text" class="input shouji" name="family_members[]" value="<?php echo $family_members[6]?>"></td>
-                                        <td style="border-right:none;"><input type="text" class="input " name="family_members[]" value="<?php echo $family_members[7]?>"></td>
+                                        <td><input type="text" class="input " name="family_members[]" value="<?php echo $family_members[7]?>"></td>
                                     </tr>
                                     <tr>
-                                        <td style="border-bottom:none;"><input type="checkbox" class="input" name="family_jianhuren[]" value="2" <?php if(in_array(2,unserialize($Clist['family_jianhuren']))){?>checked<?php }?>></td>
-                                        <td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[8]?>"></td>
-                                        <td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[9]?>"></td>
-                                        <td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[10]?>"></td>
-                                        <td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[11]?>"></td>
-                                        <td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[12]?>"></td>
-                                        <td style="border-bottom:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[13]?>"></td>
-                                        <td style="border-bottom:none;"><input type="text" class="input shouji" name="family_members1[]" value="<?php echo $family_members[14]?>"></td>
-                                        <td style="border-bottom:none; border-right:none;"><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[15]?>"></td>
+                                        <td><input type="checkbox" class="input" name="family_jianhuren[]" value="2" <?php if(in_array(2,unserialize($Clist['family_jianhuren']))){?>checked<?php }?>></td>
+                                        <td><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[8]?>"></td>
+                                        <td><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[9]?>"></td>
+                                        <td><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[10]?>"></td>
+                                        <td><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[11]?>"></td>
+                                        <td><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[12]?>"></td>
+                                        <td><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[13]?>"></td>
+                                        <td><input type="text" class="input shouji" name="family_members1[]" value="<?php echo $family_members[14]?>"></td>
+                                        <td><input type="text" class="input" name="family_members1[]" value="<?php echo $family_members[15]?>"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -611,7 +609,6 @@
                                                           value="42" <?php if(in_array(42,unserialize($Clist['growth_dilemma']))){?>
                                                 checked<?php }?>>零级</label></td>
                                     </tr>
-
                                     </tbody>
                                 </table>
                             </td>
@@ -624,6 +621,18 @@
                         </tr>
                         </tbody>
                     </table>
+                </div>
+                <div style="width: 855px;margin: auto;margin-top: 10px;">
+                    <label style="height:30px;">附件上传：
+                        <?php if (empty($Clist['enclosure'])) {?>
+                        <input id="fileupload" type="file" name="files" data-url="index.php?s=/Case/ajax_uploads" multiple>
+                        <?php } else {?>
+                        <input id="fileupload" type="file" name="files" data-url="index.php?s=/Case/ajax_uploads" multiple>
+                        <a href="__UPLOADS__/file/<?php echo $Clist['enclosure'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
+                        <?php }?>
+                        <input type="hidden" class="bar_value" name="enclosure" value="<?php echo $Clist['enclosure'];?>">（文件格式支持：jpg, png, jpeg, docx, xlsx）
+                    </label>
+                    <label class="bar" style="width:0%;color:white;text-align:center"></label>
                 </div>
                 <div style="width: 855px;margin: auto;margin-top: 10px;">
                     <label>填表日期：
@@ -662,6 +671,9 @@
 <link rel="stylesheet" href="__STATIC__/kindeditor/default/default.css"/>
 <script src="__STATIC__/kindeditor/kindeditor-min.js"></script>
 <script src="__STATIC__/kindeditor/zh_CN.js"></script>
+<script type="text/javascript" src="__JS__/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="__JS__/jquery.iframe-transport.js"></script>
+<script type="text/javascript" src="__JS__/jquery.fileupload.js"></script>
 <!--图片上传-->
 <script>
     window.URL = window.URL || window.webkitURL;
@@ -698,6 +710,25 @@
             //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
         }
     }
+    $(function () {
+        $('#fileupload').fileupload({
+            dataType: 'json',
+            add: function (e, data) {
+                data.submit();
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('.bar').text('上传中...');
+                $('.bar').css('width', progress + '%');
+                console.log(progress + '%');
+            },
+            done: function (e, data) {
+                console.log(data.result.savename);
+                $('.bar_value').val(data.result.savename);
+                $('.bar').text('上传完成');
+            }
+        });
+    });
 </script>
 <script>
     /* 表单禁用 */

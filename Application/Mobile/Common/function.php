@@ -745,3 +745,25 @@ function getProcess($status, $stage){
     ];
     return $arr[$status][$stage];
 }
+function linkage($area, $town, $village, $ac)
+{
+    $arr = array();
+    foreach ($area as $v) {
+        if ($v['parent_id'] == $ac) {
+            $str = array();
+            foreach ($town as $vs) {
+                if ($vs['parent_id'] == $v['region_id']) {
+                    $res = array();
+                    foreach ($village as $vss) {
+                        if ($vss['parent_id'] == $vs['region_id']) {
+                            $res[] = array('value' => $vss['region_id'], 'label' => $vss['region_name'], 'children' => $vss);
+                        }
+                    }
+                    $str[] = array('value' => $vs['region_id'], 'label' => $vs['region_name'], 'children' => $res);
+                }
+            }
+            $arr[] = array('value' => $v['region_id'], 'label' => $v['region_name'], 'children' => $str);
+        }
+    }
+    return $arr;
+}

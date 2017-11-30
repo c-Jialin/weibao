@@ -698,7 +698,6 @@ class CaseController extends AdminController
     public function index()
     {
         if (IS_POST) {
-            $db = M('case');
             if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
             if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
             if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
@@ -716,6 +715,7 @@ class CaseController extends AdminController
             if ($_POST['home_city_code']) $data['home_city_code'] = $_POST['home_city_code'];
             if ($_POST['home_area_code']) $data['home_area_code'] = $_POST['home_area_code'];
             if ($_POST['home_address']) $data['home_address'] = $_POST['home_address'];
+            if ($_POST['enclosure']) $data['enclosure'] = $_POST['enclosure'];
             if ($_POST['health'] == 1) {
                 $data['health'] = $_POST['health'];
             } else {
@@ -774,16 +774,13 @@ class CaseController extends AdminController
                 if ($_POST['xId']) $data['id'] = $_POST['xId'];
                 // 采集 or 重新采集完成 更改stage_status
                 $data['stage_status'] = 'complete';
-
                 //提交后检测该案件是否超时
                 $cases = $Case->where(['id' => $data['id']])->select();
                 $this->countOverTimeCases($cases, true, false);
-
                 $case = $Case->update($data);
                 if ($case) {
                     //发送短信提醒
                     $res = $this->smsSend('trial', 'caiji', true);
-//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -801,6 +798,33 @@ class CaseController extends AdminController
             $this->assign('member', $member);
             $this->display();
         }
+    }
+
+    //上传附件
+    public function ajax_uploads()
+    {
+        $photo = false;
+        if ($_FILES['files']['name'] != '') {
+            $uploadPath = 'case/user/file/';
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath);
+                chmod($uploadPath, 0777);
+            }
+            $upload = new \Think\Upload(array(
+                'savePath' => $uploadPath,
+                'subName' => false,
+                'uploadReplace' => true // 覆盖同名文件
+            ));
+            $upload->maxSize = 5120000;// 设置附件上传大小
+            $upload->exts = array('jpg', 'png', 'jpeg', 'docx', 'xlsx');// 设置附件上传类型
+            $uploadInfo = $upload->uploadOne($_FILES['files']);
+            if (!$uploadInfo) {
+                $photo = $upload->getError();
+            } else {
+                $photo = $uploadInfo;
+            }
+        }
+        echo json_encode($photo);
     }
 
     //案件初审
@@ -832,8 +856,7 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('last_instance', 'chushen', true);
-
-                    $this->error(implode(',', $res), '', 10);
+//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -845,7 +868,6 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('index', 'bohuiC', false);
-//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -895,7 +917,6 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('dispatch', 'shenpi', true);
-                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -907,7 +928,6 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('trial', 'bohuiCs', false);
-//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -964,7 +984,6 @@ class CaseController extends AdminController
             if ($saveCase) {
                 //发送短信提醒
                 $res = $this->smsSend('deal_with', 'diaodu', true);
-//                $this->error(implode(',', $res), '', 10);
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
             } else {
                 echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1025,7 +1044,6 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('finish', 'chuzhi', true);
-                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1037,7 +1055,6 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('dispatch', 'bohuiCz', false);
-//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1167,7 +1184,6 @@ class CaseController extends AdminController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('visit', 'weihuifang', true);
-//                    $this->error(implode(',', $res), '', 10);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";

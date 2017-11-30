@@ -56,13 +56,13 @@ class IndexController extends AdminController
             $cases = $case->field($field)->where($where)->order('fill_in_time desc')->select();
             //消息和待处理数量
             $where['stage_status'] = 'complete';
-            $this->messages  = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            $this->messages = $case->field($field)->where($where)->order('fill_in_time desc')->select();
             $this->waiting = count($this->messages);
             //正在处理的数量
             $where['stage_status'] = 'ing';
-            $this->handling  = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+            $this->handling = $case->field($field)->where($where)->order('fill_in_time desc')->count();
             //超时和即将超时数量
-            $overtime        = $this->countOverTimeCases($cases);
+            $overtime = $this->countOverTimeCases($cases);
             $this->overtiming = $overtime['overtiming'];
             $this->overtimed = $overtime['overtimed'];
             //超龄
@@ -70,12 +70,21 @@ class IndexController extends AdminController
             $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
             $ages = $case->field('birthday')->order('fill_in_time desc')->select();
             foreach ($ages as $val) {
-                if  (getAge($val['birthday']) > $overage) $age[] = getAge($val['birthday']);
+                if (getAge($val['birthday']) > $overage) $age[] = getAge($val['birthday']);
             }
             $this->overaged = count($age);
             //站内公告
             $document = M('document')->field('id,title,category_id')->select();
             $this->document = $document;
+            //短信配置
+            $cfg = M('addons')->where(array('name' => 'SMS'))->getField('config');
+            $number = 0;
+            if ($cfg) {
+                $cfg = json_decode($cfg, 1);
+                $url = 'http://www.smschinese.cn/web_api/SMS/?Action=SMS_Num&Uid=' . $cfg['Uid'] . '&Key=' . $cfg['Key'];
+                $number = file_get_contents($url);
+            }
+            $this->smsNumber = $number;
             $this->display();
         } else {
             $this->redirect('Public/login');
@@ -92,8 +101,8 @@ class IndexController extends AdminController
         //初始化返回结果
         $overtime = ['overtiming' => 0, 'overtimed' => 0];
 
-        $rules    = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
-        $rules    = rebuildArray($rules, 'node');
+        $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
+        $rules = rebuildArray($rules, 'node');
         $now = time();
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];

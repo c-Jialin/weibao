@@ -3,6 +3,7 @@
 namespace Mobile\Controller;
 
 use Mobile\Model\AuthGroupModel;
+use Think\Auth;
 use Think\Page;
 use Think\phpexcel;
 
@@ -400,7 +401,7 @@ class CaseController extends MobileController
         $count = array();
         $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
         foreach ($list as $val) {
-            if  (getAge($val['birthday']) > $overage) $count[] = $val;
+            if (getAge($val['birthday']) > $overage) $count[] = $val;
         }
         $pagesize = 25;
         $p = I('pageIndex') ? I('pageIndex') : 1;
@@ -466,51 +467,27 @@ class CaseController extends MobileController
     //地区
     public function Lage()
     {
-        $list = M('area')->where(array('region_type' => 1))->select();
-        $this->assign('list', $list);
-        $list_top = M('area_top')->where(array('parent_id' => 1))->select();
-        $this->assign('list_top', $list_top);
-    }
-
-    //联动菜单
-    public function Linkage()
-    {
-        $id = $_POST['id'];
-        $type = $_POST['type'];
-        $list = M('area')->where(array('parent_id' => $id))->select();
-        if ($type == 1) {
-            $str = "<option value='' >请选择市</option>";
-        } else if ($type == 2) {
-            $str = "<option value='' >请选择区</option>";
+        $list = M('area')->where('parent_id!=0')->select();
+        $are = array();
+        $town = array();
+        $village = array();
+        foreach ($list as $k => &$v) {
+            if ($v['region_type'] == 1) $are[] = $v;
+            if ($v['region_type'] == 2) $town[] = $v;
+            if ($v['region_type'] == 3) $village[] = $v;
         }
-        foreach ($list as $v) {
-            $str .= "<option value='{$v['region_id']}'>{$v['region_name']}</option>";
+        $area = linkage($are, $town, $village, 1);
+        $list_top = M('area_top')->where('region_id!=0')->select();
+        $are = array();
+        $town = array();
+        $village = array();
+        foreach ($list_top as $k => &$v) {
+            if ($v['type_id'] == 3) $are[] = $v;
+            if ($v['type_id'] == 4) $town[] = $v;
+            if ($v['type_id'] == 5) $village[] = $v;
         }
-        echo $str;
-    }
-
-    //联动菜单
-    public function Linkage_top()
-    {
-        $id = $_POST['id'];
-        $type = $_POST['type'];
-        $list_top = M('area_top')->where(array('parent_id' => $id))->select();
-        if ($type == 3) {
-            $str = "<option value='' >请选择街/镇</option>";
-        } else if ($type == 4) {
-            $str = "<option value='' >请选择村/社区</option>";
-        }
-        foreach ($list_top as $v) {
-            $str .= "<option value='{$v['region_id']}'>{$v['region_name']}</option>";
-        }
-        echo $str;
-    }
-
-    //页面刷新
-    public function changeYe()
-    {
-        // $name = $_GET['ACTION_NAME'];
-        // echo $name;
+        $top = linkage($are, $town, $village, 1);
+        return array('area' => $area, 'area_top' => $top);
     }
 
     //信息采集
@@ -534,6 +511,7 @@ class CaseController extends MobileController
             if ($_POST['home_city_code']) $data['home_city_code'] = $_POST['home_city_code'];
             if ($_POST['home_area_code']) $data['home_area_code'] = $_POST['home_area_code'];
             if ($_POST['home_address']) $data['home_address'] = $_POST['home_address'];
+            if ($_POST['enclosure']) $data['enclosure'] = $_POST['enclosure'];
             if ($_POST['health'] == 1) {
                 $data['health'] = $_POST['health'];
             } else {
@@ -584,6 +562,7 @@ class CaseController extends MobileController
             }
             $data['case_status'] = 'caiji';
             $data['add_time'] = date("Y-m-d H:i:s", time());
+            exit(json_encode($data));
             $Case = D('case');
             if (!$Case->create()) {
                 // 如果创建失败 表示验证没有通过 输出错误提示信息
@@ -598,21 +577,20 @@ class CaseController extends MobileController
                 if ($case) {
                     //发送短信提醒
                     $res = $this->smsSend('trial', 'caiji', true);
-                    $this->error(implode(',', $res), '', 10);
                     exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
                     exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
             }
         } else {
-            $this->Lage();
+            $area = $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             // 点击采集 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'area' => $area)));
         }
     }
 
@@ -906,7 +884,7 @@ class CaseController extends MobileController
                     $way[] = $_POST['visit_form2_2'];
                     $data['visit_way'] = serialize($way);
                 }
-                $data['case_status']  = 'weihuifang';
+                $data['case_status'] = 'weihuifang';
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
@@ -958,8 +936,8 @@ class CaseController extends MobileController
             } else if ($way == 2) {
                 $data['visit_suggestion'] = serialize($_POST['visit_suggestion']);
             }
-            $data['case_status']  = 'huifang';
-            $data['visit_time']   = date("Y-m-d H:i:s", time());
+            $data['case_status'] = 'huifang';
+            $data['visit_time'] = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
@@ -1016,9 +994,9 @@ class CaseController extends MobileController
     }
 
     //短信发送$case英文节点名，$node中文节点名
-    public function smsSend($case = 'trial', $node ='chushen', $action = true)
+    public function smsSend($case = 'trial', $node = 'chushen', $action = true)
     {
-        $Auth = new \Think\Auth();
+        $Auth = new Auth();
         $user = $Auth->getCaseUserList($case);
         $uid = array();
         foreach ($user as $val) {
@@ -1068,34 +1046,35 @@ class CaseController extends MobileController
      */
     private function updateStatus($id, $status)
     {
-        if($id <= 0)
+        if ($id <= 0)
             return false;
         $auth = getStatusFromAuth();
-        if(in_array($status, $auth['status'])){
+        if (in_array($status, $auth['status'])) {
             $data = ['id' => $id, 'stage_status' => 'ing'];
             D('case')->update($data);
         }
     }
 
-    private function updateOvertime($cases, $time){
-        $res   = $this->countOverTimeCases($cases, true);
-        $case  = M('CaseManage');
+    private function updateOvertime($cases, $time)
+    {
+        $res = $this->countOverTimeCases($cases, true);
+        $case = M('CaseManage');
         $model = D('overtime');
-        if(!empty($res)){
+        if (!empty($res)) {
             //不为空则已超时
             $arr = ['bohuiC', 'bohuiCs', 'bohuiCz'];
             foreach ($res as $k => $v) {
                 $status = $v['case_status'];
-                $save   = ['case' => $v['id'], 'status' => $status];
-                $key    = translate($status);
+                $save = ['case' => $v['id'], 'status' => $status];
+                $key = translate($status);
                 //现阶段该执行的状态的时间
-                if(in_array($status, $arr))
+                if (in_array($status, $arr))
                     $caseTime = strtotime($v[$key['next'] . '_time']);
                 else
                     $caseTime = strtotime($v[$key['now'] . '_time']);
-                $save['terminal']   = $caseTime + $case->field('execute_time a')->where(['node' => $status])->find()['a'] * 3600;
-                $save['execute']    = $time;
-                $save['node']       = $v['stage_status'];
+                $save['terminal'] = $caseTime + $case->field('execute_time a')->where(['node' => $status])->find()['a'] * 3600;
+                $save['execute'] = $time;
+                $save['node'] = $v['stage_status'];
                 $model->update($save);
             }
         }
