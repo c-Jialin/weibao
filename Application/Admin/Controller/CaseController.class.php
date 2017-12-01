@@ -219,7 +219,7 @@ class CaseController extends AdminController
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
-
+        $this->count = $count;
         $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
 
         $this->shequ = M('area_top')->where(array('type_id' => 4))->select();
@@ -874,7 +874,6 @@ class CaseController extends AdminController
                 }
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
@@ -883,10 +882,8 @@ class CaseController extends AdminController
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
-
             // 点击初审 更改stage_status
             $this->updateStatus($id, $case['case_status']);
-
             $this->assign('shi', $shi);
             $this->act = $_GET['act'];
             $this->id = $id;
@@ -934,7 +931,6 @@ class CaseController extends AdminController
                 }
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
@@ -943,10 +939,8 @@ class CaseController extends AdminController
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
-
             // 点击审批 更改stage_status
             $this->updateStatus($id, $case['case_status']);
-
             $this->assign('shi', $shi);
             $this->act = $_GET['act'];
             $this->id = $id;
@@ -989,7 +983,6 @@ class CaseController extends AdminController
                 echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
@@ -998,12 +991,9 @@ class CaseController extends AdminController
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
-
             // 点击调度 更改stage_status
             $this->updateStatus($id, $case['case_status']);
-
             $this->assign('shi', $shi);
-
             $this->act = $_GET['act'];
             $this->id = $id;
             $urse = M('ucenter_member');
@@ -1061,7 +1051,6 @@ class CaseController extends AdminController
                 }
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
@@ -1071,10 +1060,8 @@ class CaseController extends AdminController
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
             $this->assign('shi', $shi);
-
             // 点击处置 更改stage_status
             $this->updateStatus($id, $case['case_status']);
-
             $this->act = $_GET['act'];
             $this->id = $id;
             $urse = M('ucenter_member');
@@ -1261,7 +1248,6 @@ class CaseController extends AdminController
                 echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
@@ -1271,10 +1257,8 @@ class CaseController extends AdminController
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
             $this->assign('shi', $shi);
-
             // 点击回访 更改stage_status
             $this->updateStatus($id, $case['case_status']);
-
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
             $this->assign('member', $member);
@@ -1369,24 +1353,27 @@ class CaseController extends AdminController
         return $SMS->AdminIndex(implode(',', array_unique($mobile)), $message);
     }
 
-    //
+    //用户信息
     public function addressList()
     {
-        $nickname = I('nickname');
-        $map['status'] = array('egt', 0);
-        if (is_numeric($nickname)) {
-            $map['uid|nickname'] = array(intval($nickname), array('like', '%' . $nickname . '%'), '_multi' => true);
-        } else {
-            $map['nickname'] = array('like', '%' . (string)$nickname . '%');
-        }
-
-        $list = $this->lists('Member', $map);
+        $member = M('member')->where('status=1 and uid!=1')->select();
+        $group = M()
+            ->table('onethink_auth_group_access a')
+            ->join('onethink_auth_group g on a.group_id=g.id')
+            ->field('a.uid,g.id,g.description,g.title')
+            ->select();
         $department = C('DEPARTMENT');
-        foreach ($list as &$v) {
+        foreach ($member as &$v) {
             $v['department'] = $department[$v['department']];
+            foreach ($group as $val) {
+                if ($v['uid'] == $val['uid']) {
+                    $v['description'][] = $val['description'];
+                    $v['title'][] = $val['title'];
+                }
+            }
         }
-        int_to_string($list);
-        $this->assign('_list', $list);
+        int_to_string($member);
+        $this->assign('_list', $member);
         $this->meta_title = '用户信息';
         $this->display();
     }

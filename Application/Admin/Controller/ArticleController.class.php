@@ -205,7 +205,6 @@ class ArticleController extends AdminController
                         }
                 }
             }
-
             $this->assign('list_grids', $grids);
             $this->assign('model_list', $model);
             // 记录当前列表页的cookie
@@ -270,7 +269,6 @@ class ArticleController extends AdminController
         $_REQUEST = array();
         $list = $this->lists($list, null, null, null, 'l.id id,l.pid pid,l.category_id,l.title title,l.update_time update_time,l.uid uid,l.status status,r.content content');
         int_to_string($list);
-
         if ($map['pid']) {
             // 获取上级文档
             $article = $Document->field('id,title,type')->find($map['pid']);
@@ -332,6 +330,13 @@ class ArticleController extends AdminController
             // 获取上级文档
             $article = $Document->field('id,title,type')->find($map['pid']);
             $this->assign('article', $article);
+        }
+        foreach ($list as $key => &$val) {
+            if ($val['display'] != 5) {
+                if (!get_department($val['display'])) {
+                    unset($list[$key]);
+                }
+            }
         }
         //检查该分类是否允许发布内容
         $allow_publish = get_category($cate_id, 'allow_publish');

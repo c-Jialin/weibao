@@ -56,7 +56,12 @@ class IndexController extends AdminController
             $cases = $case->field($field)->where($where)->order('fill_in_time desc')->select();
             //消息和待处理数量
             $where['stage_status'] = 'complete';
-            $this->messages = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            $messages = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            foreach ($messages as &$vs) {
+                $vs['case_statuss'] = getStage($vs['case_status']);
+                $vs['case_time'] = $vs[statusTime($vs['case_status'])];
+            }
+            $this->messages = $messages;
             $this->waiting = count($this->messages);
             //正在处理的数量
             $where['stage_status'] = 'ing';
@@ -74,7 +79,14 @@ class IndexController extends AdminController
             }
             $this->overaged = count($age);
             //站内公告
-            $document = M('document')->field('id,title,category_id')->select();
+            $document = M('document')->field('id,title,category_id,display')->select();
+            foreach ($document as $key => &$val) {
+                if ($val['display'] != 5) {
+                    if (!get_department($val['display'])) {
+                        unset($document[$key]);
+                    }
+                }
+            }
             $this->document = $document;
             //短信配置
             $cfg = M('addons')->where(array('name' => 'SMS'))->getField('config');

@@ -128,9 +128,9 @@
 						<label class="item-label">可见性<span class="check-tips">（是否对用户可见，针对前台）</span></label>
 						<div class="controls">
 							<select name="display">
-								<option value="1">所有人可见</option>
-								<option value="0">不可见</option>
-								<option value="2">管理员可见</option>
+								<volist  name="display" id="vo" key="ko">
+									<option value="{$ko - 1}">{$vo}</option>
+								</volist >
 							</select>
 						</div>
 					</div>

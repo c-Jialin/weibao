@@ -494,7 +494,7 @@ class CaseController extends MobileController
     public function index()
     {
         if (IS_POST) {
-            if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
+            if ($_POST['case_number'] == '自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
             if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
             if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
             if ($_POST['community_code']) $data['community_code'] = $_POST['community_code'];
@@ -515,23 +515,22 @@ class CaseController extends MobileController
             if ($_POST['health'] == 1) {
                 $data['health'] = $_POST['health'];
             } else {
-                $data['health'] = serialize($_POST['health']);
+                $data['health'] = serialize(explode(',', $_POST['health']));
             }
             if ($_POST['health_other']) $data['health_other'] = $_POST['health_other'];
             if ($_POST['character']) $data['character'] = $_POST['character'];
             if ($_POST['admission_status']) $data['admission_status'] = $_POST['admission_status'];
             if ($_POST['admission_status'] == 2) $data['entrance'] = $_POST['entrance'];
             //家庭成员分类
-            $data['family_jianhuren'] = serialize($_POST['family_jianhuren']);
-            $data1 = array_merge($_POST['family_members'], $_POST['family_members1']);
-            $data['family_members'] = serialize($data1);
+            $data['family_jianhuren'] = serialize(explode(',', $_POST['family_jianhuren']));
+            $data['family_members'] = serialize(explode(',', $_POST['family_members']));
             if ($_POST['family_structure']) $data['family_structure'] = $_POST['family_structure'];
             if ($_POST['family_other']) $data['family_other'] = $_POST['family_other'];
             if ($_POST['guardianship']) $data['guardianship'] = $_POST['guardianship'];
             if ($_POST['life_status']) $data['life_status'] = $_POST['life_status'];
-            if ($_POST['enjoy_relief_type']) $data['enjoy_relief_type'] = serialize($_POST['enjoy_relief_type']);
+            if ($_POST['enjoy_relief_type']) $data['enjoy_relief_type'] = serialize(explode(',', $_POST['enjoy_relief_type']));
             if ($_POST['housing_type']) $data['housing_type'] = $_POST['housing_type'];
-            if ($_POST['inner_predicament']) $data['inner_predicament'] = serialize($_POST['inner_predicament']);
+            if ($_POST['inner_predicament']) $data['inner_predicament'] = serialize(explode(',', $_POST['inner_predicament']));
             if (in_array(7, $_POST['inner_predicament'])) $data['Heart_other'] = $_POST['Heart_other'];
             //成长困境及成长等级
             if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
@@ -543,26 +542,31 @@ class CaseController extends MobileController
             if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
             $data['growth_dilemma'] = serialize($grow);
             if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
-            $data['fill_in_time'] = time();
+            if ($_POST['fill_in_time']) {
+                $data['fill_in_time'] = $_POST['fill_in_time'];
+            } else {
+                $data['fill_in_time'] = date('Y-m-d H:i:s', time());
+            }
             if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
             //图片上传
-            if ($_FILES['photo']['name'] != '') {
-                $uploadPath = 'case/user/photo/';
-                if (!file_exists($uploadPath)) {
-                    mkdir($uploadPath);
-                    chmod($uploadPath, 0777);
+            if ($_POST['photo'] != '') {
+                $uploadPath = './Uploads/case/user/photo/';
+                $base = explode(',', $_POST['photo'])[1];
+                $base = preg_replace("/\s/", "+", $base);
+                file_put_contents('./te.text', $base);
+                $base64 = base64_decode($base);
+                $fileName = rand(1, 9) . rand(0, 9) . rand(0, 9) . time();
+                $res = file_put_contents($uploadPath . $fileName . ".jpg", $base64);
+                if ($res) {
+                    $data['photo'] = $fileName . ".jpg";
                 }
-                $upload = new \Think\Upload(array(
-                    'savePath' => $uploadPath,
-                    'subName' => false,
-                    'uploadReplace' => true // 覆盖同名文件
-                ));
-                $uploadInfo = $upload->uploadOne($_FILES['photo']);
-                $data['photo'] = $uploadInfo['savename'];
             }
             $data['case_status'] = 'caiji';
             $data['add_time'] = date("Y-m-d H:i:s", time());
-            exit(json_encode($data));
+            echo '<pre>';
+            print_r($data);
+            echo '</pre>';
+//            exit;
             $Case = D('case');
             if (!$Case->create()) {
                 // 如果创建失败 表示验证没有通过 输出错误提示信息
@@ -619,10 +623,9 @@ class CaseController extends MobileController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('last_instance', 'chushen', true);
-                    $this->error(implode(',', $res), '', 10);
-                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
-                    echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
             } else {
                 $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
@@ -631,26 +634,19 @@ class CaseController extends MobileController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('index', 'bohuiC', false);
-                    $this->error(implode(',', $res), '', 10);
-                    echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '案件被驳回')));
                 } else {
-                    echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '案件驳回失败')));
                 }
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            if (empty($case['household_pro_code'])) {
-                $shi = M('area')->where(array('parent_id' => 14))->select();
-            } else {
-                $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
-            }
             // 点击初审 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'shi' => $shi)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
         }
     }
 
@@ -669,10 +665,9 @@ class CaseController extends MobileController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('dispatch', 'shenpi', true);
-                    $this->error(implode(',', $res), '', 10);
-                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
-                    echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
             } else if ($data['last_instance_status'] == 2) {
                 $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
@@ -681,26 +676,19 @@ class CaseController extends MobileController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('trial', 'bohuiCs', false);
-                    $this->error(implode(',', $res), '', 10);
-                    echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '案件被驳回')));
                 } else {
-                    echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '案件驳回失败')));
                 }
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            if (empty($case['household_pro_code'])) {
-                $shi = M('area')->where(array('parent_id' => 14))->select();
-            } else {
-                $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
-            }
             // 点击审批 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'shi' => $shi)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
         }
     }
 
@@ -725,25 +713,18 @@ class CaseController extends MobileController
             if ($saveCase) {
                 //发送短信提醒
                 $res = $this->smsSend('deal_with', 'diaodu', true);
-                $this->error(implode(',', $res), '', 10);
-                echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
             } else {
-                echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            if (empty($case['household_pro_code'])) {
-                $shi = M('area')->where(array('parent_id' => 14))->select();
-            } else {
-                $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
-            }
             // 点击调度 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'shi' => $shi)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
         }
     }
 
@@ -763,10 +744,9 @@ class CaseController extends MobileController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('finish', 'chuzhi', true);
-                    $this->error(implode(',', $res), '', 10);
-                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
-                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
             } else if ($data['management_status'] == 2) {
                 $arr = array('deal_with_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
@@ -775,26 +755,19 @@ class CaseController extends MobileController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('dispatch', 'bohuiCz', false);
-                    $this->error(implode(',', $res), '', 10);
-                    echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '案件被驳回')));
                 } else {
-                    echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '案件驳回失败')));
                 }
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            if (empty($case['household_pro_code'])) {
-                $shi = M('area')->where(array('parent_id' => 14))->select();
-            } else {
-                $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
-            }
             // 点击处置 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'shi' => $shi)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
         }
     }
 
@@ -890,38 +863,32 @@ class CaseController extends MobileController
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('visit', 'weihuifang', true);
-                    $this->error(implode(',', $res), '', 10);
-                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
-                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
             } else if ($data['visit_status'] == null) {
                 $data['case_status'] = 'jiean';
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
-                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
-                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                    exit(json_encode(array('erron' => 0, 'error' => '信息未填写完整')));
                 }
             } else {
-                echo "<script>alert('操作失败');window.location.href='index.php?s=/Index/index.html';</script>";
+                exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
             }
         } else {
-            $this->Lage();
+            $area = $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            if (empty($case['household_pro_code'])) {
-                $shi = M('area')->where(array('parent_id' => 14))->select();
-            } else {
-                $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
-            }
             // 点击结案 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $this->finishList = M('case')->where(array('id' => $id))->find();
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'shi' => $shi)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'area' => $area)));
         }
     }
 
@@ -941,19 +908,13 @@ class CaseController extends MobileController
             $data['stage_status'] = 'complete';
             $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
             if ($saveCase) {
-                echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
             } else {
-                echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
             }
         } else {
-            $this->Lage();
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            if (empty($case['household_pro_code'])) {
-                $shi = M('area')->where(array('parent_id' => 14))->select();
-            } else {
-                $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
-            }
             // 点击回访 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
@@ -964,7 +925,7 @@ class CaseController extends MobileController
                 $cishu2 = unserialize($cishu1);
                 $this->cishu = $cishu2[1];
             }
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'shi' => $shi)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
         }
     }
 

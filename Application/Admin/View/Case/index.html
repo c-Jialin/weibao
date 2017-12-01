@@ -156,7 +156,7 @@
                             <td rowspan="5" style="width:164px; line-height:22px; padding:0;" id="file">
                                 <label class="label" style="color:#000000; position:relative; width:188px; height:238px;">
                                     <?php if (empty($Clist['photo'])) : ?>
-                                    <input type="file" name="photo" style="width:80px; height:238px; line-height:238px;" accept="image/jpeg, image/png"/>
+                                    <input type="file" name="photo" style="width:180px; height:238px; line-height:238px;" accept="image/jpeg, image/png"/>
                                     <?php else: ?>
                                     <img name="photo" src="__UPLOADS__/photo/<?php echo $Clist['photo'];?>" style="width:188px;height:238px;">
                                     <?php endif ?>
@@ -636,11 +636,11 @@
                 </div>
                 <div style="width: 855px;margin: auto;margin-top: 10px;">
                     <label>填表日期：
-                        <?php if (empty($Clist['collect_time'])) {?>
-                        <label>手动设置填表日期 <input type="datetime-local" name="collect_time" style="font-size:12px;line-height:12px;"></label>
+                        <?php if (empty($Clist['fill_in_time'])) {?>
+                        <label>手动设置填表日期 <input type="datetime-local" name="fill_in_time" style="font-size:12px;line-height:12px;"></label>
                         * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
                         <?php } else { ?>
-                        <input type="text" class="input" name="collect_time" style="width:300px;" value="<?php echo $Clist['collect_time'] ?>">
+                        <input type="text" class="input" name="fill_in_time" style="width:300px;" value="<?php echo $Clist['fill_in_time'] ?>">
                         <?php } ?>
                     </label>
                 </div>

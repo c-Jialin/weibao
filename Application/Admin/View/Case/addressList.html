@@ -20,10 +20,10 @@
                 <th class="">UID</th>
                 <th class="">昵称</th>
                 <th class="">联系电话</th>
+                <th class="">权限</th>
                 <th class="">所属部门</th>
                 <th class="">登录次数</th>
                 <th class="">最后登录时间</th>
-                <th class="">最后登录IP</th>
                 <th class="">状态</th>
             </tr>
             </thead>
@@ -35,10 +35,10 @@
                         <td>{$vo.uid}</td>
                         <td>{$vo.nickname}</td>
                         <td>{$vo.mobile}</td>
-                        <td>{$vo.department}</td>
+                        <td><span>{$vo.description|implode=',',###}</span></td>
+                        <td>{$vo.title|implode=',',###}</td>
                         <td>{$vo.login}</td>
                         <td><span>{$vo.last_login_time|time_format}</span></td>
-                        <td><span>{:long2ip($vo['last_login_ip'])}</span></td>
                         <td>{$vo.status_text}</td>
                     </tr>
                 </volist>

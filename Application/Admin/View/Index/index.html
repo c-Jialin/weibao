@@ -62,7 +62,7 @@
 									$res  = translate($v['case_status'], true);
 									$url = U('case/' . $res['en'], ['id' => $v['id'], 'act' => $res['ch']]);
                                                 ?>
-                                                <a href='{$url}' style="color:#323232;text-decoration:none">{$v['name']}案件需要处理。
+                                                <a href='{$url}' style="color:#323232;text-decoration:none">{$v['name']}案件需要进行{$v['case_statuss']}处理，提交时间：{$v['case_time']}。
                                                 </a>
                                             </td>
                                         </tr>

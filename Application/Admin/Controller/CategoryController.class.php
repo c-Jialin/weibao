@@ -54,7 +54,18 @@ class CategoryController extends AdminController
             }
             /* 获取分类信息 */
             $info = $id ? $Category->info($id) : '';
-
+            $cfg = M('config')->where("name='DOCUMENT_DISPLAY'")->getField('value');
+            $cfg = explode(':', $cfg);
+            unset($cfg[0]);
+            $c = array();
+            foreach ($cfg as $k => $v) {
+                if ($k < count($cfg)) {
+                    $c[] = substr($v, 0, strlen($v) - 1);
+                } else {
+                    $c[] = $v;
+                }
+            }
+            $this->assign('display', $c);
             $this->assign('info', $info);
             $this->assign('category', $cate);
             $this->meta_title = '编辑分类';
@@ -83,7 +94,18 @@ class CategoryController extends AdminController
                     $this->error('指定的上级分类不存在或被禁用！');
                 }
             }
-
+            $cfg = M('config')->where("name='DOCUMENT_DISPLAY'")->getField('value');
+            $cfg = explode(':', $cfg);
+            unset($cfg[0]);
+            $c = array();
+            foreach ($cfg as $k => $v) {
+                if ($k < count($cfg)) {
+                    $c[] = substr($v, 0, strlen($v) - 1);
+                } else {
+                    $c[] = $v;
+                }
+            }
+            $this->assign('display', $c);
             /* 获取分类信息 */
             $this->assign('category', $cate);
             $this->meta_title = '新增分类';
