@@ -97,23 +97,38 @@
                        style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 12px;">
                     <tbody>
                     <tr>
-                        <td class="td_input" align="left">县/市/区：</td>
-                        <td class="td_input" align="left" style="width:170px;">
-                            <select class="select left" name="household_city_code" id="shi3" style="float:left;" onChange="nav3(this,2)">
-                                <?php echo "<option value=".$Clist['household_city_code']['k'].">
-                                ".$Clist['household_city_code']['v']."</option>"; ?>
-                                <?php foreach ($shi as $v) {?>
-                                <option value="<?php echo $v['region_id']?>"><?php echo $v['region_name']?></option>
-                                <?php }?>
-                            </select>
-                            <select class="select left" name="household_area_code" id="qu3" style="float:left;">
-                                <?php echo "<option value=".$Clist['household_area_code']['k'].">
-                                ".$Clist['household_area_code']['v']."</option>"; ?>
+                        <td class="td_item" align="left">县/市/区：</td>
+                        <td class="td_item" align="left">
+                            <select class="select left" name="area_code" disabled id="City2" style="float:left;" onChange="nav2(this,3)">
+                                <?php if (empty($Clist['area_code'])) echo "<option value=''>请选择</option>";
+                                foreach ($list_top as $v) {
+                                if ($Clist['area_code']['k'] == $v['region_id']) {
+                                echo "<option selected='selected' value=".$v['region_id'].">".$v['region_name']."</option>";
+                                } else {
+                                echo "<option value=".$v['region_id'].">".$v['region_name']."</option>";
+                                }
+                                }?>
                             </select>
                         </td>
-                        <td align="right" style="width:100px;">街/镇/村/社区：</td>
-                        <td class="td_input" align="left" style="width:250px;">
-                            <input type="text" name="home_address" value="<?php echo $Clist['home_address'];?>" style="display:inline-block;height:26px;width:240px;">
+                        <td class="td_item">街/镇：</td>
+                        <td>
+                            <select class="select left" name="street_code" disabled id="Town2" style="float:left;" onChange="nav2(this,4)">
+                                <?php if (empty($Clist['street_code'])) {
+                                    echo "<option value=''>请选择街/镇</option>";
+                                } else {
+                                echo "<option value=".$Clist['street_code']['k'].">".$Clist['street_code']['v']."</option>";
+                                } ?>
+                            </select>
+                        </td>
+                        <td class="td_item">村/社区：</td>
+                        <td>
+                            <select class="select left" name="community_code" disabled id="Country2" style="float:left;">
+                                <?php if (empty($Clist['community_code'])) {
+                                    echo "<option value=''>请选择村/社区</option>";
+                                } else {
+                                echo "<option value=".$Clist['community_code']['k'].">".$Clist['community_code']['v']."</option>";
+                                } ?>
+                            </select>
                         </td>
                         <td align="right">编号：</td>
                         <td class="td_input"><?php echo $Clist['case_number'];?></td>

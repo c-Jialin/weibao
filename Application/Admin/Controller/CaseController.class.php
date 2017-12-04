@@ -844,8 +844,8 @@ class CaseController extends AdminController
             if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
             $data['growth_dilemmas'] = serialize($grow);
             if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
+            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
             $data['trial_time'] = date("Y-m-d H:i:s", time());
-
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $data['id']])->select();
             $this->countOverTimeCases($cases, true, false);
@@ -867,7 +867,7 @@ class CaseController extends AdminController
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
                 if ($saveCase) {
                     //发送短信提醒
-                    $res = $this->smsSend('index', 'bohuiC', false);
+                    $res = $this->smsSend('index', 'bohuiC', false, $cases[0]['fill_in_person']);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -909,8 +909,8 @@ class CaseController extends AdminController
             $this->countOverTimeCases($cases, true, false);
 
             if ($data['last_instance_status'] == 1) {
-                $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 $data['stage_status'] = 'complete';
+                $saveCase = $case->where(array('id' => $data['id']))->save($data);
                 if ($saveCase) {
                     //发送短信提醒
                     $res = $this->smsSend('dispatch', 'shenpi', true);
@@ -924,7 +924,7 @@ class CaseController extends AdminController
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
                 if ($saveCase) {
                     //发送短信提醒
-                    $res = $this->smsSend('trial', 'bohuiCs', false);
+                    $res = $this->smsSend('trial', 'bohuiCs', false, $cases[0]['trial_person']);
                     echo "<script>alert('案件被驳回');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -968,7 +968,6 @@ class CaseController extends AdminController
             if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
             $data['dispatch_time'] = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
-
             $id = I('id');
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $id])->select();
@@ -977,7 +976,7 @@ class CaseController extends AdminController
             $saveCase = $case->where(array('id' => $id))->save($data);
             if ($saveCase) {
                 //发送短信提醒
-                $res = $this->smsSend('deal_with', 'diaodu', true);
+                $res = $this->smsSend('deal_with', 'diaodu', true, 'turn_related');
                 echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
             } else {
                 echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1150,7 +1149,7 @@ class CaseController extends AdminController
             if (!empty($_POST['recommendations'])) $data['recommendations'] = $_POST['recommendations'];
             if (!empty($_POST['growth_dilemmass'])) $data['growth_dilemmass'] = $_POST['growth_dilemmass'];
             if ($_POST['finish_person']) $data['finish_person'] = $_POST['finish_person'];
-
+            $data['visit_status'] = empty($_POST['visit_status']) ? '' : $_POST['visit_status'];
             $id = I('id');
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $id])->select();
@@ -1201,7 +1200,7 @@ class CaseController extends AdminController
 
             // 点击结案 更改stage_status
             $this->updateStatus($id, $case['case_status']);
-
+            $this->birthday = unserialize($case['birthday']);
             $this->id = $id;
             $this->act = $_GET['act'];
             $this->finishList = M('case')->where(array('id' => $id))->find();
@@ -1227,12 +1226,6 @@ class CaseController extends AdminController
             }
             $case = M('case');
             $id = I('id');
-            $way = M('case')->where(array('id' => $id))->getField('visit_form');
-            if ($way == 1) {
-                $data['visit_suggestion'] = $_POST['visit_suggestion'];
-            } else if ($way == 2) {
-                $data['visit_suggestion'] = serialize($_POST['visit_suggestion']);
-            }
             $data['case_status'] = 'huifang';
             $data['visit_time'] = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
@@ -1312,7 +1305,7 @@ class CaseController extends AdminController
     }
 
     //短信发送$case英文节点名，$node中文节点名
-    public function smsSend($case = '', $node = '', $action = true)
+    public function smsSend($case = '', $node = '', $action = true, $turn_related = '')
     {
         $Auth = new \Think\Auth();
         $user = $Auth->getCaseUserList($case);
@@ -1324,10 +1317,16 @@ class CaseController extends AdminController
             ->table('onethink_ucenter_member a')
             ->where(array("id" => array("in", implode(',', $uid))))
             ->join('onethink_member g on a.id=g.uid')
-            ->field('a.mobile as mobiles,g.mobile,a.username,g.nickname,g.status')
+            ->field('a.mobile as mobiles,g.mobile,a.username,g.nickname,g.status,g.department')
             ->select();
         foreach ($mobiles as $kk => &$vv) {
             if ($vv['status'] == '-1') unset($mobiles[$kk]);
+            if ($node == 'diaodu') {
+                if ($vv['department'] != $turn_related) unset($mobiles[$kk]);
+            }
+            if (in_array($node, array('bohuiC', 'bohuiCs'))) {
+                if ($vv['nickname'] != $turn_related) unset($mobiles[$kk]);
+            }
         }
         $execute = M('caseManage')->where("node='" . $node . "'")->field('node_name,execute_time')->find();
         if (empty($execute)) {

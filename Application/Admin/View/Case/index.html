@@ -245,28 +245,28 @@
                             <td class="td_input" colspan="5">
                                 <label><input type="radio" class="radio healthradio" name="health"
                                               value="1"<?php if($Clist['health'] == 1){?>checked<?php }?>>健康</label>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="2"<?php if(in_array(2,unserialize($Clist['health']))){?>
                                     checked<?php }?>>肢体残疾</label>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="3"<?php if(in_array(3,unserialize($Clist['health']))){?>
                                     checked<?php }?>>智力缺陷</label>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="4"<?php if(in_array(4,unserialize($Clist['health']))){?>
                                     checked<?php }?>>精神疾病</label>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="5"<?php if(in_array(5,unserialize($Clist['health']))){?>
                                     checked<?php }?>>传染病</label>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="6"<?php if(in_array(6,unserialize($Clist['health']))){?>
                                     checked<?php }?>>盲人</label><br>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="7"<?php if(in_array(7,unserialize($Clist['health']))){?>
                                     checked<?php }?>>聋哑</label>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="8"<?php if(in_array(8,unserialize($Clist['health']))){?>
                                     checked<?php }?>>吸毒史</label>
-                                <label><input type="checkbox" class="radio healthbox" name="health"
+                                <label><input type="checkbox" class="radio healthbox" name="health[]"
                                               value="9"<?php if(in_array(9,unserialize($Clist['health']))){?>
                                     checked<?php }?>>其它重病</label>
                                 <input type="text" name="health_other"
@@ -353,17 +353,10 @@
                                 <label><input type="radio" class="radio" name="family_structure"
                                               value="2" <?php if($Clist['family_structure'] == 2){?>checked<?php }?>
                                     >单亲家庭</label>　
-                                <label><input type="radio" class="radio" name="family_structure"
-                                              value="3" <?php if($Clist['family_structure'] == 3){?>checked<?php }?>
-                                    >孤儿</label>
-                                <label><input type="radio" class="radio jiating" name="family_structure"
-                                              value="4">离异家庭</label>
-                                <label><input type="radio" class="radio" id="qitajiating" name="family_structure"
-                                              value="5">其他</label>
-                                <input type="text" name="family_other"
-                                       value="<?php if($Clist['family_other']){?><?php echo $Clist['family_other'];?><?php }?>"
-                                       id="qitajiainput"
-                                       style="display:inline-block;height:26px;width:240px;line-height:26px;"></td>
+                                <label><input type="radio" class="radio" name="family_structure" value="3" <?php if($Clist['family_structure'] == 3){?>checked<?php }?>>孤儿</label>
+                                <label><input type="radio" class="radio jiating" name="family_structure" value="4" <?php if($Clist['family_structure'] == 4){?>checked<?php }?>>离异家庭</label>
+                                <label><input type="radio" class="radio" id="qitajiating" name="family_structure" value="5" <?php if($Clist['family_structure'] == 5){?>checked<?php }?>>其他</label>
+                                <input type="text" name="family_other" value="<?php if($Clist['family_other']){?><?php echo $Clist['family_other'];?><?php }?>" id="qitajiainput" style="display:inline-block;height:26px;width:240px;line-height:26px;"></td>
                         </tr>
                         <tr>
                             <td class="td_item">监护状况</td>

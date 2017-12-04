@@ -135,7 +135,7 @@
                                                 <input type="text" style="width: 200px;height: 25px;display: none;" name="file_name"/>
                                                 <?php }?>
                                             </td>
-                                            <td class="td_item" style="width:80px;">处置联系人</td>
+                                            <td class="td_item" style="width:80px;">添加人</td>
                                             <td class="td_input" style="width:120px;">
                                                 <?php if (empty($v['person'])) {?>
                                                 <input type="text" class="input" name="management_person" value="<?php echo $member ?>">
@@ -149,7 +149,7 @@
                                                 <textarea cols="60" name="management_record"><?php echo $v['record']?></textarea>
                                             </td>
                                             <td colspan="2" class="td_input" style="border-right:none;">
-                                                <label>处置日期(不设置则为当天日期)</label>
+                                                <label>添加日期(不设置则为当天日期)</label>
                                                 <?php if (empty($v['date'])) {?>
                                                 <label><input type="datetime-local" name="management_riqi" style="font-size:12px;line-height:12px;"></label>
                                                 <?php } else { ?>

@@ -263,17 +263,14 @@
                 <div class="li">
                     <div class="left">流程操作</div>
                     <div class="right">
-                        <label><input type="radio" class="radio"
-                                      name="trial_status" <?php if($Clist['trial_status'] == 1) echo 'checked';?>
-                            value="1"> <span
-                                    class="radio-text">初审通过，提交终审</span></label>&emsp;
+                        <label><input type="radio" class="radio" name="trial_status" <?php if($Clist['trial_status'] == 1) echo 'checked';?>
+                            value="1"> <span class="radio-text">初审通过，提交终审</span></label>&emsp;
                         <!--<select class="select" name="trial_person">-->
                             <!--<option value="">选择终审人员</option>-->
                         <!--</select>-->
                     </div>
                     <div class="right" style="margin-left: 20%;">
-                        <label><input type="radio" class="radio" name="trial_status" value="2"> <span
-                                class="radio-text">初审不通过，驳回</span></label>&emsp;
+                        <label><input type="radio" class="radio" name="trial_status" value="2"> <span class="radio-text">初审不通过，驳回</span></label>&emsp;
                     </div>
                     <input type="hidden" name="id" value="<?php echo $id;?>">
                     <div style="clear: both;"></div>
@@ -281,8 +278,7 @@
                 <div class="li">
                     <div class="left">初审意见</div>
                     <div class="right">
-                        <textarea name="trial_suggestion"
-                                  value=""><?php if(!empty($Clist['trial_suggestion'])) echo $Clist['trial_suggestion']; ?></textarea>
+                        <textarea name="trial_suggestion" value=""><?php if(!empty($Clist['trial_suggestion'])) echo $Clist['trial_suggestion']; ?></textarea>
                     </div>
                 </div>
                 <div class="li">
