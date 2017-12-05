@@ -480,7 +480,32 @@ class CaseController extends MobileController
                 $arr['home_area_code']['v'] = $v['region_name'];
             }
         }
-        return array_merge($list, $arr);
+        $list = array_merge($list, $arr);
+        $Case = array();
+        $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/weicn/Uploads/case/user/photo/';
+        $field = array(
+            'birthday',
+            'health',
+            'family_jianhuren',
+            'family_members',
+            'enjoy_relief_type',
+            'inner_predicament',
+            'growth_dilemma',
+            'growth_dilemmas',
+            'checkbox_status',
+            'management_record',
+            'visit_suggestion'
+        );
+        foreach ($list as $k => $v) {
+            if (in_array($k, $field)) {
+                $Case[$k] = unserialize($list[$k]);
+            } else if ($k == 'photo') {
+                $Case[$k] = !empty($v) ? $str . $list[$k] : '';
+            } else {
+                $Case[$k] = $v;
+            }
+        }
+        return $Case;
     }
 
     //地区
@@ -550,7 +575,7 @@ class CaseController extends MobileController
             if ($_POST['enjoy_relief_type']) $data['enjoy_relief_type'] = serialize(explode(',', $_POST['enjoy_relief_type']));
             if ($_POST['housing_type']) $data['housing_type'] = $_POST['housing_type'];
             if ($_POST['inner_predicament']) $data['inner_predicament'] = serialize(explode(',', $_POST['inner_predicament']));
-            if ($_POST['inner_predicament'] == 7) $data['Heart_other'] = $_POST['Heart_other'];
+            if ($_POST['inner_predicament'] == 7) $data['Heart_other'] = rtrim($_POST['Heart_other'], '"');
             //成长困境及成长等级
             if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
             if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
@@ -582,20 +607,19 @@ class CaseController extends MobileController
             if (!$Case->create()) {
                 // 如果创建失败 表示验证没有通过 输出错误提示信息
                 exit(json_encode(array('erron' => 0, 'error' => $Case->getError())));
+            }
+            if ($_POST['id']) $data['id'] = $_POST['id'];
+            // 采集 or 重新采集完成 更改stage_status
+            $data['stage_status'] = 'complete';
+            $cases = $Case->where(['id' => $data['id']])->select();
+            $this->updateOvertime($cases, strtotime($data['add_time']));
+            $case = $Case->update($data);
+            if ($case) {
+                //发送短信提醒
+                $res = $this->smsSend('trial', 'caiji', true);
+                exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
             } else {
-                if ($_POST['xId']) $data['id'] = $_POST['xId'];
-                // 采集 or 重新采集完成 更改stage_status
-                $data['stage_status'] = 'complete';
-                $cases = $Case->where(['id' => $data['id']])->select();
-                $this->updateOvertime($cases, strtotime($data['add_time']));
-                $case = $Case->update($data);
-                if ($case) {
-                    //发送短信提醒
-                    $res = $this->smsSend('trial', 'caiji', true);
-                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
-                } else {
-                    exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
-                }
+                exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
             }
         } else {
             $area = $this->Lage();
@@ -644,7 +668,6 @@ class CaseController extends MobileController
             } else {
                 $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
                 $arr['stage_status'] = 'complete';
-                exit(json_encode($data));
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
                 if ($saveCase) {
                     //发送短信提醒
@@ -688,10 +711,9 @@ class CaseController extends MobileController
                 } else {
                     exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
-            } else if ($data['last_instance_status'] == 2) {
+            } else {
                 $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
                 $arr['stage_status'] = 'complete';
-                exit(json_encode($data));
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
                 if ($saveCase) {
                     //发送短信提醒
@@ -729,16 +751,30 @@ class CaseController extends MobileController
             if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
             $data['dispatch_time'] = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
-            //提交后检测该案件是否超时
-            $cases = $case->where(array('id' => $_POST['id']))->select();
-            $this->countOverTimeCases($cases, true, false);
-            $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
-            if ($saveCase) {
-                //发送短信提醒
-                $res = $this->smsSend('deal_with', 'diaodu', true);
-                exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
+            $is_finish = 0;
+            if ($_POST['is_finish']) $is_finish = $_POST['is_finish'];
+            if ($is_finish == '1') {
+                $arr = array('dispatch_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'chuzhi', 'stage_status' => 'complete');
+                $saveCase = $case->where(array('id' => $_POST['id']))->save($arr);
+                if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('finish', 'chuzhi', true);
+                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
+                } else {
+                    exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
+                }
             } else {
-                exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
+                //提交后检测该案件是否超时
+                $cases = $case->where(array('id' => $_POST['id']))->select();
+                $this->countOverTimeCases($cases, true, false);
+                $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
+                if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('deal_with', 'diaodu', true);
+                    exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
+                } else {
+                    exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
+                }
             }
         } else {
             $id = $_GET['id'];
@@ -756,26 +792,25 @@ class CaseController extends MobileController
     {
         if (IS_POST) {
             $case = M('case');
-            $data['case_status'] = 'chuzhi';
-            $data['management_status'] = $_POST['"management_status'];
-            if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
-            $data['deal_with_time'] = date("Y-m-d H:i:s", time());
             //提交后检测该案件是否超时
             $cases = $case->where(array('id' => $_POST['id']))->select();
             $this->countOverTimeCases($cases, true, false);
+            $data['management_status'] = $_POST['"management_status'];
             if ($data['management_status'] == 1) {
+                $data['case_status'] = 'shenpi';
+                if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
+                $data['deal_with_time'] = date("Y-m-d H:i:s", time());
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
-                    //发送短信提醒
-                    $res = $this->smsSend('finish', 'chuzhi', true);
+                    //发送短信提醒finish
+                    $res = $this->smsSend('dispatch', 'shenpi', true);
                     exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
                     exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
-            } else if ($data['management_status'] == 2) {
+            } else {
                 $arr['stage_status'] = 'complete';
-                exit(json_encode($data));
                 $arr = array('deal_with_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($arr);
                 if ($saveCase) {
@@ -789,11 +824,21 @@ class CaseController extends MobileController
         } else {
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
+            $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/weicn/Uploads/case/user/deal/';
+            $record = $case['management_record'];
+            unset($case['management_record']);
+            if (!empty($record)) {
+                foreach ($record as &$v) {
+                    $v['file'] = empty($v['file']) ? '' : $str . $v['file'];
+                }
+            } else {
+                $record = array();
+            }
             // 点击处置 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'record' => $record)));
         }
     }
 
@@ -896,11 +941,11 @@ class CaseController extends MobileController
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $birthday = unserialize($case['birthday']);
             $str = array();
-            foreach (unserialize($case['growth_dilemma']) as $v1) {
+            foreach ($case['growth_dilemma'] as $v1) {
                 $str[] = getFengxian($v1);
             }
             $arr = array();
-            foreach (unserialize($case['growth_dilemmas']) as $v1) {
+            foreach ($case['growth_dilemmas'] as $v1) {
                 $arr[] = getFengxian($v1);
             }
             $growth['growth_dilemma'] = max($str);
@@ -935,17 +980,21 @@ class CaseController extends MobileController
         } else {
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
+            $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/weicn/Uploads/case/user/deal/';
+            $suggestion = $case['visit_suggestion'];
+            unset($case['visit_suggestion']);
+            if (!empty($suggestion)) {
+                foreach ($suggestion as &$v) {
+                    $v['file'] = empty($v['file']) ? '' : $str . $v['file'];
+                }
+            } else {
+                $suggestion = array();
+            }
             // 点击回访 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            $this->huifang = M('case')->where(array('id' => $id))->getField('visit_form');
-            if ($this->huifang == 2) {
-                $cishu1 = M('case')->where(array('id' => $id))->getField('visit_way');
-                $cishu2 = unserialize($cishu1);
-                $this->cishu = $cishu2[1];
-            }
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'suggestion' => $suggestion)));
         }
     }
 
@@ -1079,11 +1128,4 @@ class CaseController extends MobileController
             }
         }
     }
-
-    //搜索
-//    public function search(){
-//        $this->CaseList = M('case')->where(array('name'=>array('like',"%".$_POST['search']."%")))->select();
-//        $this->shequ = M('area_top')->where(array('type_id'=>5))->select();
-//        $this->display('Case/'.$_POST['action']);
-//    }
 }

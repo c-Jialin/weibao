@@ -77,11 +77,15 @@ body{padding: 0}
         <td><?php echo getAge($v['birthday'])?></td>
         <td><?php echo $v['nation']?></td>
         <td><?php echo $v['home_address']?></td>
-        <td><?php 
-            $health = unserialize($v['health']);
-            foreach ($health as $val) {?>
-            <?php echo getHealth($val,$v['id']);?><br>
-            <?php }?>
+        <td><?php
+            if ($v['health'] == 1) {
+                echo '健康';
+            } else {
+                $health = unserialize($v['health']);
+                foreach ($health as $val) {
+                    echo getHealth($val,$v['id']);
+                }
+            } ?>
         </td>
         <td><?php $fengxian = unserialize($v['growth_dilemma']);
                 foreach ($fengxian as $v1) {

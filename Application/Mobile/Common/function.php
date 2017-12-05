@@ -767,3 +767,26 @@ function linkage($area, $town, $village, $ac)
     }
     return $arr;
 }
+
+/**
+ * 案件状态对应的时间
+ * @param string $chn 中文拼音案件状态
+ * return array
+ */
+function statusTime($chn)
+{
+    $arr = [
+        'caiji' => 'add_time',
+        'bohuiC' => 'trial_time',
+        'chushen' => 'trial_time',
+        'bohuiCs' => 'last_instance_time',
+        'shenpi' => 'last_instance_time',
+        'diaodu' => 'dispatch_time',
+        'bohuiCz' => 'deal_with_time',
+        'chuzhi' => 'deal_with_time',
+        'weihuifang' => 'finish_time',
+        'jiean' => 'finish_time',
+        'huifang' => 'visit_time',
+    ];
+    return $arr[$chn];
+}

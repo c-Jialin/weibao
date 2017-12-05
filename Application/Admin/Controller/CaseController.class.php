@@ -972,14 +972,27 @@ class CaseController extends AdminController
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $id])->select();
             $this->countOverTimeCases($cases, true, false);
-
-            $saveCase = $case->where(array('id' => $id))->save($data);
-            if ($saveCase) {
-                //发送短信提醒
-                $res = $this->smsSend('deal_with', 'diaodu', true, 'turn_related');
-                echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+            $is_finish = 0;
+            if ($_POST['is_finish']) $is_finish = $_POST['is_finish'];
+            if ($is_finish == '1') {
+                $arr = array('dispatch_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'chuzhi', 'stage_status' => 'complete');
+                $saveCase = $case->where(array('id' => $id))->save($arr);
+                if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('finish', 'chuzhi', true);
+                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                } else {
+                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                }
             } else {
-                echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                $saveCase = $case->where(array('id' => $id))->save($data);
+                if ($saveCase) {
+                    //发送短信提醒
+                    $res = $this->smsSend('deal_with', 'diaodu', true, 'turn_related');
+                    echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
+                } else {
+                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
+                }
             }
         } else {
             $id = $_GET['id'];
@@ -1008,31 +1021,22 @@ class CaseController extends AdminController
         if (IS_POST) {
             if ($_POST['types'] == 1) {
                 return $this->tichu();
-            } else {
-                $management_record = M('case')->where(array('id' => $_POST['id']))->getField('management_record');
-                if (empty($management_record)) {
-                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/deal_with/id/" . $_POST['id'] . "/act/chuzhi.html';</script>";
-                    exit;
-                }
             }
             $case = M('case');
-            $data['case_status'] = 'chuzhi';
-            $data['management_status'] = $_POST['management_status'];
-            $data['management_record'] = serialize($_POST['management_record']);
-            if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
-            $data['deal_with_time'] = date("Y-m-d H:i:s", time());
-
             $id = I('id');
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $id])->select();
             $this->countOverTimeCases($cases, true, false);
-
+            $data['management_status'] = $_POST['management_status'];
             if ($data['management_status'] == 1) {
+                $data['case_status'] = 'shenpi';
+                if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
+                $data['deal_with_time'] = date("Y-m-d H:i:s", time());
                 $data['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $id))->save($data);
                 if ($saveCase) {
-                    //发送短信提醒
-                    $res = $this->smsSend('finish', 'chuzhi', true);
+                    //发送短信提醒finish
+                    $res = $this->smsSend('dispatch', 'shenpi', true);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1217,12 +1221,6 @@ class CaseController extends AdminController
         if (IS_POST) {
             if ($_POST['types'] == 1) {
                 return $this->tihui();
-            } else {
-                $management_record = M('case')->where(array('id' => $_POST['id']))->getField('visit_suggestion');
-                if (empty($management_record)) {
-                    echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Case/visit/id/" . $_POST['id'] . "/act/huifang.html';</script>";
-                    exit;
-                }
             }
             $case = M('case');
             $id = I('id');
@@ -1321,12 +1319,10 @@ class CaseController extends AdminController
             ->select();
         foreach ($mobiles as $kk => &$vv) {
             if ($vv['status'] == '-1') unset($mobiles[$kk]);
-            if ($node == 'diaodu') {
-                if ($vv['department'] != $turn_related) unset($mobiles[$kk]);
-            }
-            if (in_array($node, array('bohuiC', 'bohuiCs'))) {
-                if ($vv['nickname'] != $turn_related) unset($mobiles[$kk]);
-            }
+            //判断部门
+            if ($node == 'diaodu') if ($vv['department'] != $turn_related) unset($mobiles[$kk]);
+            //判断姓名
+            if (in_array($node, array('bohuiC', 'bohuiCs'))) if ($vv['nickname'] != $turn_related) unset($mobiles[$kk]);
         }
         $execute = M('caseManage')->where("node='" . $node . "'")->field('node_name,execute_time')->find();
         if (empty($execute)) {
