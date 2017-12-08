@@ -17,8 +17,7 @@ class MobileController extends Controller
     protected function _initialize()
     {
         // 获取当前用户ID
-//        define('UID', is_login());
-        define('UID', 1);
+        define('UID', is_login());
         if (!UID) {// 还没登录 跳转到登录页面
             exit(json_encode(array('erron' => 0, 'error' => '请登录...')));
         }
@@ -30,8 +29,7 @@ class MobileController extends Controller
         }
         C($config); //添加配置
         // 是否是超级管理员
-//        define('IS_ROOT', is_administrator());
-        define('IS_ROOT', is_administrator(1));
+        define('IS_ROOT', is_administrator());
         if (!IS_ROOT && C('ADMIN_ALLOW_IP')) {
             // 检查IP地址访问
             if (!in_array(get_client_ip(), explode(',', C('ADMIN_ALLOW_IP')))) {
@@ -49,7 +47,7 @@ class MobileController extends Controller
             $dynamic = $this->checkDynamic();//检测分类栏目有关的各项动态权限
             if ($dynamic === null) {
                 //检测非动态权限
-                $rule = strtolower(MODULE_NAME . '/' . CONTROLLER_NAME . '/' . ACTION_NAME);
+                $rule = strtolower('admin/' . CONTROLLER_NAME . '/' . ACTION_NAME);
                 if (!$auth = $this->checkRule($rule, array('in', '1,2'))) {
                     //Case跳过权限
                     if (!CONTROLLER_NAME == 'case') {

@@ -17,10 +17,10 @@ class IndexController extends MobileController
             $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
             //根据用户id，查询用户上次登录ip
             $ucenter_member = M('ucenter_member');
-            $where = array(
+            $what = array(
                 'id' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
             );
-            $last_login_ip = $ucenter_member->where($where)->getField('last_login_ip');
+            $last_login_ip = $ucenter_member->where($what)->getField('last_login_ip');
             //用户信息
             $user_info = array(
                 'uid' => $uid,
@@ -28,6 +28,8 @@ class IndexController extends MobileController
                 'username' => $_SESSION['onethink_admin']['user_auth']['username'],
                 'last_login_time' => $_SESSION['onethink_admin']['user_auth']['last_login_time'],
             );
+
+            //案件统计
             $case = M('case');
             $auth = getStatusFromAuth();
             $where = [
@@ -36,16 +38,30 @@ class IndexController extends MobileController
             //案件统计过滤的字段
             $field = ['id', 'name', 'case_status', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
             //消息中心
-            $messages = $case->field($field)->where($where)->order('fill_in_time desc')->select();
-            $overtime = $this->countOverTimeCases($messages);
+            $list = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            $overtime = $this->countOverTimeCases($list);
+            //待处理数量
+            $where['stage_status'] = 'complete';
+            $waiting = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+            //正在处理的数量
+            $where['stage_status'] = 'ing';
+            $handling = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+            //超龄
+            $age = array();
+            $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
+            $ages = $case->field('birthday')->order('fill_in_time desc')->select();
+            foreach ($ages as $val) {
+                if (getAge($val['birthday']) > $overage) $age[] = getAge($val['birthday']);
+            }
             //案件统计
             $count = array(
-                'handling' => count($messages),//正在处理的案件
-                'waiting' => count($messages),//待处理的案件
+                'handling' => $handling,//正在处理的案件
+                'waiting' => $waiting,//待处理的案件
                 'overtiming' => $overtime['overtiming'],//即将超时的案件
                 'overtimed' => $overtime['overtimed'],//已经超时的案件
+                'overage' => count($age)
             );
-            exit(json_encode(array('erron' => 1, 'user_info' => $user_info, 'messages' => array_slice($messages, 0, 20, false), 'count' => $count)));
+            exit(json_encode(array('erron' => 1, 'user_info' => $user_info, 'messages' => array_slice($list, 0, 20, false), 'count' => $count)));
         } else {
             exit(json_encode(array('erron' => 0, 'error' => '请登录...')));
         }
@@ -68,7 +84,6 @@ class IndexController extends MobileController
         $p = I('index') ? I('index') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $Page = new Page($count, $pagesize);
-//        $page = $Page->show();
         $messages = $case->field($field)->where($where)->limit($limit)->order('fill_in_time desc')->select();
         exit(json_encode(array('messages' => $messages)));
     }
@@ -82,8 +97,8 @@ class IndexController extends MobileController
     {
         //初始化返回结果
         $overtime = ['overtiming' => 0, 'overtimed' => 0];
-        $rules    = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
-        $rules    = rebuildArray($rules, 'node');
+        $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
+        $rules = rebuildArray($rules, 'node');
         $now = time();
         foreach ($cases as $k => $v) {
             $status = $v['case_status'];
@@ -102,10 +117,11 @@ class IndexController extends MobileController
                     $overtimed = $time + $rules[$status]['execute_time'] * 3600;
 
                     if ($now >= $overtiming) {
-                        if ($now >= $overtimed)
+                        if ($now >= $overtimed) {
                             $overtime['overtimed']++;
-                        else
+                        } else {
                             $overtime['overtiming']++;
+                        }
                     }
                 }
             }

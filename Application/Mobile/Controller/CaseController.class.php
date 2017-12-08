@@ -4,7 +4,6 @@ namespace Mobile\Controller;
 
 use Mobile\Model\AuthGroupModel;
 use Think\Auth;
-use Think\Page;
 use Think\phpexcel;
 
 /**
@@ -17,34 +16,33 @@ class CaseController extends MobileController
         $action = I('action');
         switch ($action) {
             case 'suoyou':
-                $list = $this->suoyou();
+                exit($this->suoyou());
                 break;
             case 'zaichu':
-                $list = $this->zaichu();
+                exit($this->zaichu());
                 break;
             case 'daichu':
-                $list = $this->daichu();
+                exit($this->daichu());
                 break;
             case 'guidang':
-                $list = $this->guidang();
+                exit($this->guidang());
                 break;
             case 'wancheng':
-                $list = $this->wancheng();
+                exit($this->wancheng());
                 break;
             case 'jijiang':
-                $list = $this->jijiang();
+                exit($this->jijiang());
                 break;
             case 'chaoshi':
-                $list = $this->chaoshi();
+                exit($this->chaoshi());
                 break;
             case 'chaoling':
-                $list = $this->chaoling();
+                exit($this->chaoling());
                 break;
             default:
-                $list = $this->suoyou();
+                exit($this->suoyou());
                 break;
         }
-        exit($list);
     }
 
     /**
@@ -161,82 +159,71 @@ class CaseController extends MobileController
     //案件列表
     public function case_list()
     {
-        $this->meta_title = '案件列表';
-        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
-        if (UID == 1) {
-            $CaseList = M('case')->select();
-        }
-        if ($uid == 1) {
-            $where = array(
-                'turn_related' => $uid,
-                'management_status' => ''
+        $id = $_GET['id'];
+        $list = array();
+        $img = array();
+        if (!empty($id)) {
+            $list = M('case')->field('id,name,fill_in_person,case_status,dispatch_person')->where(array('id' => $id))->find();
+            $img = array(
+                'caiji' => 2,
+                'bohuiC' => 1,
+                'chushen' => 3,
+                'bohuiCs' => 2,
+                'shenpi' => 4,
+                'diaodu' => 5,
+                'bohuiCz' => 5,
+                'chuzhi' => 6,
+                'weihuifang' => 7,
+                'jiean' => 7,
+                'huifang' => 7,
             );
         }
-        if ($uid == 2) {
-            $where = array(
-                'trial_status' => 1,
-                'last_instance_status' => '',
-            );
+        exit(json_encode(array('case' => $list, 'code' => $img[$list['case_status']])));
+    }
+
+    //
+    public function getMessages()
+    {
+        $case = M('case');
+        $auth = getStatusFromAuth();
+        $where = [
+            'case_status' => ['in', implode(',', $auth['status'])],
+        ];
+        //案件统计过滤的字段
+        $field = ['id', 'name', 'case_status', 'fill_in_time', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
+        //消息中心
+        $count = $case->field($field)->where($where)->count();
+        $pagesize = 20;
+        $p = I('pageIndex') ? I('pageIndex') : 1;
+        /* 计算分页信息 */
+        $totalPages = ceil($count / $pagesize); //总页数
+        if(!empty($totalPages) && $p > $totalPages) {
+            $p = $totalPages;
         }
-        if ($uid == 3) {
-            $where = ('turn_related = ' . $uid . ' AND management_status ="" or visit_status = 1 AND visit_suggestion = ""');
+        $limit = ($p - 1) * $pagesize . ',' . $pagesize;
+        $messages = $case->field($field)->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        foreach ($messages as &$vs) {
+            $vs['case_statuss'] = getStage($vs['case_status'], true);
+            $vs['case_time'] = $vs[statusTime($vs['case_status'])];
         }
-        if ($uid == 4) {
-            $where = ('trial_status = "" OR last_instance_status = 1 AND dispatch_instance = "" OR management_status = 1 AND finish_suggestion = ""');
-        }
-        $this->CaseList = M('case')->where($where)->select();
-        $this->uid = $uid;
-        $this->display();
+        exit(json_encode(array('messages' => $messages)));
     }
 
     //所有案件
     private function suoyou()
     {
-        if (UID == 1 && I('id')) {
-            $photo = M('case')->where(array('id' => I('id')))->getField('photo');
-            $file = __ROOT__ . '/Uploads/case/user/photo/' . $photo;
-            $res = M('case')->delete(I('id'));
-            if ($res) {
-                unlink($file);
-                $this->success('删除成功');
-            } else {
-                $this->error('删除失败');
-            }
-        }
-        $uid = M('auth_group_access')->where(array('uid' => UID))->field('group_id')->select();
-        $where = $assign = [];
-        $start = $end = time();
-        $type = I('type');
-        if (I('submit') || $type == 'enroll') {
-            //筛选条件 / 或导出
-            $post = I('post.');
-            //是否手动日期
-            if ($post['date'] == 1) {
-                $start = strtotime($post['start']);
-                $end = strtotime($post['end']);
-                $where['fill_in_time'] = ['between', [$start, $end]];
-            }
-            $where['area_code'] = empty($post['city']) ? ['neq', 0] : $post['city'];
-            $where['street_code'] = empty($post['town']) ? ['neq', 0] : $post['town'];
-            $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
-            $where['name'] = empty($post['name']) ? ['neq', ''] : ['like', "%{$post['name']}%"];
-            $where['sex'] = empty($post['sex']) ? ['neq', 0] : $post['sex'];
-            $assign['city'] = $post['city'];
-            $assign['town'] = $post['town'];
-            $assign['country'] = $post['country'];
-            $assign['sex'] = $post['sex'];
-            $assign['name'] = $post['name'];
-            $assign['date'] = $post['date'];
-        }
-        $count = M('case')->where($where)->count();
+        $count = M('case')->count();
         $pagesize = 20;
         $p = I('pageIndex') ? I('pageIndex') : 1;
+        /* 计算分页信息 */
+        $totalPages = ceil($count / $pagesize); //总页数
+        if(!empty($totalPages) && $p > $totalPages) {
+            $p = $totalPages;
+        }
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
-        $page = new Page($count, $pagesize);
-        $caseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
-
-        $shequ = M('area_top')->where(array('type_id' => 4))->select();
+        $caseList = M('case')->order('fill_in_time desc')->limit($limit)->select();
         $usid = array();
+        $uid = M('auth_group_access')->where(array('uid' => UID))->field('group_id')->select();
         foreach ($uid as $key => $value) {
             if (is_array($value)) {
                 $usid[$key] = $value['group_id'];
@@ -244,9 +231,6 @@ class CaseController extends MobileController
                 $usid[$key] = $value['group_id'];
             }
         }
-        $assign['start'] = $start;
-        $assign['end'] = $end;
-        $this->Lage();
         return json_encode(array('list' => $caseList, 'uid' => $usid));
     }
 
@@ -261,10 +245,14 @@ class CaseController extends MobileController
         ];
         $case = M('case');
         $count = $case->where($where)->count();
-        $pagesize = 25;
+        $pagesize = 20;
         $p = I('pageIndex') ? I('pageIndex') : 1;
+        /* 计算分页信息 */
+        $totalPages = ceil($count / $pagesize); //总页数
+        if(!empty($totalPages) && $p > $totalPages) {
+            $p = $totalPages;
+        }
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
-        $page = new Page($count, $pagesize);
         $caseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
         return json_encode(array('list' => $caseList, 'uid' => $uid));
@@ -281,12 +269,15 @@ class CaseController extends MobileController
         ];
         $case = M('case');
         $count = $case->where($where)->count();
-        $pagesize = 25;
+        $pagesize = 20;
         $p = I('pageIndex') ? I('pageIndex') : 1;
+        /* 计算分页信息 */
+        $totalPages = ceil($count / $pagesize); //总页数
+        if(!empty($totalPages) && $p > $totalPages) {
+            $p = $totalPages;
+        }
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
-        $page = new Page($count, $pagesize);
         $caseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
-        $shequ = M('area_top')->where(array('type_id' => 5))->select();
         return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
@@ -295,12 +286,15 @@ class CaseController extends MobileController
     {
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         $count = M('case')->where('case_status = "jiean" or case_status = "huifang"')->order('fill_in_time desc')->count();
-        $pagesize = 25;
+        $pagesize = 20;
         $p = I('pageIndex') ? I('pageIndex') : 1;
+        /* 计算分页信息 */
+        $totalPages = ceil($count / $pagesize); //总页数
+        if(!empty($totalPages) && $p > $totalPages) {
+            $p = $totalPages;
+        }
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
-        $page = new Page($count, $pagesize);
         $caseList = M('case')->where('case_status = "jiean" or case_status = "huifang"')->limit($limit)->order('fill_in_time desc')->select();
-        $shequ = M('area_top')->where(array('type_id' => 5))->select();
         return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
@@ -310,12 +304,15 @@ class CaseController extends MobileController
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         $where = ('case_status = "jiean" or case_status = "huifang"');
         $count = M('case')->where($where)->order('fill_in_time desc')->count();
-        $pagesize = 25;
+        $pagesize = 20;
         $p = I('pageIndex') ? I('pageIndex') : 1;
+        /* 计算分页信息 */
+        $totalPages = ceil($count / $pagesize); //总页数
+        if(!empty($totalPages) && $p > $totalPages) {
+            $p = $totalPages;
+        }
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
-        $page = new Page($count, $pagesize);
         $caseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
-        $shequ = M('area_top')->where(array('type_id' => 5))->select();
         return json_encode(array('list' => $caseList, 'uid' => $uid));
     }
 
@@ -330,7 +327,6 @@ class CaseController extends MobileController
         $pagesize = 25;
         $p = I('pageIndex') ? I('pageIndex') : 1;
         $start = ($p - 1) * $pagesize;
-        $page = new Page(count($count), $pagesize);
         $caseList = array();
         $s = 0;
         for ($i = $start; $i < count($count); $i++, $s++) {
@@ -350,7 +346,6 @@ class CaseController extends MobileController
         $pagesize = 25;
         $p = I('pageIndex') ? I('pageIndex') : 1;
         $start = ($p - 1) * $pagesize;
-        $page = new Page(count($count), $pagesize);
         $caseList = array();
         $s = 0;
         for ($i = $start; $i < count($count); $i++, $s++) {
@@ -425,7 +420,6 @@ class CaseController extends MobileController
         $pagesize = 25;
         $p = I('pageIndex') ? I('pageIndex') : 1;
         $start = ($p - 1) * $pagesize;
-        $page = new Page(count($count), $pagesize);
         $caseList = array();
         $s = 0;
         for ($i = $start; $i < count($count); $i++, $s++) {
@@ -537,9 +531,9 @@ class CaseController extends MobileController
     //信息采集
     public function index()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             if (!$_POST['case_number']) $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
-            if ($_POST['"area_code']) $data['area_code'] = $_POST['"area_code'];
+            if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
             if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
             if ($_POST['community_code']) $data['community_code'] = $_POST['community_code'];
             if ($_POST['name']) $data['name'] = $_POST['name'];
@@ -629,14 +623,14 @@ class CaseController extends MobileController
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'area' => $area)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'area' => $area, 'is_auth' => IS_AUTH)));
         }
     }
 
     //案件初审
     public function trial()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $data = $_POST;
             $case = M('case');
             $data['case_status'] = 'chushen';
@@ -650,7 +644,7 @@ class CaseController extends MobileController
             if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
             $data['growth_dilemmas'] = serialize($grow);
             if ($_POST['trial_person']) $data['trial_person'] = $_POST['trial_person'];
-            if ($_POST['"trial_status']) $data['trial_status'] = $_POST['"trial_status'];
+            if ($_POST['trial_status']) $data['trial_status'] = $_POST['trial_status'];
             $data['trial_time'] = date("Y-m-d H:i:s", time());
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $data['id']])->select();
@@ -665,7 +659,7 @@ class CaseController extends MobileController
                 } else {
                     exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
-            } else {
+            } elseif ($data['trial_status'] == 2) {
                 $arr = array('trial_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiC');
                 $arr['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
@@ -684,20 +678,20 @@ class CaseController extends MobileController
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'is_auth' => IS_AUTH)));
         }
     }
 
     //案件终审
     public function last_instance()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $data = $_POST;
             $case = M('case');
             $data['case_status'] = 'shenpi';
             if ($_POST['last_instance_person']) $data['last_instance_person'] = $_POST['last_instance_person'];
             $data['last_instance_time'] = date("Y-m-d H:i:s", time());
-            if ($_POST['"last_instance_status']) $data['last_instance_status'] = $_POST['"last_instance_status'];
+            if ($_POST['last_instance_status']) $data['last_instance_status'] = $_POST['last_instance_status'];
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $data['id']])->select();
             $this->countOverTimeCases($cases, true, false);
@@ -711,7 +705,7 @@ class CaseController extends MobileController
                 } else {
                     exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
-            } else {
+            } elseif ($data['last_instance_status'] == 2) {
                 $arr = array('last_instance_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCs');
                 $arr['stage_status'] = 'complete';
                 $saveCase = $case->where(array('id' => $data['id']))->save($arr);
@@ -730,19 +724,19 @@ class CaseController extends MobileController
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'is_auth' => IS_AUTH)));
         }
     }
 
     //案件调度
     public function dispatch()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $case = M('case');
             $data['case_status'] = 'diaodu';
             if ($_POST['checkbox1']) $data['police_station'] = $_POST['police_station'];
             if ($_POST['checkbox2']) $data['turn_professional'] = $_POST['turn_professional'];
-            if ($_POST['checkbox3']) $data['turn_related'] = $_POST['"turn_related'];
+            if ($_POST['checkbox3']) $data['turn_related'] = $_POST['turn_related'];
             $check[] = $_POST['checkbox1'];
             $check[] = $_POST['checkbox2'];
             $check[] = $_POST['checkbox3'];
@@ -783,19 +777,19 @@ class CaseController extends MobileController
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'is_auth' => IS_AUTH)));
         }
     }
 
     //案件处置
     public function deal_with()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $case = M('case');
             //提交后检测该案件是否超时
             $cases = $case->where(array('id' => $_POST['id']))->select();
             $this->countOverTimeCases($cases, true, false);
-            $data['management_status'] = $_POST['"management_status'];
+            $data['management_status'] = $_POST['management_status'];
             if ($data['management_status'] == 1) {
                 $data['case_status'] = 'shenpi';
                 if ($_POST['deal_person']) $data['deal_person'] = $_POST['deal_person'];
@@ -809,7 +803,7 @@ class CaseController extends MobileController
                 } else {
                     exit(json_encode(array('erron' => 0, 'error' => '操作失败')));
                 }
-            } else {
+            } elseif ($data['management_status'] == 2) {
                 $arr['stage_status'] = 'complete';
                 $arr = array('deal_with_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'bohuiCz');
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($arr);
@@ -838,7 +832,7 @@ class CaseController extends MobileController
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'record' => $record)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'record' => $record, 'is_auth' => IS_AUTH)));
         }
     }
 
@@ -848,7 +842,7 @@ class CaseController extends MobileController
         $post = array();
         $urse = M('ucenter_member');
         $member = $urse->where(array('id' => UID))->getField('username');
-        $post['type'] = empty($_POST['"management_type']) ? '' : $_POST['"management_type'];
+        $post['type'] = empty($_POST['management_type']) ? '' : $_POST['management_type'];
         if ($_POST['management_file'] != '') {
             $uploadPath = './Uploads/case/user/deal/';
             $base = explode(',', $_POST['management_file'])[1];
@@ -889,7 +883,7 @@ class CaseController extends MobileController
     //结案
     public function finish()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $case = M('case');
             if (!empty($_POST['finish_suggestion'])) $data['finish_suggestion'] = $_POST['finish_suggestion'];
             if (!empty($_POST['visit_status'])) $data['visit_status'] = $_POST['visit_status'];
@@ -955,19 +949,19 @@ class CaseController extends MobileController
             $this->finishList = M('case')->where(array('id' => $id))->find();
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'area' => $area, 'birthday' => $birthday, 'growth' => $growth)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'area' => $area, 'birthday' => $birthday, 'growth' => $growth, 'is_auth' => IS_AUTH)));
         }
     }
 
     //回访
     public function visit()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $case = M('case');
             $data['case_status'] = 'huifang';
             $data['visit_time'] = date("Y-m-d H:i:s", time());
             $data['stage_status'] = 'complete';
-            $id = rtrim($_POST['"id'], '"');
+            $id = $_POST['id'];
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $id])->select();
             $this->countOverTimeCases($cases, true, false);
@@ -994,7 +988,7 @@ class CaseController extends MobileController
             $this->updateStatus($id, $case['case_status']);
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
-            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'suggestion' => $suggestion)));
+            exit(json_encode(array('id' => $id, 'caseList' => $case, 'member' => $member, 'suggestion' => $suggestion, 'is_auth' => IS_AUTH)));
         }
     }
 
@@ -1043,9 +1037,9 @@ class CaseController extends MobileController
     }
 
     //短信发送$case英文节点名，$node中文节点名
-    public function smsSend($case = 'trial', $node = 'chushen', $action = true)
+    public function smsSend($case = '', $node = '', $action = true, $turn_related = '')
     {
-        $Auth = new Auth();
+        $Auth = new \Think\Auth();
         $user = $Auth->getCaseUserList($case);
         $uid = array();
         foreach ($user as $val) {
@@ -1055,16 +1049,21 @@ class CaseController extends MobileController
             ->table('onethink_ucenter_member a')
             ->where(array("id" => array("in", implode(',', $uid))))
             ->join('onethink_member g on a.id=g.uid')
-            ->field('a.mobile as mobiles,g.mobile,a.username,g.nickname,g.status')
+            ->field('a.mobile as mobiles,g.mobile,a.username,g.nickname,g.status,g.department')
             ->select();
         foreach ($mobiles as $kk => &$vv) {
             if ($vv['status'] == '-1') unset($mobiles[$kk]);
+            //判断部门
+            if ($node == 'diaodu') if ($vv['department'] != $turn_related) unset($mobiles[$kk]);
+            //判断姓名
+            if (in_array($node, array('bohuiC', 'bohuiCs'))) if ($vv['nickname'] != $turn_related) unset($mobiles[$kk]);
         }
         $execute = M('caseManage')->where("node='" . $node . "'")->field('node_name,execute_time')->find();
         if (empty($execute)) {
             return array('erron' => 0, 'error' => '案件执行行为的时间没有设置');
         }
         $mobile = array();
+        $nickname = array();
         foreach ($mobiles as $k => $v) {
             $mobile[$k] = empty($v['mobile']) ? $v['mobiles'] : $v['mobile'];
             if (!preg_match("/^1[34578]\d{9}$/", $mobile[$k])) {
@@ -1079,15 +1078,10 @@ class CaseController extends MobileController
         } else {
             $message = '您好：您有一份案件被驳回需要在（' . date('Y年m月d日H:i:s', $time) . '）之前重新处理，请及时登录平台进行' . $execute['node_name'] . '操作。';
         }
+        file_put_contents('./message.txt', implode(',', array_unique($mobile)). $message.implode(',', $nickname), FILE_APPEND);
         return array(implode(',', array_unique($mobile)), $message, implode(',', $nickname));
         $SMS = new SMSAddon();
         return $SMS->AdminIndex(implode(',', array_unique($mobile)), $message);
-    }
-
-    //
-    public function statistics()
-    {
-        $this->display();
     }
 
     /**

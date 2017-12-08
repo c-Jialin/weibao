@@ -697,7 +697,7 @@ class CaseController extends AdminController
     //信息采集
     public function index()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
             if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
             if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
@@ -830,7 +830,7 @@ class CaseController extends AdminController
     //案件初审
     public function trial()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $data = $_POST;
             $case = M('case');
             $data['case_status'] = 'chushen';
@@ -897,7 +897,7 @@ class CaseController extends AdminController
     //案件终审
     public function last_instance()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $data = $_POST;
             $case = M('case');
             $data['case_status'] = 'shenpi';
@@ -954,7 +954,7 @@ class CaseController extends AdminController
     //案件调度
     public function dispatch()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $case = M('case');
             $data['case_status'] = 'diaodu';
             if ($_POST['checkbox1']) $data['police_station'] = $_POST['police_station'];
@@ -1018,7 +1018,7 @@ class CaseController extends AdminController
     //案件处置
     public function deal_with()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             if ($_POST['types'] == 1) {
                 return $this->tichu();
             }
@@ -1142,7 +1142,7 @@ class CaseController extends AdminController
     //结案
     public function finish()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             $case = M('case');
             if (!empty($_POST['finish_suggestion'])) $data['finish_suggestion'] = $_POST['finish_suggestion'];
             if (!empty($_POST['visit_status'])) $data['visit_status'] = $_POST['visit_status'];
@@ -1218,7 +1218,7 @@ class CaseController extends AdminController
     //回访
     public function visit()
     {
-        if (IS_POST) {
+        if (IS_POST && IS_AUTH) {
             if ($_POST['types'] == 1) {
                 return $this->tihui();
             }
@@ -1329,6 +1329,7 @@ class CaseController extends AdminController
             return array('erron' => 0, 'error' => '案件执行行为的时间没有设置');
         }
         $mobile = array();
+        $nickname = array();
         foreach ($mobiles as $k => $v) {
             $mobile[$k] = empty($v['mobile']) ? $v['mobiles'] : $v['mobile'];
             if (!preg_match("/^1[34578]\d{9}$/", $mobile[$k])) {
@@ -1343,6 +1344,7 @@ class CaseController extends AdminController
         } else {
             $message = '您好：您有一份案件被驳回需要在（' . date('Y年m月d日H:i:s', $time) . '）之前重新处理，请及时登录平台进行' . $execute['node_name'] . '操作。';
         }
+        file_put_contents('./message.txt', implode(',', array_unique($mobile)). $message.implode(',', $nickname), FILE_APPEND);
         return array(implode(',', array_unique($mobile)), $message, implode(',', $nickname));
         $SMS = new SMSAddon();
         return $SMS->AdminIndex(implode(',', array_unique($mobile)), $message);

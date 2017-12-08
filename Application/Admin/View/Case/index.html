@@ -76,7 +76,7 @@
             ?>
         </h4>
         <div class="tips">
-            <span>案件正在处理阶段：<?php echo getStage($Clist['case_status'])?></span><span>指挥调度责任人：无</span><span>社会责任人：<?php echo $Clist['fill_in_person']?></span>
+            <span>案件正在处理阶段：<?php echo getStage($Clist['case_status'])?></span><span>指挥调度责任人：<?php echo $Clist['dispatch_person']?></span><span>社会责任人：<?php echo $Clist['fill_in_person']?></span>
         </div>
         <div class="stage">
             <?php $id = empty($Clist['id']) ? $_GET['id'] : $Clist['id']; ?>

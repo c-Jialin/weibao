@@ -687,9 +687,9 @@ function getStatusFromAuth($getStatus = false)
     $arr = ['auth' => [], 'status' => [], 'next' => []];
     $next = ['add' => 1, 'trial' => 2, 'last_instance' => 3, 'dispatch' => 4, 'deal_with' => 5, 'finish' => 6, 'visit' => 7];
     //根据权限获得英文节点 或者如果是用于得到案件状态
-    if($getStatus)
+    if ($getStatus) {
         $arr['auth'] = [$getStatus];
-    else if (empty(IS_NODE)) {
+    } else if (empty(IS_NODE)) {
         $arr['auth'] = ['add', 'trial', 'last_instance', 'dispatch', 'deal_with', 'finish', 'visit'];
     } else {
         $arr['auth'] = explode(',', IS_NODE);
@@ -772,4 +772,29 @@ function statusTime($chn)
         'huifang' => 'visit_time',
     ];
     return $arr[$chn];
+}
+
+function isAuth($chn)
+{
+    $arr = [
+        'caiji' => 'trial',
+        'bohuiC' => 'index',
+        'bohuiCs' => 'trial',
+        'chushen' => 'last_instance',
+        'shenpi' => 'dispatch',
+        'diaodu' => 'deal_with',
+        'chuzhi' => 'finish',
+        'bohuiCz' => 'dispatch',
+        'weihuifang' => 'visit',
+        'jiean' => '',
+        'huifang' => '',
+    ];
+    if (in_array($arr[$chn], explode(',', IS_NODE))) {
+        return true;
+    } else {
+        if (UID == 1) {
+            return true;
+        }
+        return false;
+    }
 }

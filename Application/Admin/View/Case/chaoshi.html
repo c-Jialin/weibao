@@ -62,39 +62,39 @@ body{padding: 0}
         </td>
         <td><?php echo $v['execute_name']?></td>
         <td>
-            <?php if(($v['case_status'] == 'jiean' && IS_AUTH) || ($v['case_status'] == 'huifang' && IS_AUTH) || UID == 1){?>
+            <?php if(($v['case_status'] == 'jiean' && IS_AUTH) || ($v['case_status'] == 'huifang' && IS_AUTH)){?>
             <span style="color:#A0A0A0">完成</span>
             <a href="index.php?s=/Case/visit/id/<?php echo $v['id'];?>/act/huifang.html">查看</a>
-            <?php }else if(($v['case_status'] == 'weihuifang' && IS_AUTH) || UID == 1){?>
+            <?php }else if(($v['case_status'] == 'weihuifang' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/visit/id/<?php echo $v['id'];?>/act/huifang.html">回访</a>
-            <?php }else if($v['case_status'] == 'weihuifang' && !IS_AUTH){?>
+            <?php }else if($v['case_status'] == 'weihuifang' && !isAuth($v['case_status'])){?>
             <span style="color:#A0A0A0">回访</span>
-            <a href="{:U('Case/finish',array('id'=>$v['id']))}">查看</a>
-            <?php }else if(($v['case_status'] == 'chuzhi' && IS_AUTH) || UID == 1){?>
+            <?php }else if(($v['case_status'] == 'chuzhi' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/finish/id/<?php echo $v['id'];?>/act/jiean.html">结案</a>
-            <?php }else if($v['case_status'] == 'chuzhi' && !IS_AUTH){?>
+            <?php }else if($v['case_status'] == 'chuzhi' && !isAuth($v['case_status'])){?>
             <span style="color:#A0A0A0">结案</span>
-            <?php }else if(($v['case_status'] == 'diaodu' && IS_AUTH) || ($v['case_status'] == 'diaodu' && IS_AUTH) || UID == 1){?>
+            <?php }else if(($v['case_status'] == 'diaodu' && isAuth($v['case_status'])) || ($v['case_status'] == 'diaodu' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/deal_with/id/<?php echo $v['id'];?>/act/chuzhi.html">处置</a>
-            <?php }else if(($v['case_status'] == 'diaodu' && !IS_AUTH) || ($v['case_status'] == 'diaodu' && !IS_AUTH)){?>
+            <?php }else if(($v['case_status'] == 'diaodu' && !isAuth($v['case_status'])) || ($v['case_status'] == 'diaodu' && !isAuth($v['case_status']))){?>
             <span style="color:#A0A0A0">处置</span>
-            <?php }else if(($v['case_status'] == 'shenpi' && IS_AUTH) || ($v['case_status'] == 'bohuiCz' && IS_AUTH) || UID == 1){?>
+            <?php }else if(($v['case_status'] == 'shenpi' && isAuth($v['case_status'])) || ($v['case_status'] == 'bohuiCz' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/dispatch/id/<?php echo $v['id'];?>/act/diaodu.html">调度</a>
-            <?php }else if(($v['case_status'] == 'shenpi' && !IS_AUTH) || ($v['case_status'] == 'bohuiCz' && !IS_AUTH)){?>
+            <?php }else if(($v['case_status'] == 'shenpi' && !isAuth($v['case_status'])) || ($v['case_status'] == 'bohuiCz' && !isAuth($v['case_status']))){?>
             <span style="color:#A0A0A0">调度</span>
-            <?php }else if(($v['case_status'] == 'chushen' && IS_AUTH) || UID == 1){?>
+            <?php }else if(($v['case_status'] == 'chushen' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/last_instance/id/<?php echo $v['id'];?>/act/zhongshen.html">审批</a>
-            <?php }else if($v['case_status'] == 'chushen' && !IS_AUTH){?>
+            <?php }else if($v['case_status'] == 'chushen' && !isAuth($v['case_status'])){?>
             <span style="color:#A0A0A0">审批</span>
-            <?php }else if(($v['case_status'] == 'caiji' && IS_AUTH) || ($v['case_status'] == 'bohuiCs' && IS_AUTH) || UID == 1){?>
+            <?php }else if(($v['case_status'] == 'caiji' && isAuth($v['case_status'])) || ($v['case_status'] == 'bohuiCs' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/trial/id/<?php echo $v['id'];?>/act/chushen.html">初审</a>
-            <?php }else if(($v['case_status'] == 'caiji' && !IS_AUTH) || ($v['case_status'] == 'bohuiCs' && !IS_AUTH)){?>
+            <?php }else if(($v['case_status'] == 'caiji' && !isAuth($v['case_status'])) || ($v['case_status'] == 'bohuiCs' && !isAuth($v['case_status']))){?>
             <span style="color:#A0A0A0">初审</span>
-            <?php }else if(($v['case_status'] == 'bohuiC' && IS_AUTH) || UID == 1){?>
+            <?php }else if(($v['case_status'] == 'bohuiC' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/index/id/<?php echo $v['id'];?>.html">采集</a>
-            <?php }else if($uid !== 3){?>
-            <span style="color:#A0A0A0">采集</span>
             <?php }?>
+            <?php if (UID == 1) { ?>
+            <a href="index.php?s=/Case/suoyou/id/<?php echo $v['id'];?>.html">删除</a>
+            <?php } ?>
         </td>
     </tr>
           <?php } } else { ?>

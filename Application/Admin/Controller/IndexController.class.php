@@ -33,10 +33,10 @@ class IndexController extends AdminController
                 );
                 //根据用户id，查询用户上次登录ip
                 $ucenter_member = M('ucenter_member');
-                $where = array(
+                $what = array(
                     'id' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
                 );
-                $user_info['last_login_ip'] = $ucenter_member->where($where)->getField('last_login_ip');
+                $user_info['last_login_ip'] = $ucenter_member->where($what)->getField('last_login_ip');
 
                 $this->assign('user_info', $user_info);
 
@@ -112,7 +112,6 @@ class IndexController extends AdminController
     {
         //初始化返回结果
         $overtime = ['overtiming' => 0, 'overtimed' => 0];
-
         $rules = M('CaseManage')->field(['node', 'warn_time', 'execute_time'])->where(['status' => 1])->select();
         $rules = rebuildArray($rules, 'node');
         $now = time();
@@ -133,10 +132,11 @@ class IndexController extends AdminController
                     $overtimed = $time + $rules[$status]['execute_time'] * 3600;
 
                     if ($now >= $overtiming) {
-                        if ($now >= $overtimed)
+                        if ($now >= $overtimed) {
                             $overtime['overtimed']++;
-                        else
+                        } else {
                             $overtime['overtiming']++;
+                        }
                     }
                 }
             }
