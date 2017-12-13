@@ -175,7 +175,7 @@ class CaseController extends MobileController
                 'chuzhi' => 6,
                 'weihuifang' => 7,
                 'jiean' => 7,
-                'huifang' => 7,
+                'huifang' => 8,
             );
         }
         exit(json_encode(array('case' => $list, 'code' => $img[$list['case_status']])));
@@ -476,7 +476,7 @@ class CaseController extends MobileController
         }
         $list = array_merge($list, $arr);
         $Case = array();
-        $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/weicn/Uploads/case/user/photo/';
+        $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/Uploads/case/user/photo/';
         $field = array(
             'birthday',
             'health',
@@ -492,7 +492,11 @@ class CaseController extends MobileController
         );
         foreach ($list as $k => $v) {
             if (in_array($k, $field)) {
-                $Case[$k] = unserialize($list[$k]);
+                if ($k == 'health' && $v == 1) {
+                    $Case[$k] = $v;
+                } else {
+                    $Case[$k] = unserialize($list[$k]);
+                }
             } else if ($k == 'photo') {
                 $Case[$k] = !empty($v) ? $str . $list[$k] : '';
             } else {
@@ -818,7 +822,7 @@ class CaseController extends MobileController
         } else {
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/weicn/Uploads/case/user/deal/';
+            $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/Uploads/case/user/deal/';
             $record = $case['management_record'];
             unset($case['management_record']);
             if (!empty($record)) {
@@ -974,7 +978,7 @@ class CaseController extends MobileController
         } else {
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/weicn/Uploads/case/user/deal/';
+            $str = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/Uploads/case/user/deal/';
             $suggestion = $case['visit_suggestion'];
             unset($case['visit_suggestion']);
             if (!empty($suggestion)) {

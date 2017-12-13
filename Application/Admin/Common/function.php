@@ -646,7 +646,7 @@ function rebuildArray($arr, $key)
  */
 function translate($chn, $next = false)
 {
-    if ($next)
+    if ($next) {
         $arr = [
             'caiji' => ['ch' => 'chushen', 'en' => 'trial'],
             'bohuiC' => ['ch' => '', 'en' => 'index'],
@@ -660,7 +660,7 @@ function translate($chn, $next = false)
             'jiean' => ['ch' => '', 'en' => ''],
             'huifang' => ['ch' => '', 'en' => ''],
         ];
-    else
+    } else {
         $arr = [
             'caiji' => ['now' => 'add', 'next' => 'trial'],
             'bohuiC' => ['now' => 'add', 'next' => 'trial'],
@@ -674,6 +674,7 @@ function translate($chn, $next = false)
             'jiean' => ['now' => 'finish', 'next' => ''],
             'huifang' => ['now' => 'visit', 'next' => ''],
         ];
+    }
     return $arr[$chn];
 }
 

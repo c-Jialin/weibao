@@ -134,7 +134,7 @@
                             <span class="radio-text"> 是否结案</span>
                             <select class="select" name="is_finish">
                                 <option value="0">否</option>
-                                <option value="1">是</option>
+                                <option value="1" <?php if($Clist['management_status'] == 1){?>selected<?php }?>>是</option>
                             </select>
                         </label>
                     </div>
