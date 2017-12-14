@@ -768,7 +768,7 @@ class CaseController extends MobileController
                 $saveCase = $case->where(array('id' => $_POST['id']))->save($data);
                 if ($saveCase) {
                     //发送短信提醒
-                    $res = $this->smsSend('deal_with', 'diaodu', true);
+                    $res = $this->smsSend('deal_with', 'diaodu', true, 'turn_related');
                     exit(json_encode(array('erron' => 1, 'error' => '操作成功')));
                 } else {
                     exit(json_encode(array('erron' => 0, 'error' => '操作失败')));

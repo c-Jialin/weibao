@@ -105,7 +105,6 @@ body{padding: 0}
         </td>
         <td>
             <?php if(($v['case_status'] == 'jiean' && IS_AUTH) || ($v['case_status'] == 'huifang' && IS_AUTH)){?>
-            <span style="color:#A0A0A0">完成</span>
             <a href="index.php?s=/Case/visit/id/<?php echo $v['id'];?>/act/huifang.html">查看</a>
             <?php }else if(($v['case_status'] == 'weihuifang' && isAuth($v['case_status']))){?>
             <a href="index.php?s=/Case/visit/id/<?php echo $v['id'];?>/act/huifang.html">回访</a>
@@ -139,9 +138,9 @@ body{padding: 0}
             <?php } ?>
         </td>
     </tr>
-          <?php } } else { ?>
+        <?php } } else { ?>
             <tr><td colspan="9" class="text-center">暂无数据</td></tr>
-           <?php } ?>
+        <?php } ?>
     </tbody>
     </table>
     </div>
@@ -150,8 +149,6 @@ body{padding: 0}
     </div>
 </block>
 <block name="script">
-
-
 <script type="text/javascript">
     /* 插件块关闭操作 */
     $(".title-opt .wm-slide").each(function(){

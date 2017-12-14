@@ -32,16 +32,14 @@
     </div>
     <div class="bottom">
         <ul>
-            <li><a href="{:U('Case/suoyou')}">所有案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                           class="solid"></li>
-            <li><a href="{:U('Case/zaichu')}">正在处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                           class="solid"></li>
-            <li><a href="{:U('Case/daichu')}">待处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                          class="solid"></li>
-            <li><a href="{:U('Case/wancheng')}">完成处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                             class="solid"></li>
-            <li><a href="{:U('Case/guidang')}">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                            class="solid"></li>
+            <li><a href="{:U('Case/suoyou')}">所有案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/zaichu')}">正在处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/daichu')}">待处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/jijiang')}">即将超时</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/chaoshi')}">超时案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/chaoling')}">超龄案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/wancheng')}">完成处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/guidang')}">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
         </ul>
         <form class="form-inline">
             <div class="form-group">
@@ -94,49 +92,23 @@
                 <div class="li">
                     <div class="left">流程操作</div>
                     <div class="right">
-                        <!--<label>
-                            <input type="checkbox" name="checkbox1" value="1" <?php if(in_array(1, unserialize($Clist['checkbox_status']))) echo 'checked'; ?>/>
-                            <span class="radio-text"> 报警110</span>
-                            <select class="select" name="police_station">
-                                <option value="1">委派部门</option>
-                            </select>
-                        </label>&emsp;-->
-                        <!--<label>
-                            <input type="checkbox" name="checkbox2" value="2" <?php if(in_array(2, unserialize($Clist['checkbox_status']))) echo 'checked'; ?>/>
-                            <span class="radio-text"> 转专业机构</span>
-                            <select class="select" name="turn_professional">
-                                <option value="1">选择机构</option>
-                            </select>
-                        </label>&emsp;
                         <label>
-                            <input type="checkbox" name="checkbox3" value="3" <?php if(in_array(3, unserialize($Clist['checkbox_status']))) echo 'checked'; ?>/>
+                            <input type="radio" class="radio" name="checkbox3" value="3" <?php if ($Clist['checkbox_status'] == '3') echo checked ?>/>
                             <span class="radio-text"> 转相关部门</span>
-                            <select class="select" name="turn_related">
-                                <option value="">选择部门</option>
-                                <option value="1"
-                                <?php if($Clist['turn_related'] == 1){?>selected<?php }?>>市级部门</option>
-                                <option value="3"
-                                <?php if($Clist['turn_related'] == 3){?>selected<?php }?>>社区部门</option>
-                            </select>
-                        </label>-->
-                        <label>
-                            <input type="checkbox" name="checkbox3" value="3" checked/>
-                            <span class="radio-text"> 转相关部门</span>
-                            <select class="select" name="turn_related">
-                                <option value="">选择部门</option>
-                                <option value="1"
-                                <?php if($Clist['turn_related'] == 1){?>selected<?php }?>>市级部门</option>
-                                <option value="3"
-                                <?php if($Clist['turn_related'] == 3){?>selected<?php }?>>社区部门</option>
-                            </select>
-                        </label>&emsp;
-                        <label>
-                            <span class="radio-text"> 是否结案</span>
-                            <select class="select" name="is_finish">
-                                <option value="0">否</option>
-                                <option value="1" <?php if($Clist['management_status'] == 1){?>selected<?php }?>>是</option>
-                            </select>
+                            <input type="radio" class="radio" name="checkbox3" value="1" <?php if ($Clist['checkbox_status'] == '1') echo checked ?>/>
+                            <span class="radio-text"> 转至结案</span>
                         </label>
+                        <br/>
+                        <?php
+                        foreach ($department as $k => $v) {
+                        $related = unserialize($Clist['turn_related']);
+                        if (in_array($k, $related)) {
+                        echo '<label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="' . $k . '" checked>' . $v . '</label> ';
+                        } else {
+                        echo '<label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="' . $k . '">' . $v . '</label> ';
+                        }
+                        }
+                        ?>
                     </div>
                     <div style="clear: both;"></div>
                 </div>

@@ -20,28 +20,21 @@
         <img src="__PUBLIC__/Admin/images/xtwcn/logo.png" class="logo"/>
         <!-- <h2>湘潭市未成年保护系统</h2> -->
         <ul class="right">
-            <li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href="{:U('Index/index')}"><img
-                    src="__PUBLIC__/Admin/images/xtwcn/returnhome.png"><br><span>返回首页</span></a></li>
-            <li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a
-                    href="{:U('User/updatepassword')}"><img
-                    src="__PUBLIC__/Admin/images/xtwcn/changepass.png"><br><span>修改密码</span></a></li>
-            <li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a
-                    href="{:U('Public/logout')}"><img
-                    src="__PUBLIC__/Admin/images/xtwcn/reload.png"><br><span>重新登录</span></a></li>
+            <li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href="{:U('Index/index')}"><img src="__PUBLIC__/Admin/images/xtwcn/returnhome.png"><br><span>返回首页</span></a></li>
+            <li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href="{:U('User/updatepassword')}"><img src="__PUBLIC__/Admin/images/xtwcn/changepass.png"><br><span>修改密码</span></a></li>
+            <li><img src="__PUBLIC__/Admin/images/xtwcn/top-solid.png" class="solid"><a href="{:U('Public/logout')}"><img src="__PUBLIC__/Admin/images/xtwcn/reload.png"><br><span>重新登录</span></a></li>
         </ul>
     </div>
     <div class="bottom">
         <ul>
-            <li><a href="{:U('Case/suoyou')}">所有案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                           class="solid"></li>
-            <li><a href="{:U('Case/zaichu')}">正在处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                           class="solid"></li>
-            <li><a href="{:U('Case/daichu')}">待处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                          class="solid"></li>
-            <li><a href="{:U('Case/wancheng')}">完成处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                             class="solid"></li>
-            <li><a href="{:U('Case/guidang')}">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png"
-                                                            class="solid"></li>
+            <li><a href="{:U('Case/suoyou')}">所有案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/zaichu')}">正在处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/daichu')}">待处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/jijiang')}">即将超时</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/chaoshi')}">超时案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/chaoling')}">超龄案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/wancheng')}">完成处理</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
+            <li><a href="{:U('Case/guidang')}">归档案件</a><img src="__PUBLIC__/Admin/images/xtwcn/bottom-solid.png" class="solid"></li>
         </ul>
         <form class="form-inline">
             <div class="form-group">
@@ -97,8 +90,168 @@
                     <tr>
                         <td class="td_item">成长困境<br>及风险等级</td>
                         <td colspan="6" valign="top" style="padding:0 0;">
-                            <table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%"
-                                   style="border:none;">
+                            <?php if (empty($Clist['growth_dilemmas'])) { ?>
+                            <table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
+                                <tbody>
+                                <tr>
+                                    <td class="td_input">1、孤儿或因法定监护人服刑、重病、重残等原因实际无人监护的未成年人</td>
+                                    <td class="td_input" style="border-right:none;">
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                       value="1" <?php if(in_array(1,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】一级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                       value="2" <?php if(in_array(2,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】二级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                       value="3" <?php if(in_array(3,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】三级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                       value="4" <?php if(in_array(4,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】四级</label><br>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                       value="5" <?php if(in_array(5,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】五级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma1"
+                                                       value="6" <?php if(in_array(6,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】零级</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_input">2、因家庭暴力、遭受侵害等原因得不到适当监护的未成年人</td>
+                                    <td class="td_input" style="border-right:none;">
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                       value="7" <?php if(in_array(7,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】一级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                       value="8" <?php if(in_array(8,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】二级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                       value="9" <?php if(in_array(9,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】三级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                       value="10" <?php if(in_array(10,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】四级</label><br>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                       value="11" <?php if(in_array(11,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】五级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma2"
+                                                       value="12" <?php if(in_array(12,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】零级</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_input">3、因家庭困境面临辍学和失去基本生活保障的未成年人</td>
+                                    <td class="td_input" style="border-right:none;">
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                       value="13" <?php if(in_array(13,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】一级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                       value="14" <?php if(in_array(14,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】二级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                       value="15" <?php if(in_array(15,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】三级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                       value="16" <?php if(in_array(16,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】四级</label><br>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                       value="17" <?php if(in_array(17,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】五级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma3"
+                                                       value="18" <?php if(in_array(18,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】零级</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_input">4、有工读教育、特训学校教育、违法犯罪经历及严重偏差行为的未成年人</td>
+                                    <td class="td_input" style="border-right:none;">
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                       value="19" <?php if(in_array(19,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】一级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                       value="20" <?php if(in_array(20,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】二级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                       value="21" <?php if(in_array(21,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】三级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                       value="22" <?php if(in_array(22,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】四级</label><br>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                       value="23" <?php if(in_array(23,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】五级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma4"
+                                                       value="24" <?php if(in_array(24,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】零级</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_input">5、被遗弃、拐卖、肋迫及故意伤害等原因陷入成长受阻碍的未成年人</td>
+                                    <td class="td_input" style="border-right:none;">
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                       value="25" <?php if(in_array(25,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】一级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                       value="26" <?php if(in_array(26,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】二级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                       value="27" <?php if(in_array(27,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】三级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                       value="28" <?php if(in_array(28,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】四级</label><br>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                       value="29" <?php if(in_array(29,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】五级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma5"
+                                                       value="30" <?php if(in_array(30,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】零级</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_input">6、父母一方或双方外出，临时监护不到位的留守未成年人</td>
+                                    <td class="td_input" style="border-right:none;">
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                       value="31" <?php if(in_array(31,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】一级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                       value="32" <?php if(in_array(32,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】二级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                       value="33" <?php if(in_array(33,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】三级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                       value="34" <?php if(in_array(34,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】四级</label><br>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                       value="35" <?php if(in_array(35,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】五级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma6"
+                                                       value="36" <?php if(in_array(36,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】零级</label></td>
+                                </tr>
+                                <tr>
+                                    <td class="td_input" style="border-bottom:none;">7、生理、心理和精神状态异常或失去生活自理、学习等能力的未成年人
+                                    </td>
+                                    <td class="td_input" style="border-right:none; border-bottom:none;">
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                       value="37" <?php if(in_array(37,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】一级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                       value="38" <?php if(in_array(38,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】二级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                       value="39" <?php if(in_array(39,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】三级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                       value="40" <?php if(in_array(40,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】四级</label><br>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                       value="41" <?php if(in_array(41,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】五级</label>
+                                        <label>【<input type="radio" class="radio" name="growth_dilemma7"
+                                                       value="42" <?php if(in_array(42,unserialize($Clist['growth_dilemma']))){?>
+                                            checked<?php }?>>】零级</label></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <?php }else{ ?>
+                            <table cellpadding="0" cellspacing="0" class="table_3" border="0" width="100%" style="border:none;">
                                 <tbody>
                                 <tr>
                                     <td class="td_input">1、孤儿或因法定监护人服刑、重病、重残等原因实际无人监护的未成年人</td>
@@ -257,6 +410,7 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            <?php } ?>
                         </td>
                     </tr>
                 </table>

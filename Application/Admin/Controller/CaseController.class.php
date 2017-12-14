@@ -169,7 +169,6 @@ class CaseController extends AdminController
             }
         }
         $uid = M('auth_group_access')->where(array('uid' => UID))->field('group_id')->select();
-
         $where = $assign = [];
         $start = $end = time();
         $type = I('type');
@@ -177,7 +176,6 @@ class CaseController extends AdminController
             //筛选条件 / 或导出
             $post = I('get.');
             //dump($post);exit;
-
             //是否手动日期
             if ($post['date'] == 1) {
                 $start = strtotime($post['start']);
@@ -186,7 +184,6 @@ class CaseController extends AdminController
             }
             //根据案件状态选择
             $result = empty($post['status']) ? false : getStatusFromAuth($post['status']);
-
             $where['name'] = empty($post['name']) ? ['neq', ''] : ['like', "%{$post['name']}%"];
             $where['case_status'] = empty($result) ? ['neq', ''] : ['in', implode(',', $result['status'])];
             $where['area_code'] = empty($post['city']) ? ['neq', 0] : $post['city'];
@@ -200,15 +197,14 @@ class CaseController extends AdminController
             $assign['name'] = $post['name'];
             $assign['date'] = $post['date'];
             $assign['status'] = $post['status'];
-
             if ($type == 'enroll') {
                 //导出..
                 $count = M('case')->where($where)->count();
-                if ($count > 0)
+                if ($count > 0) {
                     $result = ['result' => 1, 'msg' => '准备下载,请稍等片刻', 'url' => U('Case/enrollListExcel', ['data' => serialize($where)])];
-                else
+                } else {
                     $result = ['result' => 0, 'msg' => '无数据可导出'];
-
+                }
                 exit(json_encode($result, JSON_UNESCAPED_UNICODE));
             }
         }
@@ -221,7 +217,6 @@ class CaseController extends AdminController
         $this->Page = $page->show();
         $this->count = $count;
         $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
-
         $this->shequ = M('area_top')->where(array('type_id' => 4))->select();
         $usid = array();
         foreach ($uid as $key => $value) {
@@ -957,24 +952,15 @@ class CaseController extends AdminController
         if (IS_POST && IS_AUTH) {
             $case = M('case');
             $data['case_status'] = 'diaodu';
-            if ($_POST['checkbox1']) $data['police_station'] = $_POST['police_station'];
-            if ($_POST['checkbox2']) $data['turn_professional'] = $_POST['turn_professional'];
-            if ($_POST['checkbox3']) $data['turn_related'] = $_POST['turn_related'];
-            $check[] = $_POST['checkbox1'];
-            $check[] = $_POST['checkbox2'];
-            $check[] = $_POST['checkbox3'];
-            $data['checkbox_status'] = serialize($check);
-            $data['dispatch_instance'] = $_POST['dispatch_instance'];
-            if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
-            $data['dispatch_time'] = date("Y-m-d H:i:s", time());
-            $data['stage_status'] = 'complete';
+            $box = $_POST['checkbox3'];
+//            if ($_POST['checkbox1']) $data['police_station'] = $_POST['police_station'];
+//            if ($_POST['checkbox2']) $data['turn_professional'] = $_POST['turn_professional'];
+//            if ($_POST['checkbox3']) $data['turn_related'] = $_POST['turn_related'];
             $id = I('id');
             //提交后检测该案件是否超时
             $cases = $case->where(['id' => $id])->select();
             $this->countOverTimeCases($cases, true, false);
-            $is_finish = 0;
-            if ($_POST['is_finish']) $is_finish = $_POST['is_finish'];
-            if ($is_finish == '1') {
+            if ($box == 1) {
                 $arr = array('dispatch_time' => date("Y-m-d H:i:s", time()), 'case_status' => 'chuzhi', 'stage_status' => 'complete');
                 $saveCase = $case->where(array('id' => $id))->save($arr);
                 if ($saveCase) {
@@ -984,11 +970,17 @@ class CaseController extends AdminController
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
-            } else {
+            } elseif ($box == 3) {
+                $data['checkbox_status'] = $_POST['checkbox3'];
+                $data['dispatch_instance'] = $_POST['dispatch_instance'];
+                if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
+                $data['dispatch_time'] = date("Y-m-d H:i:s", time());
+                $data['stage_status'] = 'complete';
+                $data['turn_related'] = serialize($_POST['turn_related']);
                 $saveCase = $case->where(array('id' => $id))->save($data);
                 if ($saveCase) {
                     //发送短信提醒
-                    $res = $this->smsSend('deal_with', 'diaodu', true, 'turn_related');
+                    $res = $this->smsSend('deal_with', 'diaodu', true, $_POST['turn_related']);
                     echo "<script>alert('操作成功');window.location.href='index.php?s=/Index/index.html';</script>";
                 } else {
                     echo "<script>alert('信息未填写完整');window.location.href='index.php?s=/Index/index.html';</script>";
@@ -1010,6 +1002,8 @@ class CaseController extends AdminController
             $this->id = $id;
             $urse = M('ucenter_member');
             $member = $urse->where(array('id' => UID))->getField('username');
+            $department = C('DEPARTMENT');
+            $this->assign('department', $department);
             $this->assign('member', $member);
             $this->display();
         }
@@ -1303,7 +1297,7 @@ class CaseController extends AdminController
     }
 
     //短信发送$case英文节点名，$node中文节点名
-    public function smsSend($case = '', $node = '', $action = true, $turn_related = '')
+    public function smsSend($case = '', $node = '', $action = true, $turn_related = array())
     {
         $Auth = new \Think\Auth();
         $user = $Auth->getCaseUserList($case);
@@ -1320,7 +1314,9 @@ class CaseController extends AdminController
         foreach ($mobiles as $kk => &$vv) {
             if ($vv['status'] == '-1') unset($mobiles[$kk]);
             //判断部门
-            if ($node == 'diaodu') if ($vv['department'] != $turn_related) unset($mobiles[$kk]);
+            if ($node == 'diaodu') {
+                if (!in_array($vv['department'], $turn_related)) unset($mobiles[$kk]);
+            }
             //判断姓名
             if (in_array($node, array('bohuiC', 'bohuiCs'))) if ($vv['nickname'] != $turn_related) unset($mobiles[$kk]);
         }
