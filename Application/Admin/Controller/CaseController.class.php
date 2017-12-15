@@ -639,6 +639,31 @@ class CaseController extends AdminController
         return array_merge($list, $arr);
     }
 
+    //区街社
+    public function Related($type)
+    {
+        switch ($type) {
+            case 1:
+                $where = array('type_id' => 3);
+                break;
+            case 2:
+                $where = array('type_id' => 4);
+                break;
+            case 3:
+                $where = array('type_id' => 5);
+                break;
+            default:
+                $where = array('type_id' => 2);
+                break;
+        }
+        $list = M('area_top')->where($where)->select();
+        $str = '';
+        foreach ($list as $v) {
+            $str .= '<label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="' . $v['region_id'] . '">' . $v['region_name'] . '</label> ';
+        }
+        echo $str;
+    }
+
     //地区
     public function Lage()
     {
@@ -972,6 +997,7 @@ class CaseController extends AdminController
                 }
             } elseif ($box == 3) {
                 $data['checkbox_status'] = $_POST['checkbox3'];
+                $data['turn_professional'] = $_POST['turn_professional'];
                 $data['dispatch_instance'] = $_POST['dispatch_instance'];
                 if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
                 $data['dispatch_time'] = date("Y-m-d H:i:s", time());

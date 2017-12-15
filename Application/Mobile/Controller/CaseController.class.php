@@ -163,7 +163,7 @@ class CaseController extends MobileController
         $list = array();
         $img = array();
         if (!empty($id)) {
-            $list = M('case')->field('id,name,fill_in_person,case_status,dispatch_person')->where(array('id' => $id))->find();
+            $list = M('case')->field('id,name,fill_in_person,case_number,case_status,dispatch_person')->where(array('id' => $id))->find();
             $img = array(
                 'caiji' => 2,
                 'bohuiC' => 1,
@@ -190,7 +190,7 @@ class CaseController extends MobileController
             'case_status' => ['in', implode(',', $auth['status'])],
         ];
         //案件统计过滤的字段
-        $field = ['id', 'name', 'case_status', 'fill_in_time', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
+        $field = ['id', 'name', 'case_status', 'fill_in_time', 'case_number', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
         //消息中心
         $count = $case->field($field)->where($where)->count();
         $pagesize = 20;

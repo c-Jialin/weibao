@@ -232,6 +232,8 @@ class UserController extends AdminController
                 $this->error($this->showRegError($uid));
             }
         } else {
+            $list_top = M('area_top')->where(array('parent_id' => 1))->select();
+            $this->assign('list_top', $list_top);
             $department = C('DEPARTMENT');
             $this->assign('department', $department);
             $this->meta_title = '新增用户';

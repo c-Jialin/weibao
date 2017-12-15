@@ -93,22 +93,29 @@
                     <div class="left">流程操作</div>
                     <div class="right">
                         <label>
-                            <input type="radio" class="radio" name="checkbox3" value="3" <?php if ($Clist['checkbox_status'] == '3') echo checked ?>/>
-                            <span class="radio-text"> 转相关部门</span>
-                            <input type="radio" class="radio" name="checkbox3" value="1" <?php if ($Clist['checkbox_status'] == '1') echo checked ?>/>
-                            <span class="radio-text"> 转至结案</span>
+                            <select class="select checkbox3" name="checkbox3">
+                                <option value="">请选择</option>
+                                <option value="3">转相关部门</option>
+                                <option value="1">转至结案</option>
+                            </select>
+                        </label>
+                        <label>
+                            <select style="display: none" class="select related" name="turn_professional">
+                                <option value="0">请选择</option>
+                                <option value="1">区县民政</option>
+                                <option value="2">街道民政</option>
+                                <option value="3">社区民政</option>
+                            </select>
                         </label>
                         <br/>
-                        <?php
-                        foreach ($department as $k => $v) {
-                        $related = unserialize($Clist['turn_related']);
-                        if (in_array($k, $related)) {
-                        echo '<label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="' . $k . '" checked>' . $v . '</label> ';
-                        } else {
-                        echo '<label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="' . $k . '">' . $v . '</label> ';
-                        }
-                        }
-                        ?>
+                        <label style="display: none" class="turn_related">
+                            <span id="turn_related"> </span>
+                            <br/>
+                            协同部门：
+                            <label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="-1">市公安局</label>
+                            <label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="-2">市教育局</label>
+                            <label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="-3">市残联</label>
+                        </label>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
@@ -192,6 +199,27 @@
             //fileList.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='image',src='"+nfile+"')";
         }
     }
+    $('.checkbox3').change(function () {
+        var val = $(this).val();
+        if (val == '3') {
+            $('.related').css('display', 'inline-block');
+        } else {
+            $('.related').css('display', 'none');
+            $('.turn_related').css('display', 'none');
+        }
+    });
+    $('.related').change(function () {
+        var val = $(this).val();
+        if (val != 0) {
+            $.post("{:U('Case/Related')}", {"type": val}, function (res) {
+                console.log(res);
+                $('#turn_related').html(res);
+            });
+            $('.turn_related').css('display', 'inline-block');
+        } else {
+            $('.turn_related').css('display', 'none');
+        }
+    });
 </script>
 <script>
     /* 表单禁用 */
