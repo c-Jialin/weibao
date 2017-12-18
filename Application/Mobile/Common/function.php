@@ -775,6 +775,21 @@ function linkage($area, $town, $village, $ac)
     return $arr;
 }
 
+function linkages($area, $ac)
+{
+    $str = array();
+    foreach ($ac as $ks => $vs) {
+        $res = array();
+        foreach ($area as $vss) {
+            if ($vss['type_id'] == ($ks+2)) {
+                $res[] = array('value' => $vss['region_id'], 'label' => $vss['region_name'], 'children' => $vss);
+            }
+        }
+        $str[] = array('value' => "$ks", 'label' => $vs, 'children' => $res);
+    }
+    return $str;
+}
+
 /**
  * 案件状态对应的时间
  * @param string $chn 中文拼音案件状态
@@ -796,4 +811,36 @@ function statusTime($chn)
         'huifang' => 'visit_time',
     ];
     return $arr[$chn];
+}
+
+function handle($data, $ac = true)
+{
+    $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+    $user = M('member')->where(array('uid' => UID))->find();
+    $list = array();
+    if ($user['department'] == 4) {
+        $group = M('auth_group')->where(array('id' => $uid))->getField('title');
+        $arr = array();
+        switch ($group) {
+            case '市公安局':
+                $arr = array('a:1:{i:0;s:4:"1001";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1002";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1003";}', 'a:3:{i:0;s:4:"1001";i:1;s:4:"1002";i:2;s:4:"1003";}');
+                break;
+            case '市教育局':
+                $arr = array('a:1:{i:0;s:4:"1002";}', 'a:2:{i:0;s:4:"1002";i:1;s:4:"1003";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1002";}', 'a:3:{i:0;s:4:"1001";i:1;s:4:"1002";i:2;s:4:"1003";}');
+                break;
+            case '市残联':
+                $arr = array('a:1:{i:0;s:4:"1003";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1003";}', 'a:2:{i:0;s:4:"1002";i:1;s:4:"1003";}', 'a:3:{i:0;s:4:"1001";i:1;s:4:"1002";i:2;s:4:"1003";}');
+                break;
+        }
+        foreach ($data as $v) {
+            if (in_array($v['turn_relateds'], $arr)) {
+                $list[] = $v;
+            }
+        }
+    }
+    if ($ac) {
+        return empty($list) ? $data : $list;
+    } else {
+        return empty($list) ? count($data) : count($list);
+    }
 }

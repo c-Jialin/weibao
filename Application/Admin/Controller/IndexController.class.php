@@ -50,22 +50,36 @@ class IndexController extends AdminController
             $where = [
                 'case_status' => ['in', implode(',', $auth['status'])],
             ];
+            if (UID != 1) {
+                $user = M('member')->where(array('uid' => UID))->find();
+                switch ($user['department']){
+                    case 0:
+                        $where['community_code'] = $user['community_code'];
+                        break;
+                    case 1:
+                        $where['street_code'] = $user['street_code'];
+                        break;
+                    case 2:
+                        $where['area_code'] = $user['area_code'];
+                        break;
+                }
+            }
             //案件统计过滤的字段
-            $field = ['id', 'name', 'case_status', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
+            $field = ['id', 'name', 'case_status', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time', 'birthday', 'turn_relateds'];
             //权限下所有案件
-            $cases = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            $cases = handle($case->field($field)->where($where)->order('fill_in_time desc')->select());
             //消息和待处理数量
             $where['stage_status'] = 'complete';
-            $messages = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            $messages = handle($case->field($field)->where($where)->order('fill_in_time desc')->select());
             foreach ($messages as &$vs) {
                 $vs['case_statuss'] = getStage($vs['case_status']);
                 $vs['case_time'] = $vs[statusTime($vs['case_status'])];
             }
             $this->messages = $messages;
-            $this->waiting = count($this->messages);
+            $this->waiting = count($messages);
             //正在处理的数量
             $where['stage_status'] = 'ing';
-            $this->handling = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+            $this->handling = handle($case->field($field)->where($where)->order('fill_in_time desc')->select(), false);
             //超时和即将超时数量
             $overtime = $this->countOverTimeCases($cases);
             $this->overtiming = $overtime['overtiming'];
@@ -73,8 +87,7 @@ class IndexController extends AdminController
             //超龄
             $age = array();
             $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
-            $ages = $case->field('birthday')->order('fill_in_time desc')->select();
-            foreach ($ages as $val) {
+            foreach ($cases as $val) {
                 if (getAge($val['birthday']) > $overage) $age[] = getAge($val['birthday']);
             }
             $this->overaged = count($age);

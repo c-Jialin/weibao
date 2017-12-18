@@ -43,27 +43,17 @@
 		<div class="form-item">
 			<label class="item-label">选择所属区域</label>
 			<select class="select " name="area_code" id="City2" onChange="nav2(this,3)">
-				<?php if (empty($Clist['area_code'])) echo "<option value=''>请选择市/区</option>";
-				foreach ($list_top as $v) {
-				if ($Clist['area_code']['k'] == $v['region_id']) {
-				echo "<option selected='selected' value=".$v['region_id'].">".$v['region_name']."</option>";
-				} else {
-				echo "<option value=".$v['region_id'].">".$v['region_name']."</option>";
-				}}?>
+				<option value=''> 请选择市/区 </option>
+				<?php
+                foreach ($list_top as $v) {
+                    echo "<option value=".$v['region_id']."> ".$v['region_name']." </option>";
+				}?>
 			</select>
 			<select class="select " name="street_code" id="Town2" onChange="nav2(this,4)">
-				<?php if (empty($Clist['street_code'])) {
-                    echo "<option value=''>请选择街/镇</option>";
-				} else {
-				echo "<option value=".$Clist['street_code']['k'].">".$Clist['street_code']['v']."</option>";
-				} ?>
+				<option value=''> 请选择街/镇 </option>
 			</select>
 			<select class="select " name="community_code" id="Country2">
-				<?php if (empty($Clist['community_code'])) {
-                    echo "<option value=''>请选择村/社区</option>";
-				} else {
-				echo "<option value=".$Clist['community_code']['k'].">".$Clist['community_code']['v']."</option>";
-				} ?>
+				<option value=''> 请选择村/社区 </option>
 			</select>
 		</div>
 		<br/>
@@ -74,25 +64,25 @@
 	</form>
 	</div>
 	<script>
-                function nav2(obj, type) {
-                    $.post("{:U('Case/Linkage_top')}", {"id": obj.value, "type": type}, function (res) {
-                        if (type == 3) {
-                            if (obj.value > 0) {
-                                $("#Town2").html(res);
-                            } else {
-                                $("#Town2").html("<option>请选择街/镇</option>");
-                            }
-                            $("#Country2").html("<option>请选择村/社区</option>");
-                        } else if (type == 4) {
-                            if (obj.value > 0) {
-                                $("#Country2").html(res)
-                            } else {
-                                $("#Country2").html("<option>请选择村/社区</option>");
-                            }
-                        }
-                    })
+		function nav2(obj, type) {
+            $.post("{:U('Case/Linkage_top')}", {"id": obj.value, "type": type}, function (res) {
+                if (type == 3) {
+                    if (obj.value > 0) {
+                        $("#Town2").html(res);
+                    } else {
+                        $("#Town2").html("<option>请选择街/镇</option>");
+                    }
+                    $("#Country2").html("<option>请选择村/社区</option>");
+                } else if (type == 4) {
+                    if (obj.value > 0) {
+                        $("#Country2").html(res)
+                    } else {
+                        $("#Country2").html("<option>请选择村/社区</option>");
+                    }
                 }
-			</script>
+            })
+        }
+    </script>
 </block>
 
 <block name="script">

@@ -799,3 +799,35 @@ function isAuth($chn)
         return false;
     }
 }
+
+function handle($data, $ac = true)
+{
+    $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+    $user = M('member')->where(array('uid' => UID))->find();
+    $list = array();
+    if ($user['department'] == 4) {
+        $group = M('auth_group')->where(array('id' => $uid))->getField('title');
+        $arr = array();
+        switch ($group) {
+            case '市公安局':
+                $arr = array('a:1:{i:0;s:4:"1001";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1002";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1003";}', 'a:3:{i:0;s:4:"1001";i:1;s:4:"1002";i:2;s:4:"1003";}');
+                break;
+            case '市教育局':
+                $arr = array('a:1:{i:0;s:4:"1002";}', 'a:2:{i:0;s:4:"1002";i:1;s:4:"1003";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1002";}', 'a:3:{i:0;s:4:"1001";i:1;s:4:"1002";i:2;s:4:"1003";}');
+                break;
+            case '市残联':
+                $arr = array('a:1:{i:0;s:4:"1003";}', 'a:2:{i:0;s:4:"1001";i:1;s:4:"1003";}', 'a:2:{i:0;s:4:"1002";i:1;s:4:"1003";}', 'a:3:{i:0;s:4:"1001";i:1;s:4:"1002";i:2;s:4:"1003";}');
+                break;
+        }
+        foreach ($data as $v) {
+            if (in_array($v['turn_relateds'], $arr)) {
+                $list[] = $v;
+            }
+        }
+    }
+    if ($ac) {
+        return empty($list) ? $data : $list;
+    } else {
+        return empty($list) ? count($data) : count($list);
+    }
+}

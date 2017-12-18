@@ -170,6 +170,20 @@ class CaseController extends AdminController
         }
         $uid = M('auth_group_access')->where(array('uid' => UID))->field('group_id')->select();
         $where = $assign = [];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
         $start = $end = time();
         $type = I('type');
         if (I('submit') || $type == 'enroll') {
@@ -208,7 +222,7 @@ class CaseController extends AdminController
                 exit(json_encode($result, JSON_UNESCAPED_UNICODE));
             }
         }
-        $count = M('case')->where($where)->count();
+        $count = handle(M('case')->where($where)->select(), false);
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
@@ -216,7 +230,7 @@ class CaseController extends AdminController
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
         $this->count = $count;
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $this->CaseList = handle(M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select());
         $this->shequ = M('area_top')->where(array('type_id' => 4))->select();
         $usid = array();
         foreach ($uid as $key => $value) {
@@ -356,8 +370,22 @@ class CaseController extends AdminController
             'case_status' => ['in', implode(',', $auth['status'])],
             'stage_status' => 'complete',
         ];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
         $case = M('case');
-        $count = $case->where($where)->count();
+        $count = handle($case->where($where)->select(), false);
         // import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
@@ -365,7 +393,7 @@ class CaseController extends AdminController
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
 
-        $this->CaseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $this->CaseList = handle($case->where($where)->order('fill_in_time desc')->limit($limit)->select());
 //        dump(M('case')->getLastSql());
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
         $this->uid = $uid;
@@ -382,8 +410,22 @@ class CaseController extends AdminController
             'case_status' => ['in', implode(',', $auth['status'])],
             'stage_status' => 'ing',
         ];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
         $case = M('case');
-        $count = $case->where($where)->count();
+        $count = handle($case->where($where)->count(), false);
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
@@ -391,7 +433,7 @@ class CaseController extends AdminController
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
 
-        $this->CaseList = $case->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $this->CaseList = handle($case->where($where)->order('fill_in_time desc')->limit($limit)->select());
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
         $this->uid = $uid;
         $this->display();
@@ -401,14 +443,32 @@ class CaseController extends AdminController
     public function guidang()
     {
         $this->meta_title = '归档案件';
-        $count = M('case')->where('case_status = "jiean" or case_status = "huifang"')->order('fill_in_time desc')->count();
+        $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        $where = [
+            'case_status' => ['in', 'jiean,huifang'],
+        ];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
+        $count = handle(M('case')->where($where)->order('fill_in_time desc')->select(), false);
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
-        $this->CaseList = M('case')->where('case_status = "jiean" or case_status = "huifang"')->limit($limit)->order('fill_in_time desc')->select();
+        $this->CaseList = handle(M('case')->where($where)->limit($limit)->order('fill_in_time desc')->select());
         // echo M()->getLastSql();
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
         $this->display();
@@ -418,15 +478,31 @@ class CaseController extends AdminController
     public function wancheng()
     {
         $this->meta_title = '完成处理';
-        $where = ('case_status = "jiean" or case_status = "huifang"');
-        $count = M('case')->where($where)->order('fill_in_time desc')->count();
+        $where = [
+            'case_status' => ['in', 'jiean,huifang'],
+        ];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
+        $count = handle(M('case')->where($where)->order('fill_in_time desc')->select(), false);
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
         $limit = ($p - 1) * $pagesize . ',' . $pagesize;
         $page = new Page($count, $pagesize);
         $this->Page = $page->show();
-        $this->CaseList = M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select();
+        $this->CaseList = handle(M('case')->where($where)->order('fill_in_time desc')->limit($limit)->select());
         // echo M()->getLastSql();
         $this->shequ = M('area_top')->where(array('type_id' => 5))->select();
         $this->display();
@@ -438,8 +514,24 @@ class CaseController extends AdminController
         $this->meta_title = '即将超时案件';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         $status = getStatusFromAuth();
-        $where = array("case_status" => array("in", implode(',', $status['status'])));
-        $list = M('case')->where($where)->order('fill_in_time desc')->select();
+        $where = [
+            'case_status' => ['in', implode(',', $status['status'])],
+        ];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
+        $list = handle(M('case')->where($where)->order('fill_in_time desc')->select());
         $count = $this->countOverTimeCases($list, false);
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
@@ -465,8 +557,24 @@ class CaseController extends AdminController
         $this->meta_title = '超时案件';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
         $status = getStatusFromAuth();
-        $where = array("case_status" => array("in", implode(',', $status['status'])));
-        $list = M('case')->where($where)->order('fill_in_time desc')->select();
+        $where = [
+            'case_status' => ['in', implode(',', $status['status'])],
+        ];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
+        $list = handle(M('case')->where($where)->order('fill_in_time desc')->select());
         $count = $this->countOverTimeCases($list, true);
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
@@ -566,7 +674,25 @@ class CaseController extends AdminController
     {
         $this->meta_title = '超龄案件';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
-        $list = M('case')->order('fill_in_time desc')->select();
+        $auth = getStatusFromAuth();
+        $where = [
+            'case_status' => ['in', implode(',', $auth['status'])],
+        ];
+        if (UID != 1) {
+            $user = M('member')->where(array('uid' => UID))->find();
+            switch ($user['department']){
+                case 0:
+                    $where['community_code'] = $user['community_code'];
+                    break;
+                case 1:
+                    $where['street_code'] = $user['street_code'];
+                    break;
+                case 2:
+                    $where['area_code'] = $user['area_code'];
+                    break;
+            }
+        }
+        $list = handle(M('case')->where($where)->order('fill_in_time desc')->select());
         $count = array();
         $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
         foreach ($list as $val) {
@@ -657,9 +783,9 @@ class CaseController extends AdminController
                 break;
         }
         $list = M('area_top')->where($where)->select();
-        $str = '';
+        $str = '<option value="">请选择</option>';
         foreach ($list as $v) {
-            $str .= '<label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="' . $v['region_id'] . '">' . $v['region_name'] . '</label> ';
+            $str .= '<option value="' . $v['region_id'] . '">' . $v['region_name'] . '</option>';
         }
         echo $str;
     }
@@ -735,7 +861,15 @@ class CaseController extends AdminController
             if ($_POST['home_city_code']) $data['home_city_code'] = $_POST['home_city_code'];
             if ($_POST['home_area_code']) $data['home_area_code'] = $_POST['home_area_code'];
             if ($_POST['home_address']) $data['home_address'] = $_POST['home_address'];
-            if ($_POST['enclosure']) $data['enclosure'] = $_POST['enclosure'];
+            $enclosure = array();
+            if ($_POST['enclosure']) {
+                foreach ($_POST['enclosure'] as $k => $v) {
+                    if ($k < 5) {
+                        if (!empty($v)) $enclosure[] = $v;
+                    }
+                }
+            }
+            if ($enclosure) $data['enclosure'] = serialize($enclosure);
             if ($_POST['health'] == 1) {
                 $data['health'] = $_POST['health'];
             } else {
@@ -1002,7 +1136,8 @@ class CaseController extends AdminController
                 if ($_POST['dispatch_person']) $data['dispatch_person'] = $_POST['dispatch_person'];
                 $data['dispatch_time'] = date("Y-m-d H:i:s", time());
                 $data['stage_status'] = 'complete';
-                $data['turn_related'] = serialize($_POST['turn_related']);
+                $data['turn_related'] = $_POST['turn_related'];
+                $data['turn_relateds'] = serialize($_POST['turn_relateds']);
                 $saveCase = $case->where(array('id' => $id))->save($data);
                 if ($saveCase) {
                     //发送短信提醒
@@ -1015,12 +1150,16 @@ class CaseController extends AdminController
         } else {
             $id = $_GET['id'];
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
-            $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
+            if ($case['turn_related']) {
+                $related = M('area_top')->where(array('region_id' => $case['turn_related']))->find();
+                $case['turn_related'] = $related;
+            }
+            $this->Clist = $case;
             // 点击调度 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $this->assign('shi', $shi);

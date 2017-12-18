@@ -614,14 +614,15 @@
                     </table>
                 </div>
                 <div style="width: 855px;margin: auto;margin-top: 10px;">
-                    <label style="height:30px;">附件上传：
+                    <label style="height:30px;" class="bar_value" >附件上传：
                         <?php if (empty($Clist['enclosure'])) {?>
-                        <input id="fileupload" type="file" name="files" data-url="index.php?s=/Case/ajax_uploads" multiple>
-                        <?php } else {?>
-                        <input id="fileupload" type="file" name="files" data-url="index.php?s=/Case/ajax_uploads" multiple>
-                        <a href="__UPLOADS__/file/<?php echo $Clist['enclosure'];?>" target="_blank"><span class="radio-text">点击查看文件</span></a>
-                        <?php }?>
-                        <input type="hidden" class="bar_value" name="enclosure" value="<?php echo $Clist['enclosure'];?>">（文件格式支持：jpg, png, jpeg, docx, xlsx）
+                        <input id="fileupload" type="file" name="files[]" data-url="index.php?s=/Case/ajax_uploads" multiple> （文件格式支持：jpg, png, jpeg, docx, xlsx）
+                        <?php } else {
+                        echo '点击查看文件：';
+                        $enclosure = unserialize($Clist['enclosure']);
+                        foreach ($enclosure as $v) { ?>
+                        <a href="__UPLOADS__/file/<?php echo $v;?>" target="_blank"><span class="radio-text"><?php echo $v;?></span></a>
+                        <?php }}?>
                     </label>
                     <label class="bar" style="width:0%;color:white;text-align:center"></label>
                 </div>
@@ -714,8 +715,10 @@
                 console.log(progress + '%');
             },
             done: function (e, data) {
-                console.log(data.result.savename);
-                $('.bar_value').val(data.result.savename);
+                console.log(data);
+                if (data.result.savename !== undefined) {
+                    $('.bar_value').append('<input type="hidden" name="enclosure[]" value="'+data.result.savename+'">');
+                }
                 $('.bar').text('上传完成');
             }
         });

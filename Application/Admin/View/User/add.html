@@ -38,7 +38,7 @@
         <div class="form-item">
             <label class="item-label">选择所属部门</label>
             <select class="select input-large" name="department">
-                <option value="1">选择部门</option>
+                <option value="0">选择部门</option>
                 <?php
                 foreach ($department as $k => $v) {
                 echo "<option value=" . $k . ">" . $v . "</option>";
@@ -49,7 +49,8 @@
         <div class="form-item">
             <label class="item-label">选择所属区域</label>
             <select class="select " name="area_code" id="City2" onChange="nav2(this,3)">
-                <?php if (empty($Clist['area_code'])) echo "<option value=''> 请选择市/区 </option>";
+                <option value=''> 请选择市/区 </option>
+                <?php
                 foreach ($list_top as $v) {
                     echo "<option value=".$v['region_id']."> ".$v['region_name']." </option>";
                 }?>

@@ -35,22 +35,35 @@ class IndexController extends MobileController
             $where = [
                 'case_status' => ['in', implode(',', $auth['status'])],
             ];
+            if (UID != 1) {
+                $user = M('member')->where(array('uid' => UID))->find();
+                switch ($user['department']){
+                    case 0:
+                        $where['community_code'] = $user['community_code'];
+                        break;
+                    case 1:
+                        $where['street_code'] = $user['street_code'];
+                        break;
+                    case 2:
+                        $where['area_code'] = $user['area_code'];
+                        break;
+                }
+            }
             //案件统计过滤的字段
-            $field = ['id', 'name', 'case_status', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time'];
+            $field = ['id', 'name', 'case_status', 'add_time', 'trial_time', 'last_instance_time', 'dispatch_time', 'deal_with_time', 'finish_time', 'visit_time', 'birthday'];
             //消息中心
-            $list = $case->field($field)->where($where)->order('fill_in_time desc')->select();
+            $list = handle($case->field($field)->where($where)->order('fill_in_time desc')->select());
             $overtime = $this->countOverTimeCases($list);
             //待处理数量
             $where['stage_status'] = 'complete';
-            $waiting = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+            $waiting = handle($case->field($field)->where($where)->order('fill_in_time desc')->select(), false);
             //正在处理的数量
             $where['stage_status'] = 'ing';
-            $handling = $case->field($field)->where($where)->order('fill_in_time desc')->count();
+            $handling = handle($case->field($field)->where($where)->order('fill_in_time desc')->select(), false);
             //超龄
             $age = array();
             $overage = empty(C('OVERAGE_CASE')) ? 18 : C('OVERAGE_CASE');
-            $ages = $case->field('birthday')->order('fill_in_time desc')->select();
-            foreach ($ages as $val) {
+            foreach ($list as $val) {
                 if (getAge($val['birthday']) > $overage) $age[] = getAge($val['birthday']);
             }
             //案件统计

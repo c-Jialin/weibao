@@ -95,26 +95,32 @@
                         <label>
                             <select class="select checkbox3" name="checkbox3">
                                 <option value="">请选择</option>
-                                <option value="3">转相关部门</option>
-                                <option value="1">转至结案</option>
+                                <option value="3" <?php if ($Clist['checkbox_status'] == 3) echo 'selected';?>>转相关部门</option>
+                                <option value="1" <?php if ($Clist['checkbox_status'] == 1) echo 'selected';?>>转至结案</option>
                             </select>
                         </label>
                         <label>
-                            <select style="display: none" class="select related" name="turn_professional">
+                            <select <?php if (empty($Clist['turn_professional'])) echo 'style="display: none"';?> class="select related" name="turn_professional">
                                 <option value="0">请选择</option>
-                                <option value="1">区县民政</option>
-                                <option value="2">街道民政</option>
-                                <option value="3">社区民政</option>
+                                <option value="1" <?php if ($Clist['turn_professional'] == 1) echo 'selected';?>>区县民政</option>
+                                <option value="2" <?php if ($Clist['turn_professional'] == 2) echo 'selected';?>>街道民政</option>
+                                <option value="3" <?php if ($Clist['turn_professional'] == 3) echo 'selected';?>>社区民政</option>
+                            </select>
+                        </label>
+                        <label>
+                            <select <?php if (empty($Clist['turn_related'])) echo 'style="display: none"';?> class="select turn_related" name="turn_related">
+                            <?php if (!empty($Clist['turn_related'])) {?>
+                                <option value="<?php echo $Clist['turn_related']['region_id'];?>"><?php echo $Clist['turn_related']['region_name'];?></option>
+                            <?php }?>
                             </select>
                         </label>
                         <br/>
-                        <label style="display: none" class="turn_related">
-                            <span id="turn_related"> </span>
-                            <br/>
+                        <label>
+                            <?php $relateds = unserialize($Clist['turn_relateds']);?>
                             协同部门：
-                            <label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="-1">市公安局</label>
-                            <label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="-2">市教育局</label>
-                            <label><input type="checkbox" class="radio healthbox" name="turn_related[]" value="-3">市残联</label>
+                            <label><input type="checkbox" class="radio healthbox" name="turn_relateds[]" value="1001" <?php if (in_array('1001', $relateds)) echo 'checked';?>>市公安局</label>
+                            <label><input type="checkbox" class="radio healthbox" name="turn_relateds[]" value="1002" <?php if (in_array('1002', $relateds)) echo 'checked';?>>市教育局</label>
+                            <label><input type="checkbox" class="radio healthbox" name="turn_relateds[]" value="1003" <?php if (in_array('1003', $relateds)) echo 'checked';?>>市残联</label>
                         </label>
                     </div>
                     <div style="clear: both;"></div>
@@ -134,7 +140,7 @@
                         <label>手动设置调度日期 <input type="datetime-local" name="dispatch_time" style="font-size:12px;line-height:12px;"></label>
                         * 不设置则为当天日期 - <?php echo date('Y-m-d H:i:s', time())?>
                         <?php } else { ?>
-                        <input type="text" class="input" name="dispatch_time" style="width:300px;" value="<?php echo $Clist['dispatch_time'] ?>">
+                        <label><input type="text" class="input" name="dispatch_time" style="width:300px;" value="<?php echo $Clist['dispatch_time'] ?>"></label>
                         <?php } ?>
                     </div>
                 </div>
@@ -213,7 +219,7 @@
         if (val != 0) {
             $.post("{:U('Case/Related')}", {"type": val}, function (res) {
                 console.log(res);
-                $('#turn_related').html(res);
+                $('.turn_related').html(res);
             });
             $('.turn_related').css('display', 'inline-block');
         } else {

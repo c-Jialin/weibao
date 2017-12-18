@@ -1,7 +1,8 @@
 <?php
 
 if (version_compare(PHP_VERSION, '5.3.0', '<')) die('require PHP > 5.3.0 !');
-
+//header('Access-Control-Allow-Origin:http://120.77.64.2');
+header('Access-Control-Allow-Credentials:true');
 /**
  * 系统调试设置
  * 项目正式部署后请设置为false
@@ -26,6 +27,9 @@ function isMobile()
             return true;
         }
     }
+//    if (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone') || strpos($_SERVER['HTTP_USER_AGENT'], 'Android')) {
+//        return true;
+//    }
     if (isset ($_SERVER['SERVER_NAME'])) return stristr($_SERVER['SERVER_NAME'], "www.weibao.com") ? false : true;
     return false;
 }

@@ -43,6 +43,8 @@ class UserController extends AdminController
         if (!empty($uid)) {
             $department = C('DEPARTMENT');
             $this->assign('department', $department);
+            $list_top = M('area_top')->where(array('parent_id' => 1))->select();
+            $this->assign('list_top', $list_top);
             $nickname = M('Member')->getFieldByUid($uid, 'nickname');
             $this->assign('nickname', $nickname);
             $this->assign('uid', $uid);
@@ -61,11 +63,17 @@ class UserController extends AdminController
         $uid = I('post.uid');
         $mobile = I('post.mobile');
         $department = I('post.department');
+        $area_code = I('post.area_code');
+        $street_code = I('post.street_code');
+        $community_code = I('post.community_code');
         empty($nickname) && $this->error('请输入昵称');
         $list = array(
             'nickname' => $nickname,
             'mobile' => $mobile,
             'department' => $department,
+            'area_code' => $area_code,
+            'street_code' => $street_code,
+            'community_code' => $community_code
         );
         $data = array();
         foreach ($list as $k => $v) {
@@ -210,19 +218,18 @@ class UserController extends AdminController
         }
     }
 
-    public function add($username = '', $password = '', $repassword = '', $email = '', $mobile = '', $department = '')
+    public function add($username = '', $password = '', $repassword = '', $email = '', $mobile = '', $area_code = '', $street_code = '', $community_code = '', $department = '')
     {
         if (IS_POST) {
             /* 检测密码 */
             if ($password != $repassword) {
                 $this->error('密码和重复密码不一致！');
             }
-
             /* 调用注册接口注册用户 */
             $User = new UserApi;
-            $uid = $User->register($username, $password, $email, $mobile, $department);
+            $uid = $User->register($username, $password, $email, $mobile, $area_code, $street_code, $community_code, $department);
             if (0 < $uid) { //注册成功
-                $user = array('uid' => $uid, 'nickname' => $username, 'status' => 1, 'mobile' => $mobile, 'department' => $department);
+                $user = array('uid' => $uid, 'nickname' => $username, 'status' => 1, 'mobile' => $mobile, 'area_code' => $area_code, 'street_code' => $street_code, 'community_code' => $community_code, 'department' => $department);
                 if (!M('Member')->add($user)) {
                     $this->error('用户添加失败！');
                 } else {
