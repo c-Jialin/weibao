@@ -32,11 +32,12 @@ class IndexController extends AdminController
                     'last_login_time' => $_SESSION['onethink_admin']['user_auth']['last_login_time'],
                 );
                 //根据用户id，查询用户上次登录ip
-                $ucenter_member = M('ucenter_member');
+                $ucenter_member = M('member');
                 $what = array(
-                    'id' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
+                    'uid' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
                 );
-                $user_info['last_login_ip'] = $ucenter_member->where($what)->getField('last_login_ip');
+                $department = C('DEPARTMENT');
+                $user_info['department'] = $department[$ucenter_member->where($what)->getField('department')];
 
                 $this->assign('user_info', $user_info);
 

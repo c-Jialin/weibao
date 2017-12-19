@@ -16,15 +16,16 @@ class IndexController extends MobileController
         if (UID) {
             $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
             //根据用户id，查询用户上次登录ip
-            $ucenter_member = M('ucenter_member');
+            $ucenter_member = M('member');
             $what = array(
-                'id' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
+                'uid' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
             );
-            $last_login_ip = $ucenter_member->where($what)->getField('last_login_ip');
+            $department = C('DEPARTMENT');
+            $last_login_ip = $ucenter_member->where($what)->getField('department');
             //用户信息
             $user_info = array(
                 'uid' => $uid,
-                'last_login_ip' => $last_login_ip,
+                'department' => $department[$last_login_ip],
                 'username' => $_SESSION['onethink_admin']['user_auth']['username'],
                 'last_login_time' => $_SESSION['onethink_admin']['user_auth']['last_login_time'],
             );

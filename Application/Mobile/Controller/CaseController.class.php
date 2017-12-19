@@ -1031,6 +1031,8 @@ class CaseController extends MobileController
                 $post['file'] = $fileName . ".jpg";
             }
         }
+        $post['department'] = empty($_POST['department']) ? '' : $_POST['department'];
+        $post['deal_person'] = empty($_POST['deal_person']) ? '' : $_POST['deal_person'];
         $post['record'] = empty($_POST['management_record']) ? '' : $_POST['management_record'];
         $post['date'] = empty($_POST['management_riqi']) ? date('Y-m-d H:i:s', time()) : $_POST['management_riqi'];
         $post['person'] = empty($_POST['management_person']) ? $member : $_POST['management_person'];
@@ -1069,7 +1071,15 @@ class CaseController extends MobileController
             if (!empty($_POST['help_situation'])) $data['help_situation'] = $_POST['help_situation'];
             if (!empty($_POST['professional_Reflect'])) $data['professional_Reflect'] = $_POST['professional_Reflect'];
             if (!empty($_POST['recommendations'])) $data['recommendations'] = $_POST['recommendations'];
-            if (!empty($_POST['growth_dilemmass'])) $data['growth_dilemmass'] = $_POST['growth_dilemmass'];
+            //成长困境及成长等级
+            if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
+            if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
+            if ($_POST['growth_dilemma3']) $grow['growth_dilemma3'] = $_POST['growth_dilemma3'];
+            if ($_POST['growth_dilemma4']) $grow['growth_dilemma4'] = $_POST['growth_dilemma4'];
+            if ($_POST['growth_dilemma5']) $grow['growth_dilemma5'] = $_POST['growth_dilemma5'];
+            if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
+            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
+            $data['growth_dilemmass'] = serialize($grow);
             if ($_POST['finish_person']) $data['finish_person'] = $_POST['finish_person'];
             $data['visit_status'] = empty($_POST['visit_status']) ? '' : $_POST['visit_status'];
             $data['finish_time'] = date("Y-m-d H:i:s", time());

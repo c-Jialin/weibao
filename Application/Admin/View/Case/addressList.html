@@ -11,6 +11,30 @@
 </block>
 
 <block name="body">
+    <form action='{:U("addressList")}' method='post'>
+        <div style='float: left; margin-bottom: 2px;'>
+            <select class="select left" name="area_code" id="City2" style="float:left;" onChange="nav2(this,3)">
+                <option value=''>请选择区</option>
+                <?php foreach ($list_top as $v) {
+                echo "<option value=".$v['region_id'].">".$v['region_name']."</option>";
+                }?>
+            </select>
+            <select class="select left" name="street_code" id="Town2" style="float:left;" onChange="nav2(this,4)">
+                <option value=''>请选择街/镇</option>
+            </select>
+            <select class="select left" name="community_code" id="Country2" style="float:left;">
+                <option value=''>请选择村/社区</option>
+            </select>
+            <select name='department' id='enrollSex'>
+                <option value=''>请选择部门</option>
+                <?php foreach ($department as $k => $v){?>
+                <option value="<?php echo $k;?>"><?php echo $v;?></option>
+                <?php } ?>
+            </select>
+            <input type='text' name='nickname' id='name' placeholder='请输入搜索名字'>
+            <input type='submit' id='filter' name='submit' value='搜索' class='btn'>
+        </div>
+    </form>
     <!-- 数据列表 -->
     <div class="data-table table-striped">
         <table class="">
@@ -19,12 +43,9 @@
                 <th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
                 <th class="">UID</th>
                 <th class="">昵称</th>
-                <th class="">联系电话</th>
+                <th class="">固定电话</th>
                 <th class="">权限</th>
                 <th class="">所属部门</th>
-                <th class="">登录次数</th>
-                <th class="">最后登录时间</th>
-                <th class="">状态</th>
             </tr>
             </thead>
             <tbody>
@@ -36,10 +57,7 @@
                         <td>{$vo.nickname}</td>
                         <td>{$vo.mobile}</td>
                         <td><span>{$vo.description|implode=',',###}</span></td>
-                        <td>{$vo.title|implode=',',###}</td>
-                        <td>{$vo.login}</td>
-                        <td><span>{$vo.last_login_time|time_format}</span></td>
-                        <td>{$vo.status_text}</td>
+                        <td>{$vo.department}</td>
                     </tr>
                 </volist>
                 <else/>
@@ -66,5 +84,94 @@
             $('.copyright').html('<div class="copyright"> ©2013 <a href="http://www.topthink.net" target="_blank">topthink.net</a> 上海顶想信息科技有限公司版权所有</div>');
             $('.sidebar').remove();
         })
+    </script>
+    <script type="text/javascript">
+        function auth() {
+            var case_status = $("#auth_status").attr('case_status');
+            var is_auth = $("#auth_status").attr('is_auth');
+            if (case_status == '' && is_auth) {
+                return true;
+            }
+            if (case_status == 'bohuiC' && is_auth) {
+                return true;
+            }
+            return false;
+        }
+        function nav(obj, type) {
+            $.post("{:U('Case/Linkage')}", {"id": obj.value, "type": type}, function (res) {
+                if (type == 1) {
+                    if (obj.value > 0) {
+                        $("#Town1").html(res);
+                    } else {
+                        $("#Town1").html("<option>请选择市</option>");
+                    }
+                    $("#Country1").html("<option>请选择区</option>");
+                } else if (type == 2) {
+                    if (obj.value > 0) {
+                        $("#Country1").html(res)
+                    } else {
+                        $("#Country1").html("<option>请选择区</option>");
+                    }
+                }
+            })
+        }
+        function nav1(obj, type) {
+            $.post("{:U('Case/Linkage')}", {"id": obj.value, "type": type}, function (res) {
+                if (type == 1) {
+                    if (obj.value > 0) {
+                        $("#shi1").html(res);
+                    } else {
+                        $("#shi1").html("<option>请选择市</option>");
+                    }
+                    $("#qu1").html("<option>请选择区</option>");
+                } else if (type == 2) {
+                    if (obj.value > 0) {
+                        $("#qu1").html(res)
+                    } else {
+                        $("#qu1").html("<option>请选择区</option>");
+                    }
+                }
+            })
+        }
+        function nav2(obj, type) {
+            $.post("{:U('Case/Linkage_top')}", {"id": obj.value, "type": type}, function (res) {
+                if (type == 3) {
+                    if (obj.value > 0) {
+                        $("#Town2").html(res);
+                    } else {
+                        $("#Town2").html("<option>请选择街/镇</option>");
+                    }
+                    $("#Country2").html("<option>请选择村/社区</option>");
+                } else if (type == 4) {
+                    if (obj.value > 0) {
+                        $("#Country2").html(res)
+                    } else {
+                        $("#Country2").html("<option>请选择村/社区</option>");
+                    }
+                }
+            })
+        }
+
+        function nav3(obj, type) {
+            $.post("{:U('Case/Linkage')}", {"id": obj.value, "type": type}, function (res) {
+                if (type == 1) {
+                    if (obj.value > 0) {
+                        $("#shi3").html(res);
+                    } else {
+                        $("#shi3").html("<option>请选择市</option>");
+                    }
+                    $("#qu3").html("<option>请选择区</option>");
+                } else if (type == 2) {
+                    if (obj.value > 0) {
+                        $("#qu3").html(res)
+                    } else {
+                        $("#qu3").html("<option>请选择区</option>");
+                    }
+                }
+            })
+        }
+        function printForm(){
+            $('.information').printArea({popHt: 1000, popWd: 2000, mode: 'popup', popClose: true});
+        }
     </script>
 </block>

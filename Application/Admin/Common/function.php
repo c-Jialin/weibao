@@ -549,19 +549,81 @@ function getFengxian($str)
     $arr6 = array(6, 12, 18, 24, 30, 36, 42);
     $res = '';
     if (in_array($str, $arr1)) {
-        $res = 5;
+        $res = '五';
     } else if (in_array($str, $arr2)) {
-        $res = 4;
+        $res = '四';
     } else if (in_array($str, $arr3)) {
-        $res = 3;
+        $res = '三';
     } else if (in_array($str, $arr4)) {
-        $res = 2;
+        $res = '二';
     } else if (in_array($str, $arr5)) {
-        $res = 1;
+        $res = '一';
     } else if (in_array($str, $arr6)) {
-        $res = 0;
+        $res = '零';
     }
     return $res;
+}
+
+//初级评估风险
+function getMaxFengxian($fengxian)
+{
+    if (!empty($fengxian)) {
+        $arr1 = array(5, 11, 17, 23, 29, 35, 41);
+        $arr2 = array(4, 10, 16, 22, 28, 34, 40);
+        $arr3 = array(3, 9, 15, 21, 27, 33, 39);
+        $arr4 = array(2, 8, 14, 20, 26, 32, 38);
+        $arr5 = array(1, 7, 13, 19, 25, 31, 37);
+        $arr6 = array(6, 12, 18, 24, 30, 36, 42);
+        $res = array();
+        foreach ($fengxian as $k1 => $v1) {
+            if (in_array($v1, $arr1)) {
+                $res[$k1] = 5;
+            } else if (in_array($v1, $arr2)) {
+                $res[$k1] = 4;
+            } else if (in_array($v1, $arr3)) {
+                $res[$k1] = 3;
+            } else if (in_array($v1, $arr4)) {
+                $res[$k1] = 2;
+            } else if (in_array($v1, $arr5)) {
+                $res[$k1] = 1;
+            } else if (in_array($v1, $arr6)) {
+                $res[$k1] = 0;
+            }
+        }
+        $str = max($res);
+        $ar1 = array(1, 2, 3, 4, 5);
+        $ar2 = array(7, 8, 9, 10, 11);
+        $ar3 = array(13, 14, 15, 16, 17);
+        $ar4 = array(19, 20, 21, 22, 23);
+        $ar5 = array(25, 26, 27, 28, 29);
+        $ar6 = array(31, 32, 33, 34, 35);
+        $ar7 = array(37, 38, 39, 40, 41);
+        $arr = '';
+        foreach ($fengxian as $kl => $vl) {
+            if ($kl == array_search($str, $res)) {
+                if (in_array($vl, $ar1)) {
+                    $arr = '1类:';
+                } else if (in_array($vl, $ar2)) {
+                    $arr = '2类:';
+                } else if (in_array($vl, $ar3)) {
+                    $arr = '3类:';
+                } else if (in_array($vl, $ar4)) {
+                    $arr = '4类:';
+                } else if (in_array($vl, $ar5)) {
+                    $arr = '5类:';
+                } else if (in_array($vl, $ar6)) {
+                    $arr = '6类:';
+                } else if (in_array($vl, $ar7)) {
+                    $arr = '7类:';
+                }
+            }
+        }
+        $data = array('零','一','二','三','四','五');
+        return $arr . $data[$str] . '级';
+    } else {
+        return null;
+    }
+
 }
 
 //初级评估风险类
@@ -576,19 +638,19 @@ function getFxian($str)
     $arr6 = array(31, 32, 33, 34, 35);
     $arr7 = array(37, 38, 39, 40, 41);
     if (in_array($str, $arr1)) {
-        $res = '一类:';
+        $res = '1类:';
     } else if (in_array($str, $arr2)) {
-        $res = '二类:';
+        $res = '2类:';
     } else if (in_array($str, $arr3)) {
-        $res = '三类:';
+        $res = '3类:';
     } else if (in_array($str, $arr4)) {
-        $res = '四类:';
+        $res = '4类:';
     } else if (in_array($str, $arr5)) {
-        $res = '五类:';
+        $res = '5类:';
     } else if (in_array($str, $arr6)) {
-        $res = '六类:';
+        $res = '6类:';
     } else if (in_array($str, $arr7)) {
-        $res = '七类:';
+        $res = '7类:';
     }
     return $res;
 }

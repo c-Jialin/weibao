@@ -24,7 +24,7 @@ body{padding: 0}
         <th >性别</th>
         <th >年龄</th>
         <th >民族</th>
-        <th >家庭住址</th>
+        <th >家庭区域</th>
         <th class="" >超时流程</th>
         <th class="" >已超时间</th>
         <th class="" >责任人员</th>
@@ -42,7 +42,7 @@ body{padding: 0}
         <td><?php echo getSex($v['sex'])?></td>
         <td><?php echo getAge($v['birthday'])?></td>
         <td><?php echo $v['nation']?></td>
-        <td><?php echo $v['home_address']?></td>
+        <td><?php echo getPraName($v['home_pro_code']) . '-' . getPraName($v['home_city_code']) . '-' . getPraName($v['home_area_code']);?></td>
         <?php
             $turn_related = M('case')->where(array('id'=>$v['id']))->getField('turn_related');
         ?>

@@ -943,6 +943,8 @@ class CaseController extends AdminController
         } else {
             $this->Lage();
             $id = $_GET['id'];
+            $area = M('area')->where(array('parent_id' => 205))->select();
+            $this->assign('area', $area);
             $case = $this->Handle(M('case')->where(array('id' => $id))->find());
             $this->Clist = $case;
             // 点击采集 更改stage_status
@@ -1239,6 +1241,8 @@ class CaseController extends AdminController
         $post = array();
         $urse = M('ucenter_member');
         $member = $urse->where(array('id' => UID))->getField('username');
+        $post['department'] = empty($_POST['department']) ? '' : $_POST['department'];
+        $post['deal_person'] = empty($_POST['deal_person']) ? '' : $_POST['deal_person'];
         $post['type'] = empty($_POST['management_type']) ? '' : $_POST['management_type'];
         $post['file'] = empty($_POST['file_name']) ? '' : $_POST['file_name'];
         $post['record'] = empty($_POST['management_record']) ? '' : $_POST['management_record'];
@@ -1310,7 +1314,15 @@ class CaseController extends AdminController
             if (!empty($_POST['help_situation'])) $data['help_situation'] = $_POST['help_situation'];
             if (!empty($_POST['professional_Reflect'])) $data['professional_Reflect'] = $_POST['professional_Reflect'];
             if (!empty($_POST['recommendations'])) $data['recommendations'] = $_POST['recommendations'];
-            if (!empty($_POST['growth_dilemmass'])) $data['growth_dilemmass'] = $_POST['growth_dilemmass'];
+            //成长困境及成长等级
+            if ($_POST['growth_dilemma1']) $grow['growth_dilemma1'] = $_POST['growth_dilemma1'];
+            if ($_POST['growth_dilemma2']) $grow['growth_dilemma2'] = $_POST['growth_dilemma2'];
+            if ($_POST['growth_dilemma3']) $grow['growth_dilemma3'] = $_POST['growth_dilemma3'];
+            if ($_POST['growth_dilemma4']) $grow['growth_dilemma4'] = $_POST['growth_dilemma4'];
+            if ($_POST['growth_dilemma5']) $grow['growth_dilemma5'] = $_POST['growth_dilemma5'];
+            if ($_POST['growth_dilemma6']) $grow['growth_dilemma6'] = $_POST['growth_dilemma6'];
+            if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
+            $data['growth_dilemmass'] = serialize($grow);
             if ($_POST['finish_person']) $data['finish_person'] = $_POST['finish_person'];
             $data['visit_status'] = empty($_POST['visit_status']) ? '' : $_POST['visit_status'];
             $id = I('id');
@@ -1514,7 +1526,20 @@ class CaseController extends AdminController
     //用户信息
     public function addressList()
     {
-        $member = M('member')->where('status=1 and uid!=1')->select();
+        $where = array(
+            'status' => array('eq', 1),
+            'uid' => array('neq', 1),
+        );
+        if (I('submit')) {
+            //筛选条件 / 或导出
+            $post = I('post.');
+            foreach ($post as $k => &$v) {
+                if (empty($v)) unset($post[$k]);
+                if ($k == 'submit')  unset($post[$k]);
+            }
+            $where = array_merge($where, $post);
+        }
+        $member = M('member')->where($where)->select();
         $group = M()
             ->table('onethink_auth_group_access a')
             ->join('onethink_auth_group g on a.group_id=g.id')
@@ -1530,9 +1555,26 @@ class CaseController extends AdminController
                 }
             }
         }
+        $this->Lage();
+        $this->assign('department', $department);
         int_to_string($member);
         $this->assign('_list', $member);
         $this->meta_title = '用户信息';
+        $this->display();
+    }
+
+    // 打印
+    public function getPrint()
+    {
+        $this->Lage();
+        $id = $_GET['id'];
+        $area = M('area')->where(array('parent_id' => 205))->select();
+        $this->assign('area', $area);
+        $case = $this->Handle(M('case')->where(array('id' => $id))->find());
+        $this->Clist = $case;
+        $urse = M('ucenter_member');
+        $member = $urse->where(array('id' => UID))->getField('username');
+        $this->assign('member', $member);
         $this->display();
     }
 

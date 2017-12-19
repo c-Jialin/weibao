@@ -119,10 +119,27 @@
                                     <tbody>
                                     <form>
                                         <tr>
+                                            <td class="td_item" style="width:100px;">处置部门</td>
+                                            <td class="td_input" style="width:110px;"  colspan="3" >
+                                                <input type="text" class="input" name="department" value="<?php echo $v['department'] ?>">
+                                            </td>
+                                            <td class="td_item" style="width:80px;">处置人</td>
+                                            <td class="td_input" style="width:120px;">
+                                                <input type="text" class="input" name="deal_person" value="<?php echo $v['deal_person'] ?>">
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td class="td_item" style="width:100px;">处置类型</td>
                                             <td class="td_input" style="width:110px;">
-                                                <label><input type="radio" class="radio" name="management_type" <?php if($v['type'] == 1){ echo 'checked'; }?> value="1"/> 补助</label>
-                                                <label><input type="radio" class="radio" name="management_type" <?php if($v['type'] == 2){ echo 'checked'; }?> value="2"/> 辅助</label>
+                                                <select class="select checkbox3" name="management_type">
+                                                    <option value="">请选择</option>
+                                                    <option value="1" <?php if ($Clist['management_type'] == 1) echo 'selected';?>>心理关爱</option>
+                                                    <option value="2" <?php if ($Clist['management_type'] == 2) echo 'selected';?>>教育矫治</option>
+                                                    <option value="3" <?php if ($Clist['management_type'] == 3) echo 'selected';?>>技能培训</option>
+                                                    <option value="4" <?php if ($Clist['management_type'] == 4) echo 'selected';?>>法律援助</option>
+                                                    <option value="5" <?php if ($Clist['management_type'] == 5) echo 'selected';?>>康复援助</option>
+                                                    <option value="6" <?php if ($Clist['management_type'] == 6) echo 'selected';?>>其他项目</option>
+                                                </select>
                                             </td>
                                             <td class="td_item" style="width:80px;">上传文件</td>
                                             <td class="td_input" style="width:120px;">
@@ -133,10 +150,10 @@
                                                 <input type="text" style="width: 200px;height: 25px;display: none;" name="file_name"/>
                                                 <?php }?>
                                             </td>
-                                            <td class="td_item" style="width:80px;">添加人</td>
+                                            <td class="td_item" style="width:80px;">处置账号</td>
                                             <td class="td_input" style="width:120px;">
                                                 <?php if (empty($v['person'])) {?>
-                                                <input type="text" class="input" name="management_person" value="<?php echo $member ?>">
+                                                <input type="text" class="input" disabled name="management_person" value="<?php echo $member ?>">
                                                 <?php } else { ?>
                                                 <input type="text" class="input" disabled name="management_person" value="<?php echo $v['person'] ?>">
                                                 <?php } ?>
@@ -357,13 +374,13 @@
         })
     }
     $(function () {
-        var text = '<form action="index.php?s=/Case/tichu" method="post"><div class="submit" style="width:800px;margin:auto;"><div style="line-height:30px;"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置类型</div><div style="float:left;width:85%;display:inline-block;"><label style="width:40px"><input type="radio" class="radio" name="management_type" checked value="1"><span class="radio-text" style="position:relative;top:-2px;">补助</span></label><label style="width:40px"><input type="radio" class="radio" name="management_type" value="2"><span class="radio-text" style="position:relative;top:-2px;">辅助</span></label></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">上传文件</div><div style="float:left;width:85%;display:inline-block;"><label><input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/><input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"/></label></div></div><div style="line-height:80px;height:80px"><div style="float:left;width:15%;align-content:right;display:inline-block;height:80px">处置备注</div><div style="float:left;width:85%;display:inline-block;height:80px"><textarea style="width:600px;height:80px;" name="management_record"></textarea></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置日期</div><div style="float:left;width:85%;display:inline-block;"><label>手动设置处置日期 <input type="datetime-local" name="management_riqi" style="font-size:12px;line-height:12px;"></label>* 不设置则为当天日期 - <?php echo date("Y-m-d H:i:s", time())?></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置人</div><div style="float:left;width:85%;display:inline-block;"><input type="text" class="input" style="width:300px;" name="management_person" value="<?php echo $member ?>"></div></div><input type="hidden" name="id" value="<?php echo $id;?>"><button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button></div></form>';
+        var text = '<form action="index.php?s=/Case/tichu" method="post"><div class="submit" style="width:800px;margin:auto;"><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置部门</div><div style="float:left;width:85%;display:inline-block;"><label><input type="text" class="input" name="department"></label></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置人</div><div style="float:left;width:85%;display:inline-block;"><label><input type="text" class="input" name="deal_person"></label></div></div><div style="line-height:30px;"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置类型</div><div style="float:left;width:85%;display:inline-block;"><label><select class="select checkbox3" name="management_type"><option value="">请选择</option><option value="1">心理关爱</option><option value="2">教育矫治</option><option value="3">技能培训</option><option value="4">法律援助</option><option value="5">康复援助</option><option value="6">其他项目</option></select></label></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">上传文件</div><div style="float:left;width:85%;display:inline-block;"><label><input type="file" style="margin-left: -10px" name="management_file" class="uploadFile"/><input type="text" style="width: 280px;height: 25px;display: none;" name="file_name"/></label></div></div><div style="line-height:80px;height:80px"><div style="float:left;width:15%;align-content:right;display:inline-block;height:80px">处置备注</div><div style="float:left;width:85%;display:inline-block;height:80px"><textarea style="width:600px;height:80px;" name="management_record"></textarea></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置日期</div><div style="float:left;width:85%;display:inline-block;"><label>手动设置处置日期 <input type="datetime-local" name="management_riqi" style="font-size:12px;line-height:12px;"></label>*不设置则为当天日期 - <?php echo date("Y-m-d H:i:s", time())?></div></div><div class="li"><div style="float:left;width:15%;align-content:right;display:inline-block;">处置账号</div><div style="float:left;width:85%;display:inline-block;"><input type="text" class="input" style="width:300px;" disabled name="management_person" value="<?php echo $member ?>"></div></div><input type="hidden" name="id" value="<?php echo $id;?>"><button type="submit" style="height: 30px;width: 70%;margin: auto;line-height: 30px;background-color: rgb(161,161,161);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:block">提交</button></div></form>';
         $('#addchuzhi').click(function () {
             layer.open({
                 title:'处置备注',
                 type: 1,
                 skin: 'layui-layer-rim', //加上边框
-                area: ['850px', '340px'], //宽高
+                area: ['850px', '380px'], //宽高
                 content: text,
             });
             upload();
