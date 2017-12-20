@@ -1518,7 +1518,7 @@ class CaseController extends AdminController
             $message = '您好：您有一份案件被驳回需要在（' . date('Y年m月d日H:i:s', $time) . '）之前重新处理，请及时登录平台进行' . $execute['node_name'] . '操作。';
         }
         file_put_contents('./message.txt', implode(',', array_unique($mobile)). $message.implode(',', $nickname), FILE_APPEND);
-        return array(implode(',', array_unique($mobile)), $message, implode(',', $nickname));
+//        return array(implode(',', array_unique($mobile)), $message, implode(',', $nickname));
         $SMS = new SMSAddon();
         return $SMS->AdminIndex(implode(',', array_unique($mobile)), $message);
     }
@@ -1554,6 +1554,9 @@ class CaseController extends AdminController
                     $v['title'][] = $val['title'];
                 }
             }
+            $v['area_code'] = getShequ($v['area_code']);
+            $v['street_code'] = getShequ($v['street_code']);
+            $v['community_code'] = getShequ($v['community_code']);
         }
         $this->Lage();
         $this->assign('department', $department);

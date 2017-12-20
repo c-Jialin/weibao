@@ -55,9 +55,9 @@
                         <td><input class="ids" type="checkbox" name="id[]" value="{$vo.uid}"/></td>
                         <td>{$vo.uid}</td>
                         <td>{$vo.nickname}</td>
-                        <td>{$vo.mobile}</td>
+                        <td>{$vo.qq}</td>
                         <td><span>{$vo.description|implode=',',###}</span></td>
-                        <td>{$vo.department}</td>
+                        <td>{$vo.area_code}-{$vo.street_code}-{$vo.community_code}-{$vo.department}</td>
                     </tr>
                 </volist>
                 <else/>

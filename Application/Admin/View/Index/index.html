@@ -13,15 +13,15 @@
         <img src="__IMG__/xtwcn/welcome.png" style="display:block;float:left;height:100%"/>
         <div class="index-right" style="margin-left:200px">
             <div class="index-title" style="text-align:right;height:30px;line-height:30px;color:#999;padding-right:1em;border-bottom:1px solid #ccc;font-size:12px">
-                <span style="float: left;height: 30px;line-height: 30px;padding-left: 1em;">站内公告：</span>
+                <span style="float: left;height: 30px;line-height: 30px;padding-left: 1em; color: black">站内公告：</span>
                 <ul class="index-article" style="float: left;height: 30px;line-height: 30px;color: #999;">
                     <foreach name='document' item='v'>
                         <li style="display: none"><a href="{:U('Article/index', array('cate_id' => $v['category_id'], 'pid' => $v['id']))}">{$v['title']}</a></li>
                     </foreach>
                 </ul>
                 <div>
-                    <span>用户名：{$user_info['username']}</span>&emsp;&emsp;
-                    <span>所属部门：{$user_info['department']}</span>&emsp;&emsp;
+                    <span style="color: black">用户名：{$user_info['username']}</span>&emsp;&emsp;
+                    <span style="color: black">所属部门：{$user_info['area_code']}-{$user_info['street_code']}-{$user_info['community_code']}-{$user_info['department']}</span>&emsp;&emsp;
                     <!--<span>短信平台剩余条数：{$smsNumber} 条</span>-->
                 </div>
                 <div>

@@ -95,10 +95,12 @@ class CenterController extends MobileController
     public function noticeDetails()
     {
         $pid = $_GET['id'];
-        var_dump($pid);
         $document = M('Document')->where(array('id' => $pid))->find();
         $article = M('documentArticle')->where(array('id' => $pid))->find();
         $list = array_merge($document, $article);
-        exit(json_encode('list', $list));
+//        foreach ($list as $k => &$v) {
+//            $list[$k] = htmlentities($v);
+//        }
+        exit(json_encode(array('list' => $list)));
     }
 }

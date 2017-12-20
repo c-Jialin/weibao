@@ -57,6 +57,7 @@
         <div class="title <?php if($act == ''){?> active <?php }?>">
             案件：<?php echo $Clist['name']?><a href='javascript:printForm()' class='print'>打印</a></div>
         <div id="xinxicaiji" class="collapse in" >
+            <div class="title" style="width: 860px; margin: 0 auto">采集</div>
             <table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 14px;">
                 <input type="hidden" name="xId" value="<?php echo $_GET['id'];?>"/>
                 <tbody>
@@ -607,6 +608,7 @@
             </div>
         </div>
 
+        <div class="title" style="width: 860px; margin: 10px auto">初审</div>
         <div id="chushen" class="submit collapse in">
             <div style="margin-bottom: 8px;">指挥中心或专业机构评估风险风险等级</div>
             <table class="table_2">
@@ -982,7 +984,7 @@
             </div>
             <div style="clear:both;"></div>
         </div>
-
+        <div class="title" style="width: 860px; margin: 10px auto">终审</div>
         <div id="zhongshen" class="submit collapse in">
             <div class="li">
                 <div class="left">流程操作</div>
@@ -1025,7 +1027,7 @@
             </div>
             <div style="clear:both;"></div>
         </div>
-
+        <div class="title" style="width: 860px; margin: 10px auto">调度</div>
         <div id="diaodu" class="submit collapse in">
             <div class="li">
                 <div class="left">流程操作</div>
@@ -1094,7 +1096,7 @@
             </div>
             <div style="clear:both;"></div>
         </div>
-
+        <div class="title" style="width: 860px; margin: 10px auto">处置</div>
         <div id="chuzhi" class="collapse chuzhi in">
             <div class="relative li zhuchibeizhu" style=" width:855px;">
                 <div id="upload1" class="absolute upload1" style="display:none;"></div>
@@ -1202,7 +1204,7 @@
             </div>
             <div style="clear:both;"></div>
         </div>
-
+        <div class="title" style="width: 860px; margin: 10px auto">结案</div>
         <div id="jiean" class="submit collapse in">
             结案表：
             <table cellpadding="0" cellspacing="0" border="0" class="table_1"
@@ -1679,10 +1681,9 @@
             </div>
             <div style="clear:both;"></div>
         </div>
-
+        <div class="title" style="width: 860px; margin: 10px auto">回访</div>
         <div class="collapse huifang in">
             <div class="relative li huifangjilu" style=" width:855px;">
-                <div id="upload1" class="absolute upload1" style="display:none;"></div>
                 <table cellpadding="0" cellspacing="0" border="0" class="table_2" style=" width:855px;">
                     <tbody>
                     <tr>

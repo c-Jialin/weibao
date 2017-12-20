@@ -26,7 +26,11 @@ class UserController extends AdminController
         $list = $this->lists('Member', $map);
         $department = C('DEPARTMENT');
         foreach ($list as &$v) {
+            $v['sex'] = M('ucenter_member')->getFieldById($v['uid'], 'username');
             $v['department'] = $department[$v['department']];
+            $v['area_code'] = getShequ($v['area_code']);
+            $v['street_code'] = getShequ($v['street_code']);
+            $v['community_code'] = getShequ($v['community_code']);
         }
         int_to_string($list);
         $this->assign('_list', $list);
@@ -45,8 +49,8 @@ class UserController extends AdminController
             $this->assign('department', $department);
             $list_top = M('area_top')->where(array('parent_id' => 1))->select();
             $this->assign('list_top', $list_top);
-            $nickname = M('Member')->getFieldByUid($uid, 'nickname');
-            $this->assign('nickname', $nickname);
+            $user = M('Member')->where(array('uid' => $uid))->find();
+            $this->assign('user', $user);
             $this->assign('uid', $uid);
         }
         $this->meta_title = '修改昵称';
@@ -62,6 +66,7 @@ class UserController extends AdminController
         $nickname = I('post.nickname');
         $uid = I('post.uid');
         $mobile = I('post.mobile');
+        $qq = I('post.qq');
         $department = I('post.department');
         $area_code = I('post.area_code');
         $street_code = I('post.street_code');
@@ -69,6 +74,7 @@ class UserController extends AdminController
         empty($nickname) && $this->error('请输入昵称');
         $list = array(
             'nickname' => $nickname,
+            'qq' => $qq,
             'mobile' => $mobile,
             'department' => $department,
             'area_code' => $area_code,
@@ -218,7 +224,7 @@ class UserController extends AdminController
         }
     }
 
-    public function add($username = '', $password = '', $repassword = '', $email = '', $mobile = '', $area_code = '', $street_code = '', $community_code = '', $department = '')
+    public function add($username = '', $password = '', $repassword = '', $email = '', $qq = '', $mobile = '', $area_code = '', $street_code = '', $community_code = '', $department = '')
     {
         if (IS_POST) {
             /* 检测密码 */
@@ -227,9 +233,9 @@ class UserController extends AdminController
             }
             /* 调用注册接口注册用户 */
             $User = new UserApi;
-            $uid = $User->register($username, $password, $email, $mobile, $area_code, $street_code, $community_code, $department);
+            $uid = $User->register($username, $password, $email, $mobile, $department);
             if (0 < $uid) { //注册成功
-                $user = array('uid' => $uid, 'nickname' => $username, 'status' => 1, 'mobile' => $mobile, 'area_code' => $area_code, 'street_code' => $street_code, 'community_code' => $community_code, 'department' => $department);
+                $user = array('uid' => $uid, 'nickname' => $username, 'status' => 1, 'qq' => $qq, 'mobile' => $mobile, 'area_code' => $area_code, 'street_code' => $street_code, 'community_code' => $community_code, 'department' => $department);
                 if (!M('Member')->add($user)) {
                     $this->error('用户添加失败！');
                 } else {
@@ -245,6 +251,31 @@ class UserController extends AdminController
             $this->assign('department', $department);
             $this->meta_title = '新增用户';
             $this->display();
+        }
+    }
+
+    public function userDelete()
+    {
+        $uid = I('uid');
+        $gid = M('auth_group_access')->where(array('uid' => $uid))->getField('group_id');
+        if ($uid == UID) {
+            $this->error('不允许解除自身授权');
+        }
+        if (empty($uid) || empty($gid)) {
+            $this->error('参数有误');
+        }
+        $AuthGroup = D('AuthGroup');
+        if (!$AuthGroup->find($gid)) {
+            $this->error('用户组不存在');
+        }
+        if ($AuthGroup->removeFromGroup($uid, $gid)) {
+            $res = M('member')->where(array('uid' => $uid))->delete();
+            $str = M('ucenter_member')->where(array('id' => $uid))->delete();
+            if ($res || $str) {
+                $this->success('操作成功');
+            }
+        } else {
+            $this->error('操作失败');
         }
     }
 

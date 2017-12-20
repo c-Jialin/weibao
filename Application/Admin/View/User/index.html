@@ -31,7 +31,8 @@
     <thead>
         <tr>
 		    <th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
-		    <th class="">UID</th>
+			<th class="">UID</th>
+			<th class="">账号</th>
 			<th class="">昵称</th>
 			<th class="">联系电话</th>
 			<th class="">所属部门</th>
@@ -48,9 +49,10 @@
 		<tr>
             <td><input class="ids" type="checkbox" name="id[]" value="{$vo.uid}" /></td>
 			<td>{$vo.uid} </td>
+			<td>{$vo.sex} </td>
             <td>{$vo.nickname}</td>
             <td>{$vo.mobile}</td>
-            <td>{$vo.department}</td>
+            <td>{$vo.area_code}-{$vo.street_code}-{$vo.community_code}-{$vo.department}</td>
 			<td>{$vo.login}</td>
 			<td><span>{$vo.last_login_time|time_format}</span></td>
 			<td><span>{:long2ip($vo['last_login_ip'])}</span></td>
@@ -60,7 +62,7 @@
 				<else/>
 				<a href="{:U('User/changeStatus?method=resumeUser&id='.$vo['uid'])}" class="ajax-get">启用</a>
 				</eq>
-				<a href="{:U('AuthManager/group?uid='.$vo['uid'])}" class="confirm ajax-get">删除</a>
+				<a href="{:U('User/userdelete?uid='.$vo['uid'])}" class="confirm ajax-get">删除</a>
 				<a href="{:U('User/updatePassword?uid='.$vo['uid'])}" >编辑</a>
                 </td>
 		</tr>

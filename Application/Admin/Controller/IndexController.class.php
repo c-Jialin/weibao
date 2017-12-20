@@ -37,8 +37,11 @@ class IndexController extends AdminController
                     'uid' => intval($_SESSION['onethink_admin']['user_auth']['uid']),
                 );
                 $department = C('DEPARTMENT');
-                $user_info['department'] = $department[$ucenter_member->where($what)->getField('department')];
-
+                $info = $ucenter_member->where($what)->find();
+                $user_info['department'] = $department[$info['department']];
+                $user_info['area_code'] = getShequ($info['area_code']);
+                $user_info['street_code'] = getShequ($info['street_code']);
+                $user_info['community_code'] = getShequ($info['community_code']);
                 $this->assign('user_info', $user_info);
 
                 $uid = M('auth_group_access')->field('group_id')->where(array('uid' => UID))->select();
