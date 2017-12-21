@@ -1161,6 +1161,25 @@ class CaseController extends AdminController
                 $related = M('area_top')->where(array('region_id' => $case['turn_related']))->find();
                 $case['turn_related'] = $related;
             }
+            if (empty($case['checkbox_status'])) $case['checkbox_status'] = '3';
+            $turn = M('member')->where(array('nickname' => $case['fill_in_person']))->getField('department');
+            $arr = array(3,2,1);
+            if (empty($case['turn_professional'])) $case['turn_professional'] = $arr[intval($turn)];
+            switch (intval($turn)) {
+                case 0:
+                    $str = 'community_code';
+                    break;
+                case 1:
+                    $str = 'street_code';
+                    break;
+                default:
+                    $str = 'area_code';
+                    break;
+            }
+            if (empty($case['turn_related'])) {
+                $case['turn_related']['region_id'] = $case[$str]['k'];
+                $case['turn_related']['region_name'] = $case[$str]['v'];
+            }
             $this->Clist = $case;
             // 点击调度 更改stage_status
             $this->updateStatus($id, $case['case_status']);
