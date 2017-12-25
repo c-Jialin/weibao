@@ -1,5 +1,7 @@
 <?php
 
+
+
 if (version_compare(PHP_VERSION, '5.3.0', '<')) die('require PHP > 5.3.0 !');
 //header('Access-Control-Allow-Origin:http://120.77.64.2');
 header('Access-Control-Allow-Credentials:true');
