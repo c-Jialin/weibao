@@ -12,23 +12,34 @@ class CenterController extends MobileController
     //用户信息
     public function addressList()
     {
+
         $member = M('member')->where('status=1 and uid!=1')->select();
+
+
         $group = M()
             ->table('onethink_auth_group_access a')
             ->join('onethink_auth_group g on a.group_id=g.id')
             ->field('a.uid,g.id,g.description,g.title')
             ->select();
         $department = C('DEPARTMENT');
+
         foreach ($member as &$v) {
             $v['department'] = $department[$v['department']];
+            
             foreach ($group as $val) {
                 if ($v['uid'] == $val['uid']) {
                     $v['description'][] = $val['description'];
                     $v['title'][] = $val['title'];
                 }
             }
+            $v['address'] =  getShequ($v["area_code"]) .'-'. getShequ($v["street_code"]) .'-'. getShequ($v["community_code"]) .'-'. $v["department"]  ;
+            unset($v["area_code"]) ;
+            unset($v["street_code"]) ;
+            unset($v["community_code"]) ;
+            unset($v["department"]) ;
         }
         int_to_string($member);
+
         exit(json_encode(array('member' => $member)));
     }
 
