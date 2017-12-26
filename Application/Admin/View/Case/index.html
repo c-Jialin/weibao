@@ -90,7 +90,7 @@
     <div class="information">
         <div class="title <?php if($act == ''){?> active <?php }?>" href="#xinxicaiji">
             当前阶段：信息采集<a href='javascript:printForm()' class='print'>打印</a></div>
-        <form action="{:U('Case/index')}" method="post" enctype="multipart/form-data">
+        <form action="{:U('Case/index')}" method="post" enctype="multipart/form-data" id="form1">
             <div class="collapse <?php if($act == ''){?>in<?php }?>" id="xinxicaiji">
                 <table cellpadding="0" cellspacing="0" border="0" class="table_1" style="margin-bottom:10px; width:863px;margin: auto;margin-top: 15px;margin-bottom: 15px;font-size: 14px;">
                     <input type="hidden" name="xId" value="<?php echo $_GET['id'];?>"/>
@@ -99,9 +99,9 @@
                         <td class="td_input" align="left">县/市/区：</td>
                         <td class="td_input" align="left">
                             <select class="select left" name="area_code" id="City2" style="float:left;" onChange="nav2(this,3)">
-                                <?php if (empty($Clist['area_code'])) echo "<option value=''>请选择</option>";
+                                <?php if (empty($Clist['area_code']) || empty($Clist['community_code']) ) echo "<option value='' >请选择</option>";
                                 foreach ($list_top as $v) {
-                                    if ($Clist['area_code']['k'] == $v['region_id']) {
+                                    if ($Clist['area_code']['k'] == $v['region_id'] && !empty($Clist['community_code']) ) {
                                         echo "<option selected='selected' value=".$v['region_id'].">".$v['region_name']."</option>";
                                     } else {
                                         echo "<option value=".$v['region_id'].">".$v['region_name']."</option>";
@@ -112,7 +112,7 @@
                         <td class="td_item">街/镇：</td>
                         <td>
                             <select class="select left" name="street_code" id="Town2" style="float:left;" onChange="nav2(this,4)">
-                                <?php if (empty($Clist['street_code'])) {
+                                <?php if (empty($Clist['street_code']) || empty($Clist['community_code']) ) {
                                     echo "<option value=''>请选择街/镇</option>";
                                 } else {
                                     echo "<option value=".$Clist['street_code']['k'].">".$Clist['street_code']['v']."</option>";
@@ -638,11 +638,13 @@
                         <input type="text" class="input" style="width:300px;" disabled name="fill_in_person" value="<?php echo $Clist['fill_in_person'] ?>">
                         <?php } ?>
                     </label>
+                    <input type="hidden" name="state" value="1" id="state">
                     <div id="auth_status" style="clear:both;" case_status="<?php echo $Clist['case_status']; ?>" is_auth="<?php echo IS_AUTH?>"></div>
                 </div>
                 <div align="center">
                     <button onclick="return auth()" type="submit" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block;margin-right: 20px;">确认登记</button>
-                    <button onclick="return auth()" type="submit" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block">清空重置</button>
+                    <button type="reset" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block">清空重置</button>
+                    <button onclick="return auth(false)" type="submit" style="height: 30px;width: 10%;margin: auto;line-height: 30px;background-color: rgb(242,249,253);text-align: center;color: #000000;cursor: pointer;margin-top: 10px;display:inline-block">存为草稿</button>
                 </div>
             </div>
         </form>
@@ -830,17 +832,22 @@
     })
 </script>
 <script type="text/javascript">
-    function auth() {
+    function auth(type) {
         var case_status = $("#auth_status").attr('case_status');
         var is_auth = $("#auth_status").attr('is_auth');
+        if ( type === false ) {
+            $('#state').val('0') ;
+        }
         if (case_status == '' && is_auth) {
             return true;
         }
         if (case_status == 'bohuiC' && is_auth) {
             return true;
         }
-        return false;
+        $('form').eq('2').submit() ;
+
     }
+
     function nav(obj, type) {
         $.post("{:U('Case/Linkage')}", {"id": obj.value, "type": type}, function (res) {
             if (type == 1) {
