@@ -156,6 +156,11 @@ class CaseController extends AdminController
     //所有案件
     public function suoyou()
     {
+        $a = fopen('loglog.txt', 'a') ;
+        fwrite($a, json_encode($_REQUEST)."\n\r" ) ;
+        // fclose($a) ;
+ 
+
         $this->meta_title = '案件列表';
         if (UID == 1 && I('id')) {
             $photo = M('case')->where(array('id' => I('id')))->getField('photo');
@@ -198,12 +203,20 @@ class CaseController extends AdminController
             }
             //根据案件状态选择
             $result = empty($post['status']) ? false : getStatusFromAuth($post['status']);
+
             $where['name'] = empty($post['name']) ? ['neq', ''] : ['like', "%{$post['name']}%"];
             $where['case_status'] = empty($result) ? ['neq', ''] : ['in', implode(',', $result['status'])];
             $where['area_code'] = empty($post['city']) ? ['neq', 0] : $post['city'];
             $where['street_code'] = empty($post['town']) ? ['neq', 0] : $post['town'];
             $where['community_code'] = empty($post['country']) ? ['neq', 0] : $post['country'];
             $where['sex'] = empty($post['sex']) ? ['neq', 0] : $post['sex'];
+            if( $post['status'] == 'search' ) {
+                $where['state'] = '0' ;
+                $where['case_status'] = 'caiji' ;
+            }else{
+                $where['state'] = '1' ;
+            }
+
             $assign['city'] = $post['city'];
             $assign['town'] = $post['town'];
             $assign['country'] = $post['country'];
@@ -211,9 +224,12 @@ class CaseController extends AdminController
             $assign['name'] = $post['name'];
             $assign['date'] = $post['date'];
             $assign['status'] = $post['status'];
+
             if ($type == 'enroll') {
                 //导出..
                 $count = M('case')->where($where)->count();
+                   fwrite($a, json_encode( M('case')->_sql() )."\n\r" ) ;
+
                 if ($count > 0) {
                     $result = ['result' => 1, 'msg' => '准备下载,请稍等片刻', 'url' => U('Case/enrollListExcel', ['data' => serialize($where)])];
                 } else {
@@ -223,6 +239,8 @@ class CaseController extends AdminController
             }
         }
         $count = handle(M('case')->where($where)->select(), false);
+        fwrite($a, json_encode( M('case')->_sql() )."\n\r" ) ;
+        
         import('Think', 'ThinkPHP/Library/Think/Page');
         $pagesize = 25;
         $p = I('p') ? I('p') : 1;
@@ -240,7 +258,10 @@ class CaseController extends AdminController
                 $usid[$key] = $value['group_id'];
             }
         }
+        
+
         $statuses = [
+            ['en' => 'search', 'ch' => '草稿'],
             ['en' => 'add', 'ch' => '采集'],
             ['en' => 'trial', 'ch' => '初审'],
             ['en' => 'last_instance', 'ch' => '审批'],
@@ -405,6 +426,8 @@ class CaseController extends AdminController
     {
         $this->meta_title = '正在处理';
         $uid = M('auth_group_access')->where(array('uid' => UID))->getField('group_id');
+        file_put_contents('loglog.txt', M('auth_group_access')->_sql()) ;
+ 
         $auth = getStatusFromAuth();
         $where = [
             'case_status' => ['in', implode(',', $auth['status'])],
@@ -843,7 +866,9 @@ class CaseController extends AdminController
     //信息采集
     public function index()
     {
+
         if (IS_POST && IS_AUTH) {
+
             if ($_POST['case_number'] == '后台自动生成') $data['case_number'] = date("Ymd", time()) . rand(1000, 9999);
             if ($_POST['area_code']) $data['area_code'] = $_POST['area_code'];
             if ($_POST['street_code']) $data['street_code'] = $_POST['street_code'];
@@ -903,6 +928,7 @@ class CaseController extends AdminController
             if ($_POST['main_dilemma']) $data['main_dilemma'] = $_POST['main_dilemma'];
             $data['fill_in_time'] = time();
             if ($_POST['fill_in_person']) $data['fill_in_person'] = $_POST['fill_in_person'];
+            if ($_POST['state'] != '1')  $data['state'] = '0' ;  //是否存为草稿
             //图片上传
             if ($_FILES['photo']['name'] != '') {
                 $uploadPath = 'case/user/photo/';
@@ -921,10 +947,12 @@ class CaseController extends AdminController
             $data['case_status'] = 'caiji';
             $data['add_time'] = date("Y-m-d H:i:s", time());
             $Case = D('case');
+
             if (!$Case->create()) {
                 // 如果创建失败 表示验证没有通过 输出错误提示信息
                 $this->error($Case->getError(), '', 1);
             } else {
+
                 if ($_POST['xId']) $data['id'] = $_POST['xId'];
                 // 采集 or 重新采集完成 更改stage_status
                 $data['stage_status'] = 'complete';
@@ -945,7 +973,9 @@ class CaseController extends AdminController
             $id = $_GET['id'];
             $area = M('area')->where(array('parent_id' => 205))->select();
             $this->assign('area', $area);
-            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
+            $case = $this->Handle(M('case')->where(array('id' => $id, 'state' => 1 ))->find());
+
+          
             $this->Clist = $case;
             // 点击采集 更改stage_status
             $this->updateStatus($id, $case['case_status']);
@@ -986,7 +1016,9 @@ class CaseController extends AdminController
     //案件初审
     public function trial()
     {
+        
         if (IS_POST && IS_AUTH) {
+
             $data = $_POST;
             $case = M('case');
             $data['case_status'] = 'chushen';
@@ -1003,7 +1035,7 @@ class CaseController extends AdminController
             if ($_POST['growth_dilemma7']) $grow['growth_dilemma7'] = $_POST['growth_dilemma7'];
             $data['trial_time'] = date("Y-m-d H:i:s", time());
             //提交后检测该案件是否超时
-            $cases = $case->where(['id' => $data['id']])->select();
+            $cases = $case->where(['id' => $data['id'] ])->select();
             $this->countOverTimeCases($cases, true, false);
 
             if ($data['trial_status'] == 1) {
@@ -1029,15 +1061,19 @@ class CaseController extends AdminController
                     echo "<script>alert('案件驳回失败');window.location.href='index.php?s=/Index/index.html';</script>";
                 }
             }
+
         } else {
             $id = $_GET['id'];
-            $case = $this->Handle(M('case')->where(array('id' => $id))->find());
+            $case = $this->Handle(M('case')->where(array('id' => $id , 'state' => '1' ))->find());
+            // file_put_contents('loglog.txt', M('case')->_sql() ) ;
             $this->Clist = $case;
             if (empty($case['household_pro_code'])) {
                 $shi = M('area')->where(array('parent_id' => 14))->select();
             } else {
                 $shi = M('area')->where(array('parent_id' => $case['household_pro_code']['k']))->select();
             }
+
+
             // 点击初审 更改stage_status
             $this->updateStatus($id, $case['case_status']);
             $this->assign('shi', $shi);
@@ -1053,6 +1089,7 @@ class CaseController extends AdminController
     //案件终审
     public function last_instance()
     {
+
         if (IS_POST && IS_AUTH) {
             $data = $_POST;
             $case = M('case');
@@ -1559,12 +1596,16 @@ class CaseController extends AdminController
             $where = array_merge($where, $post);
         }
         $member = M('member')->where($where)->select();
+
         $group = M()
             ->table('onethink_auth_group_access a')
             ->join('onethink_auth_group g on a.group_id=g.id')
             ->field('a.uid,g.id,g.description,g.title')
             ->select();
+
         $department = C('DEPARTMENT');
+
+        // dump($department) ; die ;
         foreach ($member as &$v) {
             $v['department'] = $department[$v['department']];
             foreach ($group as $val) {
@@ -1580,10 +1621,13 @@ class CaseController extends AdminController
         $this->Lage();
         $this->assign('department', $department);
         int_to_string($member);
+
+        // dump( $member ) ; die ;
         $this->assign('_list', $member);
         $this->meta_title = '用户信息';
         $this->display();
     }
+
 
     // 打印
     public function getPrint()
